@@ -50,4 +50,8 @@ public class Util {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
+	
+	public static String getFolderSeparatorInZipArchive() {
+		return "/";
+	}
 }

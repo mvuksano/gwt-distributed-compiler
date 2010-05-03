@@ -53,7 +53,7 @@ public class ZipDecompressor {
 
 				int count;
 				byte data[] = new byte[BUFFER];
-				File f = new File(directory.getAbsolutePath() + File.separator + entry.getName());
+				File f = new File(directory.getAbsolutePath() + Util.getFolderSeparatorInZipArchive() + entry.getName());
 				f.createNewFile();
 				FileOutputStream fos = new FileOutputStream(f);
 				dest = new BufferedOutputStream(fos, BUFFER);

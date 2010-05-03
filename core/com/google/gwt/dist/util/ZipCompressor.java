@@ -67,7 +67,7 @@ public class ZipCompressor {
 				continue;
 			}
 			if (f.isDirectory()) {
-				addFilesToPackage(f, pathPrefix + f.getName() + File.separator, out);
+				addFilesToPackage(f, pathPrefix + f.getName() + Util.getFolderSeparatorInZipArchive(), out);
 			} else {
 				ZipEntry ze = new ZipEntry(pathPrefix + f.getName());
 				out.putNextEntry(ze);
