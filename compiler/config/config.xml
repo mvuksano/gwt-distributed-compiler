@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodes>
+	<node>
+		<ipaddress>localhost</ipaddress>
+		<port>3000</port>
+		<localWorkers>1</localWorkers>
+	</node>
+</nodes>

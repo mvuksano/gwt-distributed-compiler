@@ -71,8 +71,8 @@ class Connect extends Thread {
 		}
 
 		try {
-			File uncompressedSrc = new File("uncompressed" + File.separator + "war" + File.separator + "WEB-INF" + File.separator + "classes" + File.separator);
-			//File uncompressedSrc = new File("uncompressed" + File.separator + "src" + File.separator);
+			//File uncompressedSrc = new File("uncompressed" + File.separator + "war" + File.separator + "WEB-INF" + File.separator + "classes" + File.separator);
+			File uncompressedSrc = new File("uncompressed" + File.separator + "src" + File.separator);
 			//Util.addFolderToClasspath(uncompressedSrc, this.getContextClassLoader());
 			try {
 				Util.addUrl(uncompressedSrc.toURL());

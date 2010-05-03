@@ -13,5 +13,5 @@
 			<attribute name="javadoc_location" value="file:/D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/doc/javadoc/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="classes"/>
 </classpath>
