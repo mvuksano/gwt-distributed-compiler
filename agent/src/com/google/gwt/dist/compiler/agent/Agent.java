@@ -24,6 +24,7 @@ public class Agent extends Thread {
 				Socket client = dataServer.accept();
 				System.out.println("Accepted a connection from: "
 						+ client.getInetAddress());
+				@SuppressWarnings("unused")
 				Connect c = new Connect(client);
 			} catch (Exception e) {
 			}

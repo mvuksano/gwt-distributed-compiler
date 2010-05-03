@@ -2,9 +2,9 @@ package com.google.gwt.dist.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.util.zip.ZipInputStream;
  */
 public class ZipDecompressor {
 
-	private Logger logger = Logger.getLogger(ZipCompressor.class.getName());
+	private Logger logger = Logger.getLogger(ZipDecompressor.class.getName());
 
 	private static final int BUFFER = 2048;
 
@@ -38,21 +38,21 @@ public class ZipDecompressor {
 		try {
 			directory.mkdir();
 			BufferedOutputStream dest = null;
-			FileInputStream fis = new FileInputStream("helper.zip");
-			CheckedInputStream checksum = new CheckedInputStream(fis,
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(stream.toByteArray());
+			CheckedInputStream checksum = new CheckedInputStream(inputStream,
 					new Adler32());
 			ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
 					checksum));
 			ZipEntry entry;
 			while ((entry = zis.getNextEntry()) != null) {
+				
+				// Restore directory structure.
 				File destFile = new File(directory, entry.getName());
 				destFile = new File(destFile.getParent());
 				destFile.mkdirs();
 
-				System.out.println("Extracting: " + entry);
 				int count;
 				byte data[] = new byte[BUFFER];
-				// write the files to the disk
 				File f = new File(directory.getAbsolutePath() + File.separator + entry.getName());
 				f.createNewFile();
 				FileOutputStream fos = new FileOutputStream(f);

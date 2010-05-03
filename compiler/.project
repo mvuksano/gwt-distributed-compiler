@@ -16,11 +16,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>HyperSimple</name>
-			<type>2</type>
-			<location>D:/Devel/open-source/HyperSimple/src</location>
-		</link>
-		<link>
 			<name>core</name>
 			<type>2</type>
 			<location>D:/Devel/open-source/gwt-distributed-compiler/core</location>

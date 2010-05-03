@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -18,6 +19,7 @@ import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.compiler.impl.DispatcherZipImpl;
 import com.google.gwt.dist.impl.NodeImpl;
 import com.google.gwt.dist.util.ZipCompressor;
+import compiler.CompileTaskOptionsImpl;
 
 /**
  * Compiler that will initiate GWT Java to JavaScript compilation process.
@@ -209,6 +211,8 @@ public class Compiler {
 
 			Precompile precompile = new Precompile(precompileOptions);
 			precompile.run(logger);
+			
+			// Dispatch precompile data
 		} catch (UnableToCompleteException e) {
 			logger.log(TreeLogger.ERROR, e.getMessage());
 		}
@@ -217,6 +221,8 @@ public class Compiler {
 		File source = new File(System.getProperty("user.dir"));
 
 		ZipCompressor compressor = new ZipCompressor();
+		// TODO: this should be defined in a config file.
+		compressor.setExcludePattern(Pattern.compile("bin|\\.settings\\.classpath\\.project"));
 		Dispatcher dispatcher = new DispatcherZipImpl();
 		try {
 			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
@@ -224,10 +230,6 @@ public class Compiler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		// TODO:¸
-		// Once precompilation is done send all the data from the workDir to
-		// remote perms compilers for further processing
 
 		// TODO:
 		// After perms have been compiled on remote machines transfer them to

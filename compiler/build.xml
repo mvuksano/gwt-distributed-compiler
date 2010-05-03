@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="gwt-distributed-compiler-client" default="build" basedir=".">
+  <property name="gwt.sdk" location="D:/Devel/gwt/trunk/build/staging/gwt-0.0.0" />
+  <property name="build"        location="build"/>
+  <property name="classes"     	location="classes"/>
+  <property name="core"     	location="../core"/>
+  <property name="jarfile.name" value="${module.name}.jar"/>
+  <property name="module.name"  value="${ant.project.name}"/>
+  <property name="src"          location="src"/>
+
+  <path id="project.class.path">
+    <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
+  </path>
+	
+  <target name="init" description="Create directories.">
+  	<mkdir dir="${build}"/>
+  	<mkdir dir="${classes}"/>
+  </target>
+
+  <target name="javac" depends="init" description="Compile java source.">
+    <javac srcdir="..\core" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
+      <classpath refid="project.class.path"/>
+    </javac>
+  	<javac srcdir="src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+  <target name="build" depends="javac" description="Build this project." >
+    <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
+  	  <manifest>
+  	    <attribute name="Main-Class" value="com.google.gwt.dist.compiler.Compiler"/>
+  	  </manifest>
+  	</jar>
+  </target>
+
+  <target name="clean" description="Cleans this project.">
+  	<delete dir="${build}"/>
+  	<delete dir="${classes}"/>
+  </target>
+
+</project>

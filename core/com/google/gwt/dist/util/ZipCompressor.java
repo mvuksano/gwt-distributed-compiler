@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
@@ -15,28 +19,13 @@ import java.util.zip.ZipOutputStream;
  * Used to archive and compress folders using standard zip algorithm.
  */
 public class ZipCompressor {
+	
+	private Pattern excludePattern;
 
 	static final int BUFFER = 2048;
 
 	public ByteArrayOutputStream archiveAndCompressDir(File directory)
 			throws IOException {
-
-		ByteArrayOutputStream destination = new ByteArrayOutputStream();
-		CheckedOutputStream checksum = new CheckedOutputStream(destination,
-				new Adler32());
-		ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
-				checksum));
-		out.setMethod(ZipOutputStream.DEFLATED);
-
-		addFilesToPackage(directory, "", out);
-
-		out.close();
-
-		return destination;
-	}
-
-	public ByteArrayOutputStream archiveAndCompressDir(File directory,
-			String... exclude) throws IOException {
 
 		ByteArrayOutputStream destination = new ByteArrayOutputStream();
 		CheckedOutputStream checksum = new CheckedOutputStream(destination,
@@ -62,9 +51,18 @@ public class ZipCompressor {
 	private void addFilesToPackage(File dir, String pathPrefix,
 			ZipOutputStream out) throws IOException {
 		File[] list = dir.listFiles();
+		List<File> filteredList = new ArrayList<File>();
+		
+		if (getExcludePattern() != null) {
+			for (File f : list) {
+				Matcher m = excludePattern.matcher(f.getName());
+				if (!m.matches()) {
+					filteredList.add(f);
+				}
+			}
+		}
 
-		for (int k = 0; k < list.length; k++) {
-			File f = list[k];
+		for (File f : filteredList) {
 			if (f.getName().startsWith(".")) {
 				continue;
 			}
@@ -83,5 +81,13 @@ public class ZipCompressor {
 				in.close();
 			}
 		}
+	}
+	
+	public Pattern getExcludePattern() {
+		return this.excludePattern;
+	}
+	
+	public void setExcludePattern(Pattern excludePattern) {
+		this.excludePattern = excludePattern;
 	}
 }
