@@ -86,7 +86,7 @@ class Connect extends Thread {
 			// Compile Perms using the input data stored in tempStorage.
 			List<String> moduleNames = new ArrayList<String>();
 			moduleNames.add("com.hypersimple.HyperSimple");
-			File workDir = new File("uncompressed\\work");
+			File workDir = new File("uncompressed" + File.separator +"work");
 
 			final CompilePermsOptions options = new CompilePermsOptionsImpl();
 
