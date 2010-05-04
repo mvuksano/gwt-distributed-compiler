@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -67,26 +68,17 @@ class Connect extends Thread {
 			is.close();
 			os.close();
 			client.close();
-		} catch (Exception e) {
-		}
 
-		try {
-			//File uncompressedSrc = new File("uncompressed" + File.separator + "war" + File.separator + "WEB-INF" + File.separator + "classes" + File.separator);
-			File uncompressedSrc = new File("uncompressed" + File.separator + "src" + File.separator);
-			//Util.addFolderToClasspath(uncompressedSrc, this.getContextClassLoader());
-			try {
-				Util.addUrl(uncompressedSrc.toURL());
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			File uncompressedSrc = new File("uncompressed" + File.separator
+					+ "src" + File.separator);
+			Util.addUrl(new URL(uncompressedSrc.getAbsolutePath()));
 			TreeLogger logger = new PrintWriterTreeLogger();
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.WARN);
 
 			// Compile Perms using the input data stored in tempStorage.
 			List<String> moduleNames = new ArrayList<String>();
 			moduleNames.add("com.hypersimple.HyperSimple");
-			File workDir = new File("uncompressed" + File.separator +"work");
+			File workDir = new File("uncompressed" + File.separator + "work");
 
 			final CompilePermsOptions options = new CompilePermsOptionsImpl();
 
@@ -96,9 +88,12 @@ class Connect extends Thread {
 			options.setPermsToCompile(perms);
 
 			new CompilePerms(options).run(logger);
+		} catch (MalformedURLException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
 		} catch (UnableToCompleteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 

@@ -3,7 +3,6 @@ package com.google.gwt.dist.compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -226,7 +225,7 @@ public class Compiler {
 		Dispatcher dispatcher = new DispatcherZipImpl();
 		try {
 			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
-					new NodeImpl(InetAddress.getByName("localhost"), 3000));
+					new NodeImpl("192.168.1.239", 3000));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

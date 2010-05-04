@@ -36,7 +36,7 @@ public class DispatcherZipImpl implements Dispatcher {
 		InputStream is;
 		OutputStream os;
 		try {
-			Socket server = new Socket(node.getAddress(), node.getPort());
+			Socket server = new Socket(node.getIpaddress(), node.getPort());
 			os = server.getOutputStream();
 			is = server.getInputStream();
 			
