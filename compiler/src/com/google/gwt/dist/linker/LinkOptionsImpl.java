@@ -3,7 +3,7 @@ package com.google.gwt.dist.linker;
 import java.io.File;
 
 import com.google.gwt.dev.Link.LinkOptions;
-import compiler.CompileTaskOptionsImpl;
+import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
 
 /**
  * Options for Link.

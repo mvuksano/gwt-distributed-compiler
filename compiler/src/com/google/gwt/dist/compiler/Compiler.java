@@ -15,10 +15,10 @@ import com.google.gwt.dev.Precompile.PrecompileOptions;
 import com.google.gwt.dev.jjs.JJSOptionsImpl;
 import com.google.gwt.dev.jjs.JsOutputOption;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
+import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
 import com.google.gwt.dist.compiler.impl.DispatcherZipImpl;
 import com.google.gwt.dist.impl.NodeImpl;
 import com.google.gwt.dist.util.ZipCompressor;
-import compiler.CompileTaskOptionsImpl;
 
 /**
  * Compiler that will initiate GWT Java to JavaScript compilation process.
