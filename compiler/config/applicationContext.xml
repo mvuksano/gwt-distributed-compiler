@@ -13,5 +13,14 @@
 	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
 		<property name="mappingLocation" value="config/castor.xml" />
 	</bean>
+	
+	<bean id="link" class="com.google.gwt.dist.linker.Link">
+		<constructor-arg>
+			<ref bean="linkOptions" />
+		</constructor-arg>
+	</bean>
+	
+	<bean id="linkOptions" class="com.google.gwt.dist.linker.LinkOptionsImpl">
+	</bean>
 
 </beans>
