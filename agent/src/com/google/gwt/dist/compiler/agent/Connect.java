@@ -71,9 +71,9 @@ class Connect extends Thread {
 
 			File uncompressedSrc = new File("uncompressed" + File.separator
 					+ "src" + File.separator);
-			Util.addUrl(new URL(uncompressedSrc.getAbsolutePath()));
+			Util.addUrl(uncompressedSrc.toURI().toURL());
 			TreeLogger logger = new PrintWriterTreeLogger();
-			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.WARN);
+			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
 
 			// Compile Perms using the input data stored in tempStorage.
 			List<String> moduleNames = new ArrayList<String>();
@@ -84,7 +84,7 @@ class Connect extends Thread {
 
 			options.setModuleNames(moduleNames);
 			options.setWorkDir(workDir);
-			int perms[] = { 0 };
+			int perms[] = { 0, 1, 2, 3, 4, 5 };
 			options.setPermsToCompile(perms);
 
 			new CompilePerms(options).run(logger);

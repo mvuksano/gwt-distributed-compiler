@@ -225,7 +225,7 @@ public class Compiler {
 		Dispatcher dispatcher = new DispatcherZipImpl();
 		try {
 			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
-					new NodeImpl("192.168.1.239", 3000));
+					new NodeImpl("localhost", 3000));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
