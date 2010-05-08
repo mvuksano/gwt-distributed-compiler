@@ -3,11 +3,9 @@ package com.google.gwt.dist.compiler.agent.communicator.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -85,13 +83,15 @@ public class CommunicatorImpl implements Communicator {
 			// Check if received stream is CommMessage or not contents.
 			CommMessage commMessage = getCommMessage(receivedObject);
 			if (commMessage != null) {
+				// It's a comm message.
 				System.out.println(commMessage);
 			} else {
+				// it's a file stream.
+				processData(receivedObject);
 			}
-
-			// Read Message and tell agent if it can pick up data.
-			// processData(is, os);
 		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} catch (InvalidOperationException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		} finally {
 			try {
@@ -111,7 +111,6 @@ public class CommunicatorImpl implements Communicator {
 			ByteArrayInputStream bis = new ByteArrayInputStream(baos
 					.toByteArray());
 			ObjectInputStream ois = new ObjectInputStream(bis);
-			System.out.println((CommMessage) ois.readObject());
 			return (CommMessage) ois.readObject();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
@@ -127,60 +126,27 @@ public class CommunicatorImpl implements Communicator {
 	 *            OutputStream to which to write the data.
 	 * @throws InvalidOperationException
 	 */
-	private void processData(InputStream is, OutputStream os)
+	private void processData(ByteArrayOutputStream receivedData)
 			throws InvalidOperationException {
-		CommMessage commMessage;
 		logger.log(Level.INFO, "Starting processing data.");
-		if (is instanceof ObjectInputStream) {
-			logger.log(Level.INFO, "Data being processed is object stream.");
-			try {
-				commMessage = (CommMessage) ((ObjectInputStream) is)
-						.readObject();
-				if (sessionManager.getState().getState() == State.COMPLETED) {
-					// TODO: read data and write it to an output stream.
-					// After that, send the stream to the client.
-					commMessage.setResponse(null);
-				}
-				commMessage.setResponse(null);
-				((ObjectOutputStream) this.os).writeObject(commMessage);
-			} catch (ClassNotFoundException e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
-		}
+		sessionManager.getState().setState(State.READY);
 
-		if (is instanceof FileInputStream) {
-			logger.log(Level.INFO, "Data being processed is file stream.");
-			if (sessionManager.getState().getState() == State.READY) {
-				sessionManager.updateSessionState(new SessionState(
-						State.INPROGRESS));
-				storeInputStreamOnDisk(is, this.temporaryStorage);
-			} else {
-				throw new InvalidOperationException(
-						"Session must be in state READY before sending data for processing.");
-			}
+		if (sessionManager.getState().getState() == State.READY) {
+			sessionManager
+					.updateSessionState(new SessionState(State.INPROGRESS));
+			storeInputStreamOnDisk(receivedData, this.temporaryStorage);
+		} else {
+			throw new InvalidOperationException(
+					"Session must be in state READY before sending data for processing.");
 		}
 	}
 
 	/**
 	 * Stores input stream on disk.
 	 */
-	private void storeInputStreamOnDisk(InputStream is, File location) {
-		try {
-			ByteArrayOutputStream receivedData = new ByteArrayOutputStream();
-			byte[] buff = new byte[2056];
-			int bytesRead = 0;
-			while ((bytesRead = is.read(buff)) > -1) {
-				receivedData.write(buff, 0, bytesRead);
-			}
-			decompressor.decompressAndStoreToFile(receivedData, location);
-			receivedData.close();
-			// close streams and connections
-			is.close();
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		}
+	private void storeInputStreamOnDisk(ByteArrayOutputStream receivedData,
+			File location) {
+		decompressor.decompressAndStoreToFile(receivedData, location);
 	}
 
 	@Override

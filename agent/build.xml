@@ -11,6 +11,7 @@
 
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
+  	<fileset dir="lib" includes="*.jar" />
   </path>
 	
   <path id="exec.class.path">
@@ -34,15 +35,10 @@
 
   <target name="build" depends="javac" description="Build this project." >
     <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
+      <manifest>
+        <attribute name="Main-Class" value="com.google.gwt.dist.compiler.agent.Agent"/>
+      </manifest>
   	</jar>
-  </target>
-	
-  <target name="run" depends="build" description="Run agent">
-  	<java classname="com.google.gwt.dist.compiler.agent.Agent" fork="true">
-  	    <classpath>
-  	    	<path refid="exec.class.path"/>
-  		</classpath>
-    </java>
   </target>
 
   <target name="clean" description="Cleans this project.">

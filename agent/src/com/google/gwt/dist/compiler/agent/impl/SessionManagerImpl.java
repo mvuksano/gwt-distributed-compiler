@@ -1,6 +1,7 @@
 package com.google.gwt.dist.compiler.agent.impl;
 
 import com.google.gwt.dist.SessionState;
+import com.google.gwt.dist.SessionState.State;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 
@@ -13,6 +14,7 @@ public class SessionManagerImpl implements SessionManager {
 	private SessionState state;
 	
 	public SessionManagerImpl() {
+		state = new SessionState(State.READY);
 	}
 	
 	public Communicator getCommunicator() {

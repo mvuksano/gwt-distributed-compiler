@@ -1,15 +1,12 @@
 package com.google.gwt.dist.compiler.agent;
 
 import java.io.File;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Agent extends Thread {
 
-	private ServerSocket dataServer;
 	private SessionManager sessionManager;
 
 	public static void main(String argv[]) throws Exception {
