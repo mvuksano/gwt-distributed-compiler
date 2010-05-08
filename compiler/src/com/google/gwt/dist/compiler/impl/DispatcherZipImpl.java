@@ -3,11 +3,9 @@ package com.google.gwt.dist.compiler.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import com.google.gwt.dist.CommMessage;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.compiler.Dispatcher;
 
