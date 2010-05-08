@@ -49,6 +49,13 @@ public interface DataProcessor {
 	void storeInputStreamOnDisk(ByteArrayOutputStream receivedData)
 			throws FileNotFoundException, IOException;
 
+	/**
+	 * This method starts CompilePerms operation.
+	 * 
+	 * @throws UnableToCompleteException
+	 *             Thrown if there was an internal problem with CompilePerms.
+	 * @throws MalformedURLException
+	 */
 	void startCompilePerms() throws UnableToCompleteException,
 			MalformedURLException;
 }

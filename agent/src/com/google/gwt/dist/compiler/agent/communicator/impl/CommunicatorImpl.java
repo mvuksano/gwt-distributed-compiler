@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -82,15 +83,15 @@ public class CommunicatorImpl implements Communicator {
 			// Check if received stream is CommMessage or not contents.
 			CommMessage commMessage = getCommMessage(receivedObject);
 			if (commMessage != null) {
-				// TODO: CommMessage should be forwarded to SessionManager which
-				// should then further forward to the appropriate processing
-				// component.
-				System.out.println(commMessage);
+				commMessage.setSessionState(this.sessionManager.getState()
+						.getState());
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+				oos.writeObject(commMessage);
+				os.write(bos.toByteArray());
+				os.flush();
+				System.out.println(commMessage.getCommMessageType());
 			} else {
-				// TODO: Data should be forwarded to the SessionManager which
-				// should then forward the data for further processing the some
-				// other component.
-				// it's a file stream.
 				processData(receivedObject, this.sessionManager);
 			}
 		} catch (IOException e) {
@@ -123,11 +124,14 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	/**
+	 * Process data received from the client.
 	 * 
-	 * @param is
-	 *            InputStream from which to read the data.
-	 * @param os
-	 *            OutputStream to which to write the data.
+	 * @param receivedData
+	 *            Data received from the client as ByteArrayOutputStream.
+	 * @param sessionManager
+	 *            SessionManager that should be associated with processing.
+	 *            TODO: This variable might be removed and the private property
+	 *            could be used.
 	 * @throws InvalidOperationException
 	 */
 	private void processData(ByteArrayOutputStream receivedData,
@@ -136,21 +140,22 @@ public class CommunicatorImpl implements Communicator {
 
 		if (sessionManager.getState().getState() == State.READY) {
 			try {
-				logger.log(Level.INFO, "Changing SessionState to INPROGRESS");
+				logger.log(Level.INFO, "Changing SessionState to INPROGRESS.");
 				sessionManager.updateSessionState(new SessionState(
 						State.INPROGRESS));
 				dataProcessor.storeInputStreamOnDisk(receivedData);
 				dataProcessor.startCompilePerms();
 			} catch (FileNotFoundException e) {
-				logger.log(Level.INFO, "Changing SessionState to TERMINATED");
+				logger.log(Level.INFO, "Changing SessionState to TERMINATED.");
 				sessionManager.updateSessionState(new SessionState(
 						State.TERMINATED));
 			} catch (IOException e) {
-				logger.log(Level.INFO, "Changing SessionState to TERMINATED");
+				logger.log(Level.INFO, "Changing SessionState to TERMINATED.");
 				sessionManager.updateSessionState(new SessionState(
 						State.TERMINATED));
 			} catch (UnableToCompleteException e) {
-				logger.log(Level.INFO, "A problem occured during CompilePerms.");
+				logger.log(Level.INFO,
+								"A problem occured during CompilePerms.");
 				sessionManager.updateSessionState(new SessionState(
 						State.TERMINATED));
 			}

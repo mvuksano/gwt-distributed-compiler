@@ -3,6 +3,7 @@ package com.google.gwt.dist.compiler;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -10,6 +11,8 @@ import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.google.gwt.core.ext.TreeLogger;
@@ -43,6 +46,8 @@ public class Compiler {
 		private final JJSOptionsImpl jjsOptions = new JJSOptionsImpl();
 		private int maxPermsPerPrecompile;
 		private boolean validateOnly;
+		
+		private static final Logger logger = Logger.getLogger(Compiler.class.getName());
 
 		public PrecompileOptionsImpl() {
 		}
@@ -232,27 +237,41 @@ public class Compiler {
 		Dispatcher dispatcher = new DispatcherZipImpl();
 		try {
 			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
-					new NodeImpl("192.168.1.239", 3000));
+					new NodeImpl("localhost", 3000));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		OutputStream os;
 
-		try {
-			Socket server = new Socket("192.168.1.239", 3000);
-			os = server.getOutputStream();
-			CommMessage commMessage = new CommMessageImpl();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(bos);
-			oos.writeObject(commMessage);
-			os.write(bos.toByteArray());
-			os.flush();
+		while (true) {
+			try {
+				Socket server = new Socket("localhost", 3000);
+				OutputStream os = server.getOutputStream();
+				InputStream is = server.getInputStream();
+				
+				CommMessage commMessage = new CommMessageImpl();
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos);
+				oos.writeObject(commMessage);
+				os.write(bos.toByteArray());
+				os.flush();
 
-			os.close();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//				byte[] buff = new byte[2056];
+//				int bytesRead = 0;
+//				ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
+//				while ((bytesRead = is.read(buff)) > -1) {
+//					receivedObject.write(buff, 0, bytesRead);
+//				}
+//				
+//				System.out.println(((CommMessage)Util.byteArrayToObject(receivedObject.toByteArray())).getSessionState());
+				
+				os.close();
+				Thread.sleep(10000);
+			} catch (IOException e) {
+				PrecompileOptionsImpl.logger.log(Level.SEVERE, e.getMessage());
+			} catch (InterruptedException e) {
+				PrecompileOptionsImpl.logger.log(Level.SEVERE, e.getMessage());
+			}
+			
 		}
 
 		// TODO:

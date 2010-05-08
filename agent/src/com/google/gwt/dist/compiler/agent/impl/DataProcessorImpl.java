@@ -27,27 +27,44 @@ public class DataProcessorImpl implements DataProcessor {
 	private ZipDecompressor decompressor;
 	private File tempStorage;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param decompressor
+	 *            Decompressor used to uncompress the incoming stream.
+	 * @param tempStorage
+	 *            Directory that will be used as a temporary storage during
+	 *            processing.
+	 */
 	public DataProcessorImpl(ZipDecompressor decompressor, File tempStorage) {
 		this.compilePermsListeners = new ArrayList<CompilePermsListener>();
 		this.decompressor = decompressor;
 		this.tempStorage = tempStorage;
 	}
-	
+
+	/**
+	 * Attach a CompilePermsListener.
+	 */
 	public void addListener(CompilePermsListener listener) {
 		compilePermsListeners.add(listener);
 	}
 
-	@Override
+	/**
+	 * Notify subscribers that CopilePerms is finished.
+	 */
 	public void compilePermsFinished() {
 		for (CompilePermsListener l : compilePermsListeners) {
 			l.onCompilePermsFinished();
 		}
 	}
-	
+
+	/**
+	 * Detach a CompilePermsListener.
+	 */
 	public void removeListener(CompilePermsListener listener) {
 		compilePermsListeners.remove(listener);
 	}
-	
+
 	@Override
 	public void startCompilePerms() throws UnableToCompleteException,
 			MalformedURLException {

@@ -1,6 +1,9 @@
 package com.google.gwt.dist.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -44,22 +47,38 @@ public class Util {
 			method.invoke(sysloader, new Object[] { u });
 		} catch (NoSuchMethodException e) {
 			logger.log(Level.SEVERE, e.getMessage());
-		} catch (InvocationTargetException e) {	
+		} catch (InvocationTargetException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		} catch (IllegalAccessException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
-	
+
 	public static String getFolderSeparatorInZipArchive() {
 		return "/";
 	}
-	
-	public Object byteArrayToObject(byte[] bytes) {
+
+	/**
+	 * Converts array of bytes into object.
+	 * 
+	 * @param bytes
+	 *            Bytes to be converted to object.
+	 * @return Object read from byte array or null if conversion failed.
+	 */
+	public static Object byteArrayToObject(byte[] bytes) {
+		Object obj = null;
+		try {
+			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+			ObjectInputStream ois = new ObjectInputStream(bis);
+			obj = ois.readObject();
+			return obj;
+		} catch (IOException e) {
+		} catch (ClassNotFoundException e) {
+		}
 		return null;
 	}
-	
-	public byte[] objectToByteArray(Object o) {
+
+	public static byte[] objectToByteArray(Object o) {
 		return null;
 	}
 }
