@@ -3,17 +3,15 @@ package com.google.gwt.dist.compiler.agent.communicator.impl;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.google.gwt.dist.SessionState;
 import com.google.gwt.dist.SessionState.State;
+import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
-import com.google.gwt.dist.util.ZipDecompressor;
 
 /**
  * Tests CommunicatorImpl behavior.
@@ -22,11 +20,12 @@ public class CommunicatorImplTest {
 
 	Communicator communicator;
 	SessionManager sessionManager;
+	DataProcessor dataProcessor;
 
 	@BeforeClass
 	public void setUp() {
-		communicator = new CommunicatorImpl(new ZipDecompressor(), new File(
-				"uncompressed"));
+		dataProcessor = mock(DataProcessor.class);
+		communicator = new CommunicatorImpl(dataProcessor);
 		sessionManager = mock(SessionManager.class);
 
 		((CommunicatorImpl) communicator).setSessionManager(sessionManager);

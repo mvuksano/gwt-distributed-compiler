@@ -4,11 +4,12 @@ import com.google.gwt.dist.SessionState;
 import com.google.gwt.dist.SessionState.State;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
+import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 /**
  * SessionManager handles SessionState object for this agent.
  */
-public class SessionManagerImpl implements SessionManager {
+public class SessionManagerImpl implements SessionManager, CompilePermsListener {
 
 	private Communicator communicator;
 	private SessionState state;
@@ -23,6 +24,10 @@ public class SessionManagerImpl implements SessionManager {
 	
 	public SessionState getState() {
 		return this.state;
+	}
+	
+	public void onCompilePermsFinished() {
+		this.state.setState(State.COMPLETED);
 	}
 	
 	public void setCommunicator(Communicator communicator) {

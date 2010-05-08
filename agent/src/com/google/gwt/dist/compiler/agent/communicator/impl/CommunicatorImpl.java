@@ -2,7 +2,6 @@ package com.google.gwt.dist.compiler.agent.communicator.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,32 +14,31 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dist.CommMessage;
 import com.google.gwt.dist.SessionState;
 import com.google.gwt.dist.SessionState.State;
+import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.communicator.InvalidOperationException;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
-import com.google.gwt.dist.util.ZipDecompressor;
 
 public class CommunicatorImpl implements Communicator {
 
+	private DataProcessor dataProcessor;
 	private Set<CompilePermsListener> compilePermsFinishedListeners;
 	private Set<DataReceivedListener> dataReceivedListeners;
-	private ZipDecompressor decompressor;
 	private InputStream is;
 	private OutputStream os;
 	private ServerSocket server;
 	private SessionManager sessionManager;
-	private File temporaryStorage = null; // Store source and precompile output.
 	private static final Logger logger = Logger
 			.getLogger(CommunicatorImpl.class.getName());
 
-	public CommunicatorImpl(ZipDecompressor decompressor, File tempStorage) {
-		this.decompressor = decompressor;
-		this.temporaryStorage = tempStorage;
+	public CommunicatorImpl(DataProcessor dataProcessor) {
+		this.dataProcessor = dataProcessor;
 		this.compilePermsFinishedListeners = new HashSet<CompilePermsListener>();
 		this.dataReceivedListeners = new HashSet<DataReceivedListener>();
 	}
@@ -141,7 +139,8 @@ public class CommunicatorImpl implements Communicator {
 				logger.log(Level.INFO, "Changing SessionState to INPROGRESS");
 				sessionManager.updateSessionState(new SessionState(
 						State.INPROGRESS));
-				storeInputStreamOnDisk(receivedData, this.temporaryStorage);
+				dataProcessor.storeInputStreamOnDisk(receivedData);
+				dataProcessor.startCompilePerms();
 			} catch (FileNotFoundException e) {
 				logger.log(Level.INFO, "Changing SessionState to TERMINATED");
 				sessionManager.updateSessionState(new SessionState(
@@ -150,22 +149,15 @@ public class CommunicatorImpl implements Communicator {
 				logger.log(Level.INFO, "Changing SessionState to TERMINATED");
 				sessionManager.updateSessionState(new SessionState(
 						State.TERMINATED));
+			} catch (UnableToCompleteException e) {
+				logger.log(Level.INFO, "A problem occured during CompilePerms.");
+				sessionManager.updateSessionState(new SessionState(
+						State.TERMINATED));
 			}
 		} else {
 			throw new InvalidOperationException(
 					"Session must be in state READY before sending data for processing.");
 		}
-	}
-
-	/**
-	 * Stores input stream on disk.
-	 * 
-	 * @throws IOException
-	 * @throws FileNotFoundException
-	 */
-	private void storeInputStreamOnDisk(ByteArrayOutputStream receivedData,
-			File location) throws FileNotFoundException, IOException {
-		decompressor.decompressAndStoreToFile(receivedData, location);
 	}
 
 	@Override

@@ -1,12 +1,13 @@
 package com.google.gwt.dist.compiler.agent;
 
 import com.google.gwt.dist.SessionState;
+import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 
 /**
  * Interface that describes SessionManager which will perform within an agent.
  */
-public interface SessionManager {
+public interface SessionManager extends CompilePermsListener {
 	
 	/**
 	 * Change session state to the one specified as parameter.
