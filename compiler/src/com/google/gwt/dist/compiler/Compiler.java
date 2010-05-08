@@ -3,19 +3,28 @@ package com.google.gwt.dist.compiler;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
+import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.dev.Precompile;
 import com.google.gwt.dev.Precompile.PrecompileOptions;
 import com.google.gwt.dev.jjs.JJSOptionsImpl;
 import com.google.gwt.dev.jjs.JsOutputOption;
+import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.CommMessage;
 import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
+import com.google.gwt.dist.compiler.impl.DispatcherZipImpl;
 import com.google.gwt.dist.impl.CommMessageImpl;
+import com.google.gwt.dist.impl.NodeImpl;
+import com.google.gwt.dist.util.ZipCompressor;
 
 /**
  * Compiler that will initiate GWT Java to JavaScript compilation process.
@@ -190,47 +199,47 @@ public class Compiler {
 	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws URISyntaxException {
-//		// First step in GWT Java to Javascript is precompile
-//		PrecompileOptions precompileOptions = new PrecompileOptionsImpl();
-//		TreeLogger logger = new PrintWriterTreeLogger();
-//
-//		try {
-//			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.WARN);
-//			List<String> moduleNames = new ArrayList<String>();
-//			moduleNames.add("com.hypersimple.HyperSimple");
-//			File workDir = new File("work");
-//
-//			precompileOptions.setModuleNames(moduleNames);
-//			precompileOptions.setWorkDir(workDir);
-//			precompileOptions.setOptimizePrecompile(false);
-//			precompileOptions.setOutput(JsOutputOption.PRETTY);
-//
-//			Precompile precompile = new Precompile(precompileOptions);
-//			precompile.run(logger);
-//
-//			// Dispatch precompile data
-//		} catch (UnableToCompleteException e) {
-//			logger.log(TreeLogger.ERROR, e.getMessage());
-//		}
-//
-//		// Get compressed stream and send it to compiler agent.
-//		File source = new File(System.getProperty("user.dir"));
-//
-//		ZipCompressor compressor = new ZipCompressor();
-//		// TODO: this should be defined in a config file.
-//		compressor.setExcludePattern(Pattern
-//				.compile("bin|\\.settings\\.classpath\\.project"));
-//		Dispatcher dispatcher = new DispatcherZipImpl();
-//		try {
-//			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
-//					new NodeImpl("localhost", 3000));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		// First step in GWT Java to Javascript is precompile
+		PrecompileOptions precompileOptions = new PrecompileOptionsImpl();
+		TreeLogger logger = new PrintWriterTreeLogger();
+
+		try {
+			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.WARN);
+			List<String> moduleNames = new ArrayList<String>();
+			moduleNames.add("com.hypersimple.HyperSimple");
+			File workDir = new File("work");
+
+			precompileOptions.setModuleNames(moduleNames);
+			precompileOptions.setWorkDir(workDir);
+			precompileOptions.setOptimizePrecompile(false);
+			precompileOptions.setOutput(JsOutputOption.PRETTY);
+
+			Precompile precompile = new Precompile(precompileOptions);
+			precompile.run(logger);
+
+			// Dispatch precompile data
+		} catch (UnableToCompleteException e) {
+			logger.log(TreeLogger.ERROR, e.getMessage());
+		}
+
+		// Get compressed stream and send it to compiler agent.
+		File source = new File(System.getProperty("user.dir"));
+
+		ZipCompressor compressor = new ZipCompressor();
+		// TODO: this should be defined in a config file.
+		compressor.setExcludePattern(Pattern
+				.compile("bin|\\.settings\\.classpath\\.project"));
+		Dispatcher dispatcher = new DispatcherZipImpl();
+		try {
+			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
+					new NodeImpl("192.168.1.239", 3000));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		OutputStream os;
 
 		try {
-			Socket server = new Socket("localhost", 3000);
+			Socket server = new Socket("192.168.1.239", 3000);
 			os = server.getOutputStream();
 			CommMessage commMessage = new CommMessageImpl();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -238,13 +247,13 @@ public class Compiler {
 			oos.writeObject(commMessage);
 			os.write(bos.toByteArray());
 			os.flush();
-			
+
 			os.close();
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 
 		// TODO:
 		// After perms have been compiled on remote machines transfer them to
