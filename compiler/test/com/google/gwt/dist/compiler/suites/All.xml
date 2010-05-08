@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="All Unit Tests" parallel="methods" thread-count="2">
+  <test name="com.google.gwt.dist.compiler">
+    <classes>
+       <class name="com.google.gwt.dist.compiler.AgentsSettingsTest" />
+    </classes>
+  </test>
+  <test name="com.google.gwt.dist.compiler.communicator">
+    <classes>
+       <class name="com.google.gwt.dist.compiler.communicator.CommunicatorTest" />
+    </classes>
+  </test>
+  <test name="com.google.gwt.dist.compiler.impl">
+    <classes>
+       <class name="com.google.gwt.dist.compiler.impl.SessionManagerImplTest" />
+    </classes>
+  </test>
+  <!-- 
+  <test name="com.google.gwt.dist.linker">
+    <classes>
+      <class name="com.google.gwt.dist.linker.LinkOptionsImplTest" />
+      <class name="com.google.gwt.dist.linker.LinkTest" />
+    </classes>
+  </test>
+  -->
+</suite>

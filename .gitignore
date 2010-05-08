@@ -2,3 +2,5 @@
 */build/*
 */classes/*
 */test-output/*
+*/uncompressed/*
+*/work/*

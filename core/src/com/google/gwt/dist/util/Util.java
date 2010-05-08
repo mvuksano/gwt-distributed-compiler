@@ -54,4 +54,12 @@ public class Util {
 	public static String getFolderSeparatorInZipArchive() {
 		return "/";
 	}
+	
+	public Object byteArrayToObject(byte[] bytes) {
+		return null;
+	}
+	
+	public byte[] objectToByteArray(Object o) {
+		return null;
+	}
 }

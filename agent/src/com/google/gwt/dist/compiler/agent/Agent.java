@@ -1,31 +1,33 @@
 package com.google.gwt.dist.compiler.agent;
 
+import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Agent extends Thread {
 
 	private ServerSocket dataServer;
+	private SessionManager sessionManager;
 
 	public static void main(String argv[]) throws Exception {
-		new Agent();
+		ApplicationContext appContext = new FileSystemXmlApplicationContext(
+				new File("config/applicationContext.xml").toString());
+		new Agent((SessionManager) appContext
+				.getBean("sessionManager"));
 	}
-	
-	public Agent() throws Exception {
-		dataServer = new ServerSocket(3000);
-	     System.out.println("Server listening on port 3000.");
-	     this.start();
-	   } 
+
+	public Agent(SessionManager sessionManager) throws Exception {
+		this.sessionManager = sessionManager;
+		this.start();
+	}
 
 	public void run() {
 		while (true) {
 			try {
-				System.out.println("Waiting for connections.");
-				Socket client = dataServer.accept();
-				System.out.println("Accepted a connection from: "
-						+ client.getInetAddress());
-				@SuppressWarnings("unused")
-				Connect c = new Connect(client);
+				sessionManager.startListening();
 			} catch (Exception e) {
 			}
 		}
