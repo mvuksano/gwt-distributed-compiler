@@ -3,6 +3,7 @@ package com.google.gwt.dist.compiler.agent.communicator.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -83,11 +84,16 @@ public class CommunicatorImpl implements Communicator {
 			// Check if received stream is CommMessage or not contents.
 			CommMessage commMessage = getCommMessage(receivedObject);
 			if (commMessage != null) {
-				// It's a comm message.
+				// TODO: CommMessage should be forwarded to SessionManager which
+				// should then further forward to the appropriate processing
+				// component.
 				System.out.println(commMessage);
 			} else {
+				// TODO: Data should be forwarded to the SessionManager which
+				// should then forward the data for further processing the some
+				// other component.
 				// it's a file stream.
-				processData(receivedObject);
+				processData(receivedObject, this.sessionManager);
 			}
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
@@ -126,15 +132,25 @@ public class CommunicatorImpl implements Communicator {
 	 *            OutputStream to which to write the data.
 	 * @throws InvalidOperationException
 	 */
-	private void processData(ByteArrayOutputStream receivedData)
-			throws InvalidOperationException {
+	private void processData(ByteArrayOutputStream receivedData,
+			SessionManager sessionManager) throws InvalidOperationException {
 		logger.log(Level.INFO, "Starting processing data.");
-		sessionManager.getState().setState(State.READY);
 
 		if (sessionManager.getState().getState() == State.READY) {
-			sessionManager
-					.updateSessionState(new SessionState(State.INPROGRESS));
-			storeInputStreamOnDisk(receivedData, this.temporaryStorage);
+			try {
+				logger.log(Level.INFO, "Changing SessionState to INPROGRESS");
+				sessionManager.updateSessionState(new SessionState(
+						State.INPROGRESS));
+				storeInputStreamOnDisk(receivedData, this.temporaryStorage);
+			} catch (FileNotFoundException e) {
+				logger.log(Level.INFO, "Changing SessionState to TERMINATED");
+				sessionManager.updateSessionState(new SessionState(
+						State.TERMINATED));
+			} catch (IOException e) {
+				logger.log(Level.INFO, "Changing SessionState to TERMINATED");
+				sessionManager.updateSessionState(new SessionState(
+						State.TERMINATED));
+			}
 		} else {
 			throw new InvalidOperationException(
 					"Session must be in state READY before sending data for processing.");
@@ -143,9 +159,12 @@ public class CommunicatorImpl implements Communicator {
 
 	/**
 	 * Stores input stream on disk.
+	 * 
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
 	private void storeInputStreamOnDisk(ByteArrayOutputStream receivedData,
-			File location) {
+			File location) throws FileNotFoundException, IOException {
 		decompressor.decompressAndStoreToFile(receivedData, location);
 	}
 
