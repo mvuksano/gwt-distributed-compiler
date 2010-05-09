@@ -25,6 +25,7 @@ public class Agent extends Thread {
 		while (true) {
 			try {
 				sessionManager.startListening();
+				sessionManager.stopListening();
 			} catch (Exception e) {
 			}
 		}

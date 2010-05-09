@@ -12,7 +12,7 @@
 	</bean>
 
 	<bean id="sessionManager"
-		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl">
+		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="prototype">
 		<property name="communicator" ref="communicator" />
 		<property name="state" ref="sessionstate" />
 	</bean>

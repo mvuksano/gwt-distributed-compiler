@@ -58,6 +58,7 @@ public class CommunicatorImpl implements Communicator {
 
 	public void setSessionManager(SessionManager sessionManager) {
 		this.sessionManager = sessionManager;
+		this.dataProcessor.addListener(this.sessionManager);
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public class CommunicatorImpl implements Communicator {
 			is = client.getInputStream();
 
 			// Read contents of the stream and store it into a byte array.
-			byte[] buff = new byte[2056];
+			byte[] buff = new byte[512];
 			int bytesRead = 0;
 			ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
 			while ((bytesRead = is.read(buff)) > -1) {
@@ -89,26 +90,20 @@ public class CommunicatorImpl implements Communicator {
 				ObjectOutputStream oos = new ObjectOutputStream(bos);
 				oos.writeObject(commMessage);
 				os.write(bos.toByteArray());
-				os.flush();
 				System.out.println(commMessage.getCommMessageType());
 			} else {
 				processData(receivedObject, this.sessionManager);
 			}
+			client.shutdownOutput();
+			is.close();
+			os.close();
+			client.close();
+			server.close();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		} catch (InvalidOperationException e) {
 			logger.log(Level.SEVERE, e.getMessage());
-		} finally {
-			try {
-				is.close();
-				os.close();
-				client.close();
-				server.close();
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			}
-		}
-
+		} 
 	}
 
 	private CommMessage getCommMessage(ByteArrayOutputStream baos) {

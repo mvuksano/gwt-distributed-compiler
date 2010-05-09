@@ -27,6 +27,7 @@ import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
 import com.google.gwt.dist.compiler.impl.DispatcherZipImpl;
 import com.google.gwt.dist.impl.CommMessageImpl;
 import com.google.gwt.dist.impl.NodeImpl;
+import com.google.gwt.dist.util.Util;
 import com.google.gwt.dist.util.ZipCompressor;
 
 /**
@@ -245,27 +246,28 @@ public class Compiler {
 		while (true) {
 			try {
 				Socket server = new Socket("localhost", 3000);
-				OutputStream os = server.getOutputStream();
 				InputStream is = server.getInputStream();
+				OutputStream os = server.getOutputStream();
 				
 				CommMessage commMessage = new CommMessageImpl();
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(bos);
 				oos.writeObject(commMessage);
 				os.write(bos.toByteArray());
-				os.flush();
+				server.shutdownOutput();
 
-//				byte[] buff = new byte[2056];
-//				int bytesRead = 0;
-//				ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
-//				while ((bytesRead = is.read(buff)) > -1) {
-//					receivedObject.write(buff, 0, bytesRead);
-//				}
-//				
-//				System.out.println(((CommMessage)Util.byteArrayToObject(receivedObject.toByteArray())).getSessionState());
+				byte[] buff = new byte[512];
+				int bytesRead = 0;
+				ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
+				while ((bytesRead = is.read(buff)) > -1) {
+					receivedObject.write(buff, 0, bytesRead);
+					System.out.println("Compiler: " + receivedObject);
+				}
+				
+				System.out.println(((CommMessage)Util.byteArrayToObject(receivedObject.toByteArray())).getSessionState());
 				
 				os.close();
-				Thread.sleep(10000);
+				Thread.sleep(1000);
 			} catch (IOException e) {
 				PrecompileOptionsImpl.logger.log(Level.SEVERE, e.getMessage());
 			} catch (InterruptedException e) {

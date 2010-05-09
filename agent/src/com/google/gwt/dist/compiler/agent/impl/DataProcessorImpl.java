@@ -83,7 +83,7 @@ public class DataProcessorImpl implements DataProcessor {
 
 		options.setModuleNames(moduleNames);
 		options.setWorkDir(workDir);
-		int perms[] = { 0, 1, 2, 3, 4, 5 };
+		int perms[] = { 0, 1 };
 		options.setPermsToCompile(perms);
 
 		new CompilePerms(options).run(logger);
