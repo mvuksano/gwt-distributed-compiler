@@ -2,13 +2,11 @@ package com.google.gwt.dist.compiler.agent.communicator.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
@@ -16,11 +14,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
-import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.communicator.InvalidOperationException;
@@ -29,7 +25,6 @@ import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
 public class CommunicatorImpl implements Communicator {
 
-	private DataProcessor dataProcessor;
 	private Set<CompilePermsListener> compilePermsFinishedListeners;
 	private Set<DataReceivedListener> dataReceivedListeners;
 	private InputStream is;
@@ -39,8 +34,7 @@ public class CommunicatorImpl implements Communicator {
 	private static final Logger logger = Logger
 			.getLogger(CommunicatorImpl.class.getName());
 
-	public CommunicatorImpl(DataProcessor dataProcessor) {
-		this.dataProcessor = dataProcessor;
+	public CommunicatorImpl() {
 		this.compilePermsFinishedListeners = new HashSet<CompilePermsListener>();
 		this.dataReceivedListeners = new HashSet<DataReceivedListener>();
 	}
@@ -74,7 +68,6 @@ public class CommunicatorImpl implements Communicator {
 
 	public void setSessionManager(SessionManager sessionManager) {
 		this.sessionManager = sessionManager;
-		this.dataProcessor.addListener(this.sessionManager);
 	}
 
 	@Override
@@ -146,15 +139,6 @@ public class CommunicatorImpl implements Communicator {
 	 */
 	private void processData(ByteArrayOutputStream receivedData,
 			SessionManager sessionManager) throws InvalidOperationException {
-		try {
-			logger.log(Level.INFO, "Starting processing data.");
-			dataProcessor.storeInputStreamOnDisk(receivedData);
-			dataProcessor.startCompilePerms();
-		} catch (MalformedURLException e) {
-		} catch (UnableToCompleteException e) {
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
-		}
 	}
 
 	@Override

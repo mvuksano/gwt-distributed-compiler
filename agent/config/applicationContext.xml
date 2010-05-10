@@ -11,14 +11,16 @@
 		<constructor-arg ref="temporarystoragelocation" />
 	</bean>
 	
+	<bean id="dataprocessorMock" class="com.google.gwt.dist.compiler.agent.impl.DataProcessorMock">
+	</bean>
+	
 	<bean id="sessionManager"
-		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="prototype">
+		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl">
 		<property name="communicator" ref="communicator" />
 	</bean>
 
 	<bean id="communicator"
 		class="com.google.gwt.dist.compiler.agent.communicator.impl.CommunicatorImpl">
-		<constructor-arg ref="dataprocessor" />
 		<property name="sessionManager" ref="sessionManager" />
 	</bean>
 

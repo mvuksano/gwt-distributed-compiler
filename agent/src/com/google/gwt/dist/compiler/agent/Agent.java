@@ -27,6 +27,7 @@ public class Agent extends Thread {
 		this.start();
 		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		DataProcessorMock dpm = new DataProcessorMock();
+		dpm.addListener(this.sessionManager);
 		executorService.execute(dpm);
 		executorService.shutdown();
 	}

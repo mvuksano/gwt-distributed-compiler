@@ -26,7 +26,7 @@ public class CommunicatorImplTest {
 	@BeforeClass
 	public void setUp() {
 		dataProcessor = mock(DataProcessor.class);
-		communicator = new CommunicatorImpl(dataProcessor);
+		communicator = new CommunicatorImpl();
 		sessionManager = mock(SessionManager.class);
 
 		((CommunicatorImpl) communicator).setSessionManager(sessionManager);
