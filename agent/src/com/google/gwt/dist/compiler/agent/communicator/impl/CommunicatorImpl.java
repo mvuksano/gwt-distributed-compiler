@@ -52,7 +52,7 @@ public class CommunicatorImpl implements Communicator {
 	public SessionManager getSessionManager() {
 		return this.sessionManager;
 	}
-	
+
 	/**
 	 * Processes the incoming CommMessage and returns a modified one.
 	 * 
@@ -67,7 +67,6 @@ public class CommunicatorImpl implements Communicator {
 		message.setResponse(response);
 		return message;
 	}
-
 
 	public void setServer(ServerSocket serverSocket) {
 		this.server = serverSocket;
@@ -107,7 +106,10 @@ public class CommunicatorImpl implements Communicator {
 				oos.writeObject(commMessage);
 				os.write(bos.toByteArray());
 			} else {
-				processData(receivedObject, this.sessionManager);
+				try {
+					processData(receivedObject, this.sessionManager);
+				} catch (InvalidOperationException e) {
+				}
 			}
 			client.shutdownOutput();
 			is.close();
@@ -115,8 +117,6 @@ public class CommunicatorImpl implements Communicator {
 			client.close();
 			server.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		} catch (InvalidOperationException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}

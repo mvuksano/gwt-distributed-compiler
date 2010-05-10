@@ -4,11 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
-import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 /**
@@ -17,20 +17,12 @@ import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
  * seconds.
  * 
  */
-public class DataProcessorMock extends Thread implements DataProcessor {
+public class DataProcessorMock implements DataProcessor, Runnable {
 
 	private List<CompilePermsListener> compilePermsListeners;
 
-	public DataProcessorMock(SessionManager sm) {
-		compilePermsListeners.add(sm);
-		try {
-			for (int i = 0; i < 10; i++) {
-				Thread.sleep(30000);
-				compilePermsFinished();
-			}
-		} catch (InterruptedException e) {
-
-		}
+	public DataProcessorMock() {
+		compilePermsListeners = new ArrayList<CompilePermsListener>();
 	}
 
 	@Override
@@ -38,7 +30,6 @@ public class DataProcessorMock extends Thread implements DataProcessor {
 		compilePermsListeners.add(listener);
 	}
 
-	@Override
 	public void compilePermsFinished() {
 		for (CompilePermsListener l : compilePermsListeners) {
 			l.onCompilePermsFinished();
@@ -48,6 +39,16 @@ public class DataProcessorMock extends Thread implements DataProcessor {
 	@Override
 	public void removeListener(CompilePermsListener listener) {
 		compilePermsListeners.add(listener);
+	}
+	
+	@Override
+	public void run() {
+		try {
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		compilePermsFinished();
 	}
 
 	@Override
