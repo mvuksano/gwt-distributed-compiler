@@ -10,11 +10,10 @@
 		<constructor-arg ref="zipdecompressor" />
 		<constructor-arg ref="temporarystoragelocation" />
 	</bean>
-
+	
 	<bean id="sessionManager"
 		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="prototype">
 		<property name="communicator" ref="communicator" />
-		<property name="state" ref="sessionstate" />
 	</bean>
 
 	<bean id="communicator"
@@ -22,8 +21,6 @@
 		<constructor-arg ref="dataprocessor" />
 		<property name="sessionManager" ref="sessionManager" />
 	</bean>
-
-	<bean id="sessionstate" class="com.google.gwt.dist.SessionState" />
 
 	<bean id="temporarystoragelocation" class="java.io.File">
 		<constructor-arg type="java.lang.String" value="uncompressed" />

@@ -1,6 +1,7 @@
 package com.google.gwt.dist.compiler.agent;
 
-import com.google.gwt.dist.SessionState;
+import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 
@@ -10,14 +11,20 @@ import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 public interface SessionManager extends CompilePermsListener {
 	
 	/**
-	 * Change session state to the one specified as parameter.
+	 * Gets communicator associated with session manager.
 	 */
-	void updateSessionState(SessionState state);
+	Communicator getCommunicator();
 	
 	/**
-	 * Get current session state. 
+	 * Get current processing state.
+	 * @return
 	 */
-	SessionState getState();
+	ProcessingState getProcessingState();
+	
+	/**
+	 * Associates communicator with this session manager.
+	 */
+	void setCommunicator(Communicator communicator);
 	
 	/**
 	 * Start listening for client requests.

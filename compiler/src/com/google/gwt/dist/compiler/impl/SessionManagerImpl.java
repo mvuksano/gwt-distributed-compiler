@@ -3,8 +3,7 @@ package com.google.gwt.dist.compiler.impl;
 import java.io.InputStream;
 
 import com.google.gwt.dist.Node;
-import com.google.gwt.dist.SessionState;
-import com.google.gwt.dist.SessionState.State;
+import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.compiler.SessionManager;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 
@@ -14,51 +13,39 @@ import com.google.gwt.dist.compiler.communicator.Communicator;
 public class SessionManagerImpl implements SessionManager {
 
 	private Communicator communicator;
-	
-	public SessionManagerImpl(Communicator communicator) {
+	private Node node;
+
+	public SessionManagerImpl(Communicator communicator, Node node) {
 		this.communicator = communicator;
+		this.node = node;
 	}
-	
+
 	@Override
 	public boolean compilePermsCompleted(Node node) {
-		if (communicator.getSessionState(node).getState() == State.COMPLETED) {
-			return true;
-		}
 		return false;
 	}
 
 	@Override
 	public boolean readyToReceiveData(Node node) {
-		if (communicator.getSessionState(node).getState() == State.READY) {
-			return true;
-		}
 		return false;
 	}
 
 	@Override
-	public void sendDataToClient(InputStream inputStream, Node node) {
+	public void sendDataToClient(InputStream inputStream) {
 		communicator.sendData(inputStream, node);
 	}
-
-	@Override
-	public SessionState getSessionState(Node node) {
-		return communicator.getSessionState(node);
-	}
-
-	@Override
-	public void sendSessionState(Node node, SessionState state) {
-		communicator.sendSessionState(state, node);
+	
+	public void sendMessageToClient(CommMessage message) {
+		communicator.sendMessage(message, this.node);
 	}
 
 	@Override
 	public Communicator getCommunicator() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.communicator;
 	}
 
 	@Override
 	public void setCommunicator(Communicator communicator) {
-		// TODO Auto-generated method stub
-		
+		this.communicator = communicator;
 	}
 }

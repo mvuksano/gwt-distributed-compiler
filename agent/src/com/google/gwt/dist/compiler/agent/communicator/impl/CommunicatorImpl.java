@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
@@ -16,9 +17,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.dist.CommMessage;
-import com.google.gwt.dist.SessionState;
-import com.google.gwt.dist.SessionState.State;
+import com.google.gwt.dist.comm.CommMessage;
+import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
@@ -51,6 +52,22 @@ public class CommunicatorImpl implements Communicator {
 	public SessionManager getSessionManager() {
 		return this.sessionManager;
 	}
+	
+	/**
+	 * Processes the incoming CommMessage and returns a modified one.
+	 * 
+	 * @param message
+	 *            The message to process.
+	 * @return Updated message.
+	 */
+	public CommMessage processCommMessage(CommMessage message) {
+		CommMessageResponse response = new ProcessingStateResponse();
+		((ProcessingStateResponse) response)
+				.setCurrentState(this.sessionManager.getProcessingState());
+		message.setResponse(response);
+		return message;
+	}
+
 
 	public void setServer(ServerSocket serverSocket) {
 		this.server = serverSocket;
@@ -81,16 +98,14 @@ public class CommunicatorImpl implements Communicator {
 				receivedObject.write(buff, 0, bytesRead);
 			}
 
-			// Check if received stream is CommMessage or not contents.
+			// Check if received stream is CommMessage or not.
 			CommMessage commMessage = getCommMessage(receivedObject);
 			if (commMessage != null) {
-				commMessage.setSessionState(this.sessionManager.getState()
-						.getState());
+				commMessage = processCommMessage(commMessage);
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(bos);
 				oos.writeObject(commMessage);
 				os.write(bos.toByteArray());
-				System.out.println(commMessage.getCommMessageType());
 			} else {
 				processData(receivedObject, this.sessionManager);
 			}
@@ -103,7 +118,7 @@ public class CommunicatorImpl implements Communicator {
 			logger.log(Level.SEVERE, e.getMessage());
 		} catch (InvalidOperationException e) {
 			logger.log(Level.SEVERE, e.getMessage());
-		} 
+		}
 	}
 
 	private CommMessage getCommMessage(ByteArrayOutputStream baos) {
@@ -131,32 +146,14 @@ public class CommunicatorImpl implements Communicator {
 	 */
 	private void processData(ByteArrayOutputStream receivedData,
 			SessionManager sessionManager) throws InvalidOperationException {
-		logger.log(Level.INFO, "Starting processing data.");
-
-		if (sessionManager.getState().getState() == State.READY) {
-			try {
-				logger.log(Level.INFO, "Changing SessionState to INPROGRESS.");
-				sessionManager.updateSessionState(new SessionState(
-						State.INPROGRESS));
-				dataProcessor.storeInputStreamOnDisk(receivedData);
-				dataProcessor.startCompilePerms();
-			} catch (FileNotFoundException e) {
-				logger.log(Level.INFO, "Changing SessionState to TERMINATED.");
-				sessionManager.updateSessionState(new SessionState(
-						State.TERMINATED));
-			} catch (IOException e) {
-				logger.log(Level.INFO, "Changing SessionState to TERMINATED.");
-				sessionManager.updateSessionState(new SessionState(
-						State.TERMINATED));
-			} catch (UnableToCompleteException e) {
-				logger.log(Level.INFO,
-								"A problem occured during CompilePerms.");
-				sessionManager.updateSessionState(new SessionState(
-						State.TERMINATED));
-			}
-		} else {
-			throw new InvalidOperationException(
-					"Session must be in state READY before sending data for processing.");
+		try {
+			logger.log(Level.INFO, "Starting processing data.");
+			dataProcessor.storeInputStreamOnDisk(receivedData);
+			dataProcessor.startCompilePerms();
+		} catch (MalformedURLException e) {
+		} catch (UnableToCompleteException e) {
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 		}
 	}
 
@@ -167,13 +164,6 @@ public class CommunicatorImpl implements Communicator {
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
-	}
-
-	@Override
-	public boolean workFinished() {
-		if (sessionManager.getState().getState() == State.COMPLETED)
-			return true;
-		return false;
 	}
 
 	@Override

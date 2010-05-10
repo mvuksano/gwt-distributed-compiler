@@ -3,7 +3,8 @@ package com.google.gwt.dist.compiler.communicator;
 import java.io.InputStream;
 
 import com.google.gwt.dist.Node;
-import com.google.gwt.dist.SessionState;
+import com.google.gwt.dist.comm.CommMessage;
+import com.google.gwt.dist.comm.CommMessageResponse;
 
 /**
  * Provides abstraction layer for transport used by SessionManager.
@@ -11,13 +12,15 @@ import com.google.gwt.dist.SessionState;
 public interface Communicator {
 
 	/**
-	 * Get session state from the specified node.
+	 * Send Communication Message to the agent.
 	 * 
 	 * @param node
-	 *            Node from which to get the session state.
+	 *            Node which state should be retrieved.
+	 * @param message
+	 *            CommMessage which contains the query.
 	 * @return SessionState that is in possession of Node.
 	 */
-	SessionState getSessionState(Node node);
+	CommMessageResponse sendMessage(CommMessage message, Node node);
 
 	/**
 	 * Send data to specified node.
@@ -28,15 +31,5 @@ public interface Communicator {
 	 *            Node to which to send data.
 	 */
 	void sendData(InputStream inputStream, Node node);
-
-	/**
-	 * Send session state to the specified node;
-	 * 
-	 * @param state
-	 *            Session state to send
-	 * @param node
-	 *            Node to which to sent the above mentioned state.
-	 */
-	void sendSessionState(SessionState state, Node node);
 
 }

@@ -1,41 +1,40 @@
 package com.google.gwt.dist.compiler.agent.impl;
 
-import com.google.gwt.dist.SessionState;
-import com.google.gwt.dist.SessionState.State;
+import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 /**
- * SessionManager handles SessionState object for this agent.
+ * SessionManager handles sessions towards a node, for this agent.
  */
 public class SessionManagerImpl implements SessionManager, CompilePermsListener {
 
 	private Communicator communicator;
-	private SessionState state;
+	private ProcessingState processingState;
 	
 	public SessionManagerImpl() {
-		state = new SessionState(State.READY);
+		processingState = ProcessingState.READY;
 	}
 	
 	public Communicator getCommunicator() {
 		return this.communicator;
 	}
 	
-	public SessionState getState() {
-		return this.state;
+	public ProcessingState getProcessingState() {
+		return this.processingState;
 	}
 	
 	public void onCompilePermsFinished() {
-		this.state.setState(State.COMPLETED);
+		this.processingState = ProcessingState.COMPLETED;
+	}
+	
+	public void setProcessingState(ProcessingState processingState) {
+		this.processingState = processingState;
 	}
 	
 	public void setCommunicator(Communicator communicator) {
 		this.communicator  = communicator;
-	}
-	
-	public void setState(SessionState state) {
-		this.state = state;
 	}
 	
 	public void startListening() {
@@ -45,10 +44,4 @@ public class SessionManagerImpl implements SessionManager, CompilePermsListener 
 	public void stopListening() {
 		communicator.stopServer();
 	}
-
-	@Override
-	public void updateSessionState(SessionState state) {
-		this.state = state;
-	}
-
 }

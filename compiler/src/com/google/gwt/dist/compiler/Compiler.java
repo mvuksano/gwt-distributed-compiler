@@ -22,7 +22,7 @@ import com.google.gwt.dev.Precompile.PrecompileOptions;
 import com.google.gwt.dev.jjs.JJSOptionsImpl;
 import com.google.gwt.dev.jjs.JsOutputOption;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
-import com.google.gwt.dist.CommMessage;
+import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
 import com.google.gwt.dist.compiler.impl.DispatcherZipImpl;
 import com.google.gwt.dist.impl.CommMessageImpl;
@@ -261,10 +261,9 @@ public class Compiler {
 				ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
 				while ((bytesRead = is.read(buff)) > -1) {
 					receivedObject.write(buff, 0, bytesRead);
-					System.out.println("Compiler: " + receivedObject);
 				}
 				
-				System.out.println(((CommMessage)Util.byteArrayToObject(receivedObject.toByteArray())).getSessionState());
+				System.out.println(((CommMessage)Util.byteArrayToObject(receivedObject.toByteArray())).getResponse());
 				
 				os.close();
 				Thread.sleep(1000);

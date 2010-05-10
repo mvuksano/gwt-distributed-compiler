@@ -7,18 +7,19 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.google.gwt.dist.SessionState;
-import com.google.gwt.dist.SessionState.State;
+import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.comm.CommMessage;
+import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
-import com.google.gwt.dist.compiler.agent.communicator.Communicator;
+import com.google.gwt.dist.impl.CommMessageImpl;
 
 /**
  * Tests CommunicatorImpl behavior.
  */
 public class CommunicatorImplTest {
 
-	Communicator communicator;
+	CommunicatorImpl communicator;
 	SessionManager sessionManager;
 	DataProcessor dataProcessor;
 
@@ -31,18 +32,15 @@ public class CommunicatorImplTest {
 		((CommunicatorImpl) communicator).setSessionManager(sessionManager);
 	}
 
-	/**
-	 * Test if correct information is passed by SessionManager to the
-	 * communicator.
-	 */
 	@Test
-	public void testCompilePermsCompleted() {
-		when(sessionManager.getState()).thenReturn(
-				new SessionState(State.READY));
-		Assert.assertTrue(!communicator.workFinished());
+	public void testCommMessageProcessing() {
+		when(sessionManager.getProcessingState()).thenReturn(
+				ProcessingState.COMPLETED);
+		CommMessage message = new CommMessageImpl();
+		message = communicator.processCommMessage(message);
 
-		when(sessionManager.getState()).thenReturn(
-				new SessionState(State.COMPLETED));
-		Assert.assertTrue(communicator.workFinished());
+		ProcessingStateResponse expected = new ProcessingStateResponse();
+		expected.setCurrentState(ProcessingState.COMPLETED);
+		Assert.assertEquals(message.getResponse(), expected);
 	}
 }

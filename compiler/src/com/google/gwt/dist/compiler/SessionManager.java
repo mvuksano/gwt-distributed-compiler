@@ -3,7 +3,7 @@ package com.google.gwt.dist.compiler;
 import java.io.InputStream;
 
 import com.google.gwt.dist.Node;
-import com.google.gwt.dist.SessionState;
+import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 
 /**
@@ -21,16 +21,13 @@ public interface SessionManager {
 	 *         client.
 	 */
 	boolean compilePermsCompleted(Node n);
-	
-	Communicator getCommunicator();
 
 	/**
-	 * Request session state from the specified node.
+	 * Fetch Communicator that is currently in use.
 	 * 
-	 * @param node
-	 * @return SessionState that the is in possession of the specified node.
+	 * @return Currently used communicator.
 	 */
-	SessionState getSessionState(Node node);
+	Communicator getCommunicator();
 
 	/**
 	 * Check if it is OK to send some data to the agent.
@@ -42,20 +39,27 @@ public interface SessionManager {
 	 */
 	boolean readyToReceiveData(Node node);
 
-	/**
+	/**s
 	 * Sends data to specified node.
 	 * 
 	 * @param inputStream
 	 *            Stream from which to read the data.
-	 * @param node
-	 *            Node to which to send the data.
 	 */
-	void sendDataToClient(InputStream inputStream, Node node);
+	void sendDataToClient(InputStream inputStream);
 
 	/**
-	 * Sends SessionState object over the wire to the specified node.
+	 * Send CommMessage to the node.
+	 * 
+	 * @param message
+	 *            CommMessage to be sent.
 	 */
-	void sendSessionState(Node node, SessionState state);
-	
+	void sendMessageToClient(CommMessage message);
+
+	/**
+	 * Sets communicator to be used.
+	 * 
+	 * @param communicator
+	 *            Communicator to be used.
+	 */
 	void setCommunicator(Communicator communicator);
 }

@@ -1,5 +1,6 @@
 package com.google.gwt.dist.compiler.agent.communicator;
 
+import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
@@ -23,6 +24,10 @@ public interface Communicator {
 	 * @param listener Listener to add to the list.
 	 */
 	void addDataReceivedListener(DataReceivedListener listener);
+	
+	SessionManager getSessionManager();
+	
+	void setSessionManager(SessionManager sessionManager);
 
 	/**
 	 * Start a server and listen to the specified port.
@@ -33,11 +38,4 @@ public interface Communicator {
 	 * Stops the currently running server, if any.
 	 */
 	void stopServer();
-
-	/**
-	 * Check if this agent has completed its work.
-	 * 
-	 * @return true if work is finished. false otherwise.
-	 */
-	boolean workFinished();
 }
