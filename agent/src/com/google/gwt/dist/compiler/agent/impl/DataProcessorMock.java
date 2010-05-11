@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
@@ -20,8 +21,10 @@ import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 public class DataProcessorMock implements DataProcessor, Runnable {
 
 	private List<CompilePermsListener> compilePermsListeners;
+	private ProcessingState mockProcessingState;
 
 	public DataProcessorMock() {
+		mockProcessingState = ProcessingState.READY;
 		compilePermsListeners = new ArrayList<CompilePermsListener>();
 	}
 
@@ -36,19 +39,39 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 		}
 	}
 
+	public void compilePermsStarted() {
+		for (CompilePermsListener l : compilePermsListeners) {
+			l.onCompilePermsStarted();
+		}
+	}
+
 	@Override
 	public void removeListener(CompilePermsListener listener) {
-		compilePermsListeners.add(listener);
+		compilePermsListeners.remove(listener);
 	}
-	
+
 	@Override
 	public void run() {
-		try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		while (true) {
+			try {
+				Thread.sleep(15000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			switch (mockProcessingState) {
+			case READY:
+				mockProcessingState = ProcessingState.INPROGRESS;
+				compilePermsStarted();
+				break;
+			case INPROGRESS:
+				mockProcessingState = ProcessingState.COMPLETED;
+				compilePermsFinished();
+				break;
+			default:
+				mockProcessingState = ProcessingState.READY;
+				break;
+			}
 		}
-		compilePermsFinished();
 	}
 
 	@Override

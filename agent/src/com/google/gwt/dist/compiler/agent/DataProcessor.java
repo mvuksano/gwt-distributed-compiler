@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 /**
