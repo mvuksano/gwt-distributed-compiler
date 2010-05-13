@@ -46,6 +46,7 @@ public class Application {
 	}
 
 	public void start() {
+		
 		List<Node> nodes = this.settings.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
 		Communicator communicator = new CommunicatorImpl();

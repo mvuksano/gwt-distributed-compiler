@@ -28,6 +28,10 @@ public class SessionManagerImpl implements SessionManager, CompilePermsListener 
 	public void onCompilePermsFinished() {
 		this.processingState = ProcessingState.COMPLETED;
 	}
+	
+	public void onCompilePermsStarted() {
+		this.processingState = ProcessingState.INPROGRESS;
+	}
 
 	public void setProcessingState(ProcessingState processingState) {
 		this.processingState = processingState;
