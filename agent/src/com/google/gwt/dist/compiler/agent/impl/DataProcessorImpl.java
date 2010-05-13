@@ -81,7 +81,7 @@ public class DataProcessorImpl implements DataProcessor, DataReceivedListener,
 	@Override
 	public void startCompilePerms() throws UnableToCompleteException,
 			MalformedURLException {
-		File uncompressedSrc = new File("uncompressed" + File.separator + "src"
+		File uncompressedSrc = new File(tempStorage + File.separator + "src"
 				+ File.separator);
 		Util.addUrl(uncompressedSrc.toURI().toURL());
 		TreeLogger logger = new PrintWriterTreeLogger();
@@ -102,14 +102,14 @@ public class DataProcessorImpl implements DataProcessor, DataReceivedListener,
 		new CompilePerms(options).run(logger);
 		compilePermsFinished();
 
-		File dirToCompress = new File("uncompressed" + File.separator);
+		File dirToCompress = new File(tempStorage + File.separator);
 		ByteArrayOutputStream compressedOutput = null;
 		try {
 			compressedOutput = compressor.archiveAndCompressDir(dirToCompress,
 					Pattern.compile("permutation-[0-9+].js"));
 			File zippedOutputFile = new File("test.zip");
 			zippedOutputFile.createNewFile();
-			FileOutputStream fos = new FileOutputStream("test.zip");
+			FileOutputStream fos = new FileOutputStream(zippedOutputFile);
 			fos.write(compressedOutput.toByteArray());
 			fos.close();
 		} catch (IOException e) {
