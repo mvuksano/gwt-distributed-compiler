@@ -1,7 +1,6 @@
 package com.google.gwt.dist.compiler.agent.communicator;
 
 import com.google.gwt.dist.compiler.agent.SessionManager;
-import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
 /**
@@ -9,14 +8,6 @@ import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
  * communicate with clients.
  */
 public interface Communicator {
-
-	/**
-	 * Add a listener that will be notified of compile perms finished
-	 * operations.
-	 * 
-	 * @param listener Listener to add to the list.
-	 */
-	void addCompilePermsListener(CompilePermsListener listener);
 
 	/**
 	 * Add listener that will be notified of data received event.

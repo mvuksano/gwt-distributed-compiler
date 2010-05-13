@@ -13,20 +13,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
-import com.google.gwt.dist.compiler.agent.communicator.InvalidOperationException;
-import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
+import com.google.gwt.dist.util.ZipCompressor;
 
 public class CommunicatorImpl implements Communicator {
 
-	private Set<CompilePermsListener> compilePermsFinishedListeners;
 	private Set<DataReceivedListener> dataReceivedListeners;
+	private ZipCompressor compressor;
 	private InputStream is;
 	private OutputStream os;
 	private ServerSocket server;
@@ -35,8 +35,19 @@ public class CommunicatorImpl implements Communicator {
 			.getLogger(CommunicatorImpl.class.getName());
 
 	public CommunicatorImpl() {
-		this.compilePermsFinishedListeners = new HashSet<CompilePermsListener>();
 		this.dataReceivedListeners = new HashSet<DataReceivedListener>();
+		compressor = new ZipCompressor();
+		compressor.setExcludePattern(Pattern
+				.compile("bin|\\.settings\\.classpath\\.project"));
+	}
+
+	/**
+	 * Notify DataReceivedListeners about data transfer being finished.
+	 */
+	public void dataReceived(byte[] receivedData) {
+		for (DataReceivedListener l : dataReceivedListeners) {
+			l.onDataReceived(receivedData);
+		}
 	}
 
 	public ServerSocket getServer() {
@@ -99,10 +110,7 @@ public class CommunicatorImpl implements Communicator {
 				oos.writeObject(commMessage);
 				os.write(bos.toByteArray());
 			} else {
-				try {
-					processData(receivedObject, this.sessionManager);
-				} catch (InvalidOperationException e) {
-				}
+				dataReceived(receivedObject.toByteArray());
 			}
 			client.shutdownOutput();
 			is.close();
@@ -126,21 +134,6 @@ public class CommunicatorImpl implements Communicator {
 		return null;
 	}
 
-	/**
-	 * Process data received from the client.
-	 * 
-	 * @param receivedData
-	 *            Data received from the client as ByteArrayOutputStream.
-	 * @param sessionManager
-	 *            SessionManager that should be associated with processing.
-	 *            TODO: This variable might be removed and the private property
-	 *            could be used.
-	 * @throws InvalidOperationException
-	 */
-	private void processData(ByteArrayOutputStream receivedData,
-			SessionManager sessionManager) throws InvalidOperationException {
-	}
-
 	@Override
 	public void stopServer() {
 		try {
@@ -148,11 +141,6 @@ public class CommunicatorImpl implements Communicator {
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
-	}
-
-	@Override
-	public void addCompilePermsListener(CompilePermsListener listener) {
-		compilePermsFinishedListeners.add(listener);
 	}
 
 	@Override

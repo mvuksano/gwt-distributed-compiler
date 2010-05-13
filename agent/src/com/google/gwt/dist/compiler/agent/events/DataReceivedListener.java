@@ -5,5 +5,5 @@ package com.google.gwt.dist.compiler.agent.events;
  * this interface.
  */
 public interface DataReceivedListener {
-	void onDataReceived();
+	void onDataReceived(byte[] receivedData);
 }

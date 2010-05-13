@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="All Unit Tests" parallel="methods" thread-count="2">
+  <test name="com.google.gwt.dist.compiler.agent">
+    <classes>
+       <class name="com.google.gwt.dist.ZipCompressorTest" />
+    </classes>
+  </test>
+</suite>

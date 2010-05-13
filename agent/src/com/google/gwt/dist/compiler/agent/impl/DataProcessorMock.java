@@ -1,6 +1,5 @@
 package com.google.gwt.dist.compiler.agent.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,9 +19,11 @@ import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 public class DataProcessorMock implements DataProcessor, Runnable {
 
 	private List<CompilePermsListener> compilePermsListeners;
+	private int interval = 15000;
 
-	public DataProcessorMock() {
+	public DataProcessorMock(int intervalInMiliSeconds) {
 		compilePermsListeners = new ArrayList<CompilePermsListener>();
+		interval = intervalInMiliSeconds;
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(15000);
+			Thread.sleep(interval);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -58,7 +59,13 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 	}
 
 	@Override
-	public void storeInputStreamOnDisk(ByteArrayOutputStream receivedData)
+	public void storeInputStreamOnDisk(byte[] receivedData)
 			throws FileNotFoundException, IOException {
+	}
+
+	@Override
+	public void onDataReceived(byte[] receivedData) {
+		// TODO Auto-generated method stub
+		
 	}
 }
