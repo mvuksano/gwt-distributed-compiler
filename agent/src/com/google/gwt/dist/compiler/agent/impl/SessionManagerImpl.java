@@ -26,9 +26,7 @@ public class SessionManagerImpl implements SessionManager, CompilePermsListener 
 	}
 
 	public void onCompilePermsFinished() {
-		synchronized (this) {
-			this.processingState = ProcessingState.COMPLETED;
-		}
+		this.processingState = ProcessingState.COMPLETED;
 	}
 	
 	public void onCompilePermsStarted() {

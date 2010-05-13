@@ -1,17 +1,17 @@
 package com.google.gwt.dist.compiler.agent;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
+import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
 /**
  * Definition of objects that will handle data processing.
  */
-public interface DataProcessor {
+public interface DataProcessor extends Runnable, DataReceivedListener {
 
 	/**
 	 * Attach a CompilePermsListener.
@@ -46,8 +46,8 @@ public interface DataProcessor {
 	 *            Directory which will be used to store the data for processing
 	 *            by CompilePerms.
 	 */
-	void storeInputStreamOnDisk(ByteArrayOutputStream receivedData)
-			throws FileNotFoundException, IOException;
+	void storeInputStreamOnDisk(byte[] receivedData)
+			throws FileNotFoundException, IOException; 
 
 	/**
 	 * This method starts CompilePerms operation.

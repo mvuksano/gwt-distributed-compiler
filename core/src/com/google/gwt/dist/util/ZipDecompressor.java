@@ -3,7 +3,6 @@ package com.google.gwt.dist.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,12 +30,12 @@ public class ZipDecompressor {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public void decompressAndStoreToFile(ByteArrayOutputStream stream,
-			File directory) throws FileNotFoundException, IOException {
+	public void decompressAndStoreToFile(byte[] receivedData, File directory)
+			throws FileNotFoundException, IOException {
 		directory.mkdir();
 		BufferedOutputStream dest = null;
-		ByteArrayInputStream inputStream = new ByteArrayInputStream(stream
-				.toByteArray());
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(
+				receivedData);
 		CheckedInputStream checksum = new CheckedInputStream(inputStream,
 				new Adler32());
 		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(
