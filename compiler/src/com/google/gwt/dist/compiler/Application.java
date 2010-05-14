@@ -20,7 +20,7 @@ import com.google.gwt.dist.Node;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;
-import com.google.gwt.dist.impl.CommMessageImpl;
+import com.google.gwt.dist.util.ZipCompressor;
 
 public class Application {
 
@@ -50,14 +50,15 @@ public class Application {
 		List<Node> nodes = this.settings.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
 		Communicator communicator = new CommunicatorImpl();
+		ZipCompressor compressor = new ZipCompressor();
 		for (Node n : nodes) {
-			sessionManagers.add(new SessionManagerImpl(communicator, n));
+			sessionManagers.add(new SessionManagerImpl(communicator, n, compressor));
 		}
 		while (true) {
 			for (SessionManager sm : sessionManagers) {
-				sm.sendMessageToClient(new CommMessageImpl());
+				sm.start();
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 				}
 			}

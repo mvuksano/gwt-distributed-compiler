@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +17,8 @@ import java.util.regex.Pattern;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
+import com.google.gwt.dist.comm.ReturnResultResponse;
+import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
@@ -25,12 +26,10 @@ import com.google.gwt.dist.util.ZipCompressor;
 
 public class CommunicatorImpl implements Communicator {
 
-	private Set<DataReceivedListener> dataReceivedListeners;
 	private ZipCompressor compressor;
-	private InputStream is;
-	private OutputStream os;
-	private ServerSocket server;
+	private Set<DataReceivedListener> dataReceivedListeners;
 	private SessionManager sessionManager;
+
 	private static final Logger logger = Logger
 			.getLogger(CommunicatorImpl.class.getName());
 
@@ -42,6 +41,17 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	/**
+	 * Closes a connection towards a client.
+	 */
+	public void closeConnection(Socket client) {
+		try {
+			client.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Notify DataReceivedListeners about data transfer being finished.
 	 */
 	public void dataReceived(byte[] receivedData) {
@@ -50,8 +60,28 @@ public class CommunicatorImpl implements Communicator {
 		}
 	}
 
-	public ServerSocket getServer() {
-		return this.server;
+	public byte[] getData(Socket client) {
+		logger.log(Level.INFO, "Getting data from client: "
+				+ client.getInetAddress());
+		
+		ByteArrayOutputStream receivedObject = null;
+		try {
+			InputStream is = client.getInputStream();
+
+			// Read contents of the stream and store it into a byte array.
+			byte[] buff = new byte[512];
+			int bytesRead = 0;
+			receivedObject = new ByteArrayOutputStream();
+			while ((bytesRead = is.read(buff)) > -1) {
+				receivedObject.write(buff, 0, bytesRead);
+			}
+			
+		} catch (IOException e) {
+			logger.log(Level.SEVERE,
+					"There was a problem while getting data from client "
+							+ client.getInetAddress());
+		}
+		return receivedObject.toByteArray();
 	}
 
 	public SessionManager getSessionManager() {
@@ -59,39 +89,49 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	/**
-	 * Processes the incoming CommMessage and returns a modified one.
+	 * Processes the incoming CommMessage and returns a modified one. CANDIDATE
+	 * FOR REMOVAL.
 	 * 
 	 * @param message
 	 *            The message to process.
 	 * @return Updated message.
 	 */
-	public CommMessage processCommMessage(CommMessage message) {
-		CommMessageResponse response = new ProcessingStateResponse();
-		((ProcessingStateResponse) response)
-				.setCurrentState(this.sessionManager.getProcessingState());
+	public CommMessage<ProcessingStateResponse> processCommMessage(
+			CommMessage<ProcessingStateResponse> message) {
+		ProcessingStateResponse response = new ProcessingStateResponse();
+		if (message.getCommMessageType() == CommMessageType.QUERY) {
+			((ProcessingStateResponse) response)
+					.setCurrentState(this.sessionManager.getProcessingState());
+			message.setResponse(response);
+		}
 		message.setResponse(response);
 		return message;
-	}
-
-	public void setServer(ServerSocket serverSocket) {
-		this.server = serverSocket;
 	}
 
 	public void setSessionManager(SessionManager sessionManager) {
 		this.sessionManager = sessionManager;
 	}
 
-	@Override
-	public void startServer() {
-		Socket client = null;
+	public void sendData(byte[] data, Socket client) {
+		OutputStream os;
 		try {
-			server = new ServerSocket(3000);
-			logger.log(Level.INFO, "Waiting for connections.");
-			client = server.accept();
+			os = client.getOutputStream();
+			os.write(data);
+			client.shutdownOutput();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE,
+					"There was a problem while sending data to client "
+							+ client.getInetAddress());
+		}
+	}
+
+	@Override
+	public void serveClient(Socket client) {
+		try {
 			logger.log(Level.INFO, "Accepted a connection from: "
 					+ client.getInetAddress());
-			os = client.getOutputStream();
-			is = client.getInputStream();
+			OutputStream os = client.getOutputStream();
+			InputStream is = client.getInputStream();
 
 			// Read contents of the stream and store it into a byte array.
 			byte[] buff = new byte[512];
@@ -102,9 +142,10 @@ public class CommunicatorImpl implements Communicator {
 			}
 
 			// Check if received stream is CommMessage or not.
-			CommMessage commMessage = getCommMessage(receivedObject);
+			CommMessage<ProcessingStateResponse> commMessage = getCommMessage(receivedObject);
 			if (commMessage != null) {
 				commMessage = processCommMessage(commMessage);
+				commMessage.setResponse(decideResponse(commMessage));
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(bos);
 				oos.writeObject(commMessage);
@@ -115,19 +156,20 @@ public class CommunicatorImpl implements Communicator {
 			client.shutdownOutput();
 			is.close();
 			os.close();
-			client.close();
-			server.close();
+			client.close(); // ???
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
 	}
 
-	private CommMessage getCommMessage(ByteArrayOutputStream baos) {
+	@SuppressWarnings("unchecked")
+	private CommMessage<ProcessingStateResponse> getCommMessage(
+			ByteArrayOutputStream baos) {
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(baos
 					.toByteArray());
 			ObjectInputStream ois = new ObjectInputStream(bis);
-			return (CommMessage) ois.readObject();
+			return (CommMessage<ProcessingStateResponse>) ois.readObject();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 		}
@@ -135,16 +177,26 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	@Override
-	public void stopServer() {
-		try {
-			server.close();
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		}
-	}
-
-	@Override
 	public void addDataReceivedListener(DataReceivedListener listener) {
 		dataReceivedListeners.add(listener);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends CommMessageResponse> T decideResponse(
+			CommMessage<T> message) {
+		T responseToReturn = null;
+		switch (message.getCommMessageType()) {
+		case ECHO:
+			responseToReturn = message.getResponse();
+			break;
+		case QUERY:
+			responseToReturn = (T) new ProcessingStateResponse(
+					this.sessionManager.getProcessingState());
+			break;
+		case RETURN_RESULT:
+			responseToReturn = (T) new ReturnResultResponse();
+			break;
+		}
+		return responseToReturn;
 	}
 }

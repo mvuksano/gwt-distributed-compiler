@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Adler32;
@@ -23,10 +25,10 @@ public class ZipCompressor {
 	private Pattern excludeDirPattern;
 
 	static final int BUFFER = 2048;
+	static final Logger logger = Logger
+			.getLogger(ZipCompressor.class.getName());
 
-	public ByteArrayOutputStream archiveAndCompressDir(File directory)
-			throws IOException {
-
+	public ByteArrayOutputStream archiveAndCompressDir(File directory) {
 		ByteArrayOutputStream destination = new ByteArrayOutputStream();
 		CheckedOutputStream checksum = new CheckedOutputStream(destination,
 				new Adler32());
@@ -34,9 +36,13 @@ public class ZipCompressor {
 				checksum));
 		out.setMethod(ZipOutputStream.DEFLATED);
 
-		addFilesToPackage(directory, "", out, null);
-
-		out.close();
+		try {
+			addFilesToPackage(directory, "", out, null);
+			out.close();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE,
+					"There was a problem while adding files into Zip stream.");
+		}
 
 		return destination;
 	}

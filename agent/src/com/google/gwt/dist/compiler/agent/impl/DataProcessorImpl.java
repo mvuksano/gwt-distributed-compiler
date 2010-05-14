@@ -96,7 +96,7 @@ public class DataProcessorImpl implements DataProcessor, DataReceivedListener,
 
 		options.setModuleNames(moduleNames);
 		options.setWorkDir(workDir);
-		int perms[] = { 0 };
+		int perms[] = { 0, 1, 2, 3, 4, 5 };
 		options.setPermsToCompile(perms);
 
 		new CompilePerms(options).run(logger);
@@ -146,11 +146,6 @@ public class DataProcessorImpl implements DataProcessor, DataReceivedListener,
 	@Override
 	public void run() {
 		while (true) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

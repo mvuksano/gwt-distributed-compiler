@@ -6,7 +6,7 @@ import java.io.Serializable;
  * The definition for object that is used by client and agent for
  * intercommunication.
  */
-public interface CommMessage extends Serializable {
+public interface CommMessage<T extends CommMessageResponse> extends Serializable {
 
 	/**
 	 * CommMessage Types. ECHO - Message that should be returned as is. QUERY -
@@ -19,7 +19,7 @@ public interface CommMessage extends Serializable {
 
 	public CommMessageType getCommMessageType();
 
-	public CommMessageResponse getResponse();
+	public T getResponse();
 
-	public void setResponse(CommMessageResponse response);
+	public void setResponse(T response);
 }

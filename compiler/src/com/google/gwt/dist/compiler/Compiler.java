@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -23,12 +22,10 @@ import com.google.gwt.dev.jjs.JJSOptionsImpl;
 import com.google.gwt.dev.jjs.JsOutputOption;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.comm.CommMessage;
+import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
-import com.google.gwt.dist.compiler.impl.DispatcherZipImpl;
-import com.google.gwt.dist.impl.CommMessageImpl;
-import com.google.gwt.dist.impl.NodeImpl;
+import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.util.Util;
-import com.google.gwt.dist.util.ZipCompressor;
 
 /**
  * Compiler that will initiate GWT Java to JavaScript compilation process.
@@ -47,8 +44,9 @@ public class Compiler {
 		private final JJSOptionsImpl jjsOptions = new JJSOptionsImpl();
 		private int maxPermsPerPrecompile;
 		private boolean validateOnly;
-		
-		private static final Logger logger = Logger.getLogger(Compiler.class.getName());
+
+		private static final Logger logger = Logger.getLogger(Compiler.class
+				.getName());
 
 		public PrecompileOptionsImpl() {
 		}
@@ -229,27 +227,27 @@ public class Compiler {
 		}
 
 		// Get compressed stream and send it to compiler agent.
-		File source = new File(System.getProperty("user.dir"));
-
-		ZipCompressor compressor = new ZipCompressor();
-		// TODO: this should be defined in a config file.
-		compressor.setExcludePattern(Pattern
-				.compile("bin|\\.settings\\.classpath\\.project"));
-		Dispatcher dispatcher = new DispatcherZipImpl();
-		try {
-			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
-					new NodeImpl("localhost", 3000));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		File source = new File(System.getProperty("user.dir"));
+//
+//		ZipCompressor compressor = new ZipCompressor();
+//		// TODO: this should be defined in a config file.
+//		compressor.setExcludePattern(Pattern
+//				.compile("bin|\\.settings\\.classpath\\.project"));
+//		Dispatcher dispatcher = new DispatcherZipImpl();
+//		try {
+//			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
+//					new NodeImpl("localhost", 3000));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 		while (true) {
 			try {
 				Socket server = new Socket("localhost", 3000);
 				InputStream is = server.getInputStream();
 				OutputStream os = server.getOutputStream();
-				
-				CommMessage commMessage = new CommMessageImpl();
+
+				CommMessage<ProcessingStateResponse> commMessage = new ProcessingStateMessage();
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
 				ObjectOutputStream oos = new ObjectOutputStream(bos);
 				oos.writeObject(commMessage);
@@ -262,9 +260,11 @@ public class Compiler {
 				while ((bytesRead = is.read(buff)) > -1) {
 					receivedObject.write(buff, 0, bytesRead);
 				}
-				
-				System.out.println(((CommMessage)Util.byteArrayToObject(receivedObject.toByteArray())).getResponse());
-				
+
+				System.out.println(((ProcessingStateMessage) Util
+						.byteArrayToObject(receivedObject.toByteArray()))
+						.getResponse());
+
 				os.close();
 				Thread.sleep(1000);
 			} catch (IOException e) {
@@ -272,7 +272,7 @@ public class Compiler {
 			} catch (InterruptedException e) {
 				PrecompileOptionsImpl.logger.log(Level.SEVERE, e.getMessage());
 			}
-			
+
 		}
 
 		// TODO:

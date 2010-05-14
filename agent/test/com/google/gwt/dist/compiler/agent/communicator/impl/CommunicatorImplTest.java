@@ -12,7 +12,7 @@ import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
-import com.google.gwt.dist.impl.CommMessageImpl;
+import com.google.gwt.dist.impl.ProcessingStateMessage;
 
 /**
  * Tests CommunicatorImpl behavior.
@@ -36,7 +36,7 @@ public class CommunicatorImplTest {
 	public void testCommMessageProcessing() {
 		when(sessionManager.getProcessingState()).thenReturn(
 				ProcessingState.COMPLETED);
-		CommMessage message = new CommMessageImpl();
+		CommMessage message = new ProcessingStateMessage();
 		message = communicator.processCommMessage(message);
 
 		ProcessingStateResponse expected = new ProcessingStateResponse();

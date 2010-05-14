@@ -17,16 +17,38 @@ import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 
 public class CommunicatorImpl implements Communicator {
+	
+	private Socket client;
 
 	private static final Logger logger = Logger
 			.getLogger(CommunicatorImpl.class.getName());
-
-	@Override
-	public void sendData(InputStream inputStream, Node node) {
+	
+	public Socket getClient() {
+		return this.client;
 	}
 
 	@Override
-	public CommMessageResponse sendMessage(CommMessage message, Node node) {
+	public void sendData(byte[] data, Node node) {
+		Socket server;
+		try {
+			server = new Socket(node.getIpaddress(), node.getPort());
+			InputStream is = server.getInputStream();
+			OutputStream os = server.getOutputStream();
+			
+			os.write(data);
+			server.shutdownOutput();
+
+			os.close();
+			is.close();
+			server.close();
+		} catch (UnknownHostException e) {
+		} catch (IOException e) {
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends CommMessageResponse> T sendMessage(CommMessage<T> message, Node node) {
 		try {
 			Socket server = new Socket(node.getIpaddress(), node.getPort());
 			InputStream is = server.getInputStream();
@@ -37,7 +59,7 @@ public class CommunicatorImpl implements Communicator {
 			server.shutdownOutput();
 
 			ObjectInputStream ois = new ObjectInputStream(is);
-			message = (CommMessage) ois.readObject();
+			message = (CommMessage<T>) ois.readObject();
 			System.out
 					.println(((ProcessingStateResponse) message.getResponse())
 							.getCurrentState());
@@ -52,6 +74,10 @@ public class CommunicatorImpl implements Communicator {
 			logger.log(Level.SEVERE, e.getMessage());
 		}
 		return message.getResponse();
+	}
+	
+	public void setClient(Socket client) {
+		this.client = client;
 	}
 
 }

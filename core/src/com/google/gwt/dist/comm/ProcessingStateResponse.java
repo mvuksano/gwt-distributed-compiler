@@ -13,6 +13,10 @@ public class ProcessingStateResponse implements CommMessageResponse {
 	public ProcessingStateResponse() {
 		this.currentState = ProcessingState.READY;
 	}
+	
+	public ProcessingStateResponse(ProcessingState state) {
+		this.currentState = state;
+	}
 
 	public ProcessingState getCurrentState() {
 		return this.currentState;

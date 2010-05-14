@@ -1,9 +1,11 @@
 package com.google.gwt.dist.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -79,6 +81,17 @@ public class Util {
 	}
 
 	public static byte[] objectToByteArray(Object o) {
-		return null;
+		byte[] data = null;
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			oos.writeObject(o);
+			oos.flush();
+			oos.close();
+			bos.close();
+			data = bos.toByteArray();
+		} catch (IOException e) {
+		}
+		return data;
 	}
 }

@@ -89,7 +89,7 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 
 	@Override
 	public void onDataReceived(byte[] receivedData) {
-		// TODO Auto-generated method stub
+		mockProcessingState = ProcessingState.INPROGRESS;
 		
 	}
 }

@@ -1,15 +1,14 @@
 package com.google.gwt.dist.compiler;
 
-import java.io.InputStream;
-
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.comm.CommMessage;
+import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 
 /**
  * Defines how SessionManager implementations will handle queries from client.
  */
-public interface SessionManager {
+public interface SessionManager extends Runnable {
 
 	/**
 	 * Check if CompilePerms is finished.
@@ -39,13 +38,13 @@ public interface SessionManager {
 	 */
 	boolean readyToReceiveData(Node node);
 
-	/**s
-	 * Sends data to specified node.
+	/**
+	 * s Sends data to specified node.
 	 * 
-	 * @param inputStream
-	 *            Stream from which to read the data.
+	 * @param data
+	 *            Data to be sent to the agent.
 	 */
-	void sendDataToClient(InputStream inputStream);
+	void sendDataToAgent(byte[] data);
 
 	/**
 	 * Send CommMessage to the node.
@@ -53,7 +52,7 @@ public interface SessionManager {
 	 * @param message
 	 *            CommMessage to be sent.
 	 */
-	void sendMessageToClient(CommMessage message);
+	<T extends CommMessageResponse> T sendMessageToAgent(CommMessage<T> message);
 
 	/**
 	 * Sets communicator to be used.
@@ -62,4 +61,6 @@ public interface SessionManager {
 	 *            Communicator to be used.
 	 */
 	void setCommunicator(Communicator communicator);
+	
+	void start();
 }

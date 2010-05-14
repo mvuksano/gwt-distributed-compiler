@@ -8,6 +8,16 @@
 	http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd
 	http://www.springframework.org/schema/task
 	http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+	  <property name="scopes">
+        <map>
+          <entry key="thread">
+            <bean class="org.springframework.context.support.SimpleThreadScope"/>
+          </entry>
+        </map>
+      </property>
+    </bean>
 
 	<bean id="dataprocessor"
 		class="com.google.gwt.dist.compiler.agent.impl.DataProcessorImpl">
@@ -27,7 +37,7 @@
 	</bean>
 
 	<bean id="communicator"
-		class="com.google.gwt.dist.compiler.agent.communicator.impl.CommunicatorImpl">
+		class="com.google.gwt.dist.compiler.agent.communicator.impl.CommunicatorImpl" scope="thread">
 		<property name="sessionManager" ref="sessionManager" />
 	</bean>
 
@@ -52,6 +62,9 @@
 				<ref bean="dataprocessor" />
 			</list>
 		</property>
+	</bean>
+	
+	<bean id="serverSocket" class="java.net.ServerSocket" scope="thread">
 	</bean>
 
 </beans>
