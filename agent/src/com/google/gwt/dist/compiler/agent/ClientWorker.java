@@ -11,12 +11,7 @@ public class ClientWorker implements Runnable {
 
 	public ClientWorker(Socket client, ApplicationContext appContext) {
 		this.client = client;
-
 		sessionManager = (SessionManager) appContext.getBean("sessionManager");
-	}
-
-	public SessionManager getSessionManager() {
-		return this.sessionManager;
 	}
 
 	@Override
@@ -24,9 +19,4 @@ public class ClientWorker implements Runnable {
 		this.sessionManager.processConnection(client);
 
 	}
-
-	public void setSessionManager(SessionManager sessionManager) {
-		this.sessionManager = sessionManager;
-	}
-
 }

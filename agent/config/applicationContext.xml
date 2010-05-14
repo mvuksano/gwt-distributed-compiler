@@ -26,19 +26,18 @@
 		<constructor-arg ref="temporarystoragelocation" />
 	</bean>
 
-	<bean id="dataprocessorMock"
+	<bean id="dataProcessorMock"
 		class="com.google.gwt.dist.compiler.agent.impl.DataProcessorMock">
 		<constructor-arg value="15000" />
 	</bean>
 
 	<bean id="sessionManager"
-		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl">
-		<property name="communicator" ref="communicator" />
+		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="thread">
+		<property name="communicator" ref="communicator"/>
 	</bean>
 
 	<bean id="communicator"
 		class="com.google.gwt.dist.compiler.agent.communicator.impl.CommunicatorImpl" scope="thread">
-		<property name="sessionManager" ref="sessionManager" />
 	</bean>
 
 	<bean id="temporarystoragelocation" class="java.io.File">
@@ -48,18 +47,18 @@
 	<bean id="zipCompressor" class="com.google.gwt.dist.util.ZipCompressor" />
 
 	<bean id="zipDecompressor" class="com.google.gwt.dist.util.ZipDecompressor" />
-
-	<bean id="registerDataProcessorWithCommunicator"
+	
+	<bean id="registerSessionManagerWithDataProcessor"
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetObject">
-			<ref local="communicator" />
+			<ref local="dataProcessorMock" />
 		</property>
 		<property name="targetMethod">
-			<value>addDataReceivedListener</value>
+			<value>addListener</value>
 		</property>
 		<property name="arguments">
 			<list>
-				<ref bean="dataprocessor" />
+				<ref bean="sessionManager" />
 			</list>
 		</property>
 	</bean>

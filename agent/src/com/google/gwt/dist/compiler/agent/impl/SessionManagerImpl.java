@@ -6,7 +6,10 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 
 import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.comm.CommMessage;
+import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
+import com.google.gwt.dist.comm.ReturnResultResponse;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
@@ -42,15 +45,23 @@ public class SessionManagerImpl implements SessionManager, CompilePermsListener 
 	}
 
 	public void processConnection(Socket client) {
+		System.out.println("Started Thread " + Thread.currentThread().getName());
 		System.out.println("Processing connection");
 		byte[] receivedData = communicator.getData(client);
 		if (isProcessingStateMessage(receivedData)) {
 			ProcessingStateMessage message = getCommMessage(receivedData);
-			message.setResponse(new ProcessingStateResponse());
+			message.setResponse(decideResponse(message));
 			System.out.println(message.getCommMessageType());
 			communicator.sendData(Util.objectToByteArray(message), client);
 		}
 		communicator.closeConnection(client);
+		try {
+			Thread.sleep(15000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Finished Thread " + Thread.currentThread().getName());
 	}
 
 	public void setProcessingState(ProcessingState processingState) {
@@ -59,12 +70,6 @@ public class SessionManagerImpl implements SessionManager, CompilePermsListener 
 
 	public void setCommunicator(Communicator communicator) {
 		this.communicator = communicator;
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-
 	}
 
 	private ProcessingStateMessage getCommMessage(byte[] data) {
@@ -76,6 +81,24 @@ public class SessionManagerImpl implements SessionManager, CompilePermsListener 
 		} catch (ClassNotFoundException e) {
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends CommMessageResponse> T decideResponse(
+			CommMessage<T> message) {
+		T responseToReturn = null;
+		switch (message.getCommMessageType()) {
+		case ECHO:
+			responseToReturn = message.getResponse();
+			break;
+		case QUERY:
+			responseToReturn = (T) new ProcessingStateResponse(processingState);
+			break;
+		case RETURN_RESULT:
+			responseToReturn = (T) new ReturnResultResponse();
+			break;
+		}
+		return responseToReturn;
 	}
 
 	private boolean isProcessingStateMessage(byte[] receivedData) {

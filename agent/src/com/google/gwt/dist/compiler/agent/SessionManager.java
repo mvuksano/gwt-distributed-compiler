@@ -10,7 +10,7 @@ import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 /**
  * Interface that describes SessionManager which will perform within an agent.
  */
-public interface SessionManager extends CompilePermsListener, Runnable {
+public interface SessionManager extends CompilePermsListener {
 	
 	/**
 	 * Gets communicator associated with session manager.
