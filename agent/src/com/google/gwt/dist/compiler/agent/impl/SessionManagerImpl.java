@@ -16,7 +16,6 @@ import com.google.gwt.dist.comm.ReturnResultResponse;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
-import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.util.Util;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -41,6 +40,10 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	public Communicator getCommunicator() {
 		return this.communicator;
 	}
+	
+	public ZipCompressor getCompressor() {
+		return this.compressor;
+	}
 
 	public ZipDecompressor getDecompressor() {
 		return this.decompressor;
@@ -56,11 +59,9 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		System.out.println("Processing connection");
 		try {
 			byte[] receivedData = communicator.getData(client);
-			if (isProcessingStateMessage(receivedData)) {
-				ProcessingStateMessage message = getCommMessage(receivedData);
+			if (isCommMessage(receivedData)) {
+				CommMessage<CommMessageResponse> message = getCommMessage(receivedData);
 				message.setResponse(decideResponse(message));
-				System.out.println(message.getCommMessageType() + ", "
-						+ message.getResponse().getCurrentState());
 				communicator.sendData(Util.objectToByteArray(message), client);
 			} else {
 				File dirToStoreDataInto = new File("uncompressed");
@@ -76,6 +77,10 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		System.out.println("Finished Thread "
 				+ Thread.currentThread().getName());
 	}
+	
+	public void setCompressor(ZipCompressor compressor) {
+		this.compressor = compressor;
+	}
 
 	public void setDecompressor(ZipDecompressor decompressor) {
 		this.decompressor = decompressor;
@@ -85,13 +90,16 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		this.communicator = communicator;
 	}
 
-	private ProcessingStateMessage getCommMessage(byte[] data) {
+	@SuppressWarnings("unchecked")
+	private CommMessage<CommMessageResponse> getCommMessage(byte[] data) {
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(data);
 			ObjectInputStream ois = new ObjectInputStream(bis);
-			return (ProcessingStateMessage) ois.readObject();
+			return (CommMessage<CommMessageResponse>) ois.readObject();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
+		} catch (ClassCastException e) {
+			return null;
 		}
 		return null;
 	}
@@ -111,8 +119,9 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		case RETURN_RESULT:
 			try {
 				ReturnResultResponse response = new ReturnResultResponse();
+				File folderFromWhichToPickData = new File(System.getProperty("user.dir"));
 				byte[] data = compressor.archiveAndCompressDir(
-						new File("uncompressed"), Pattern.compile("permutation-[0-9+].js"))
+						folderFromWhichToPickData, Pattern.compile("permutation-[0-9+].js"))
 						.toByteArray();
 				response.setResponseValue(data);
 				responseToReturn = (T) response;
@@ -124,8 +133,8 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		return responseToReturn;
 	}
 
-	private boolean isProcessingStateMessage(byte[] receivedData) {
-		ProcessingStateMessage message = getCommMessage(receivedData);
+	private boolean isCommMessage(byte[] receivedData) {
+		CommMessage<?> message = getCommMessage(receivedData);
 		if (message != null) {
 			return true;
 		}

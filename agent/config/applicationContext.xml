@@ -43,6 +43,7 @@
 		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="thread">
 		<constructor-arg ref="dataProcessorMock"/>
 		<property name="communicator" ref="communicator"/>
+		<property name="compressor" ref="zipCompressor" />
 		<property name="decompressor" ref="zipDecompressor" />
 		<aop:scoped-proxy/>
 	</bean>
