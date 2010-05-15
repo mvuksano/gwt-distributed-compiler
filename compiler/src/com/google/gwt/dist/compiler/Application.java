@@ -21,6 +21,7 @@ import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;
 import com.google.gwt.dist.util.ZipCompressor;
+import com.google.gwt.dist.util.ZipDecompressor;
 
 public class Application {
 
@@ -42,17 +43,18 @@ public class Application {
 
 	public Application() {
 
-		
 	}
 
 	public void start() {
-		
+
 		List<Node> nodes = this.settings.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
 		Communicator communicator = new CommunicatorImpl();
 		ZipCompressor compressor = new ZipCompressor();
+		ZipDecompressor decompressor = new ZipDecompressor();
 		for (Node n : nodes) {
-			sessionManagers.add(new SessionManagerImpl(communicator, n, compressor));
+			sessionManagers.add(new SessionManagerImpl(communicator, n,
+					compressor, decompressor));
 		}
 		while (true) {
 			for (SessionManager sm : sessionManagers) {

@@ -1,6 +1,7 @@
 package com.google.gwt.dist.compiler.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import com.google.gwt.dist.Node;
@@ -13,6 +14,7 @@ import com.google.gwt.dist.compiler.SessionManager;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.util.ZipCompressor;
+import com.google.gwt.dist.util.ZipDecompressor;
 
 /**
  * Concrete SessionManager implementation.
@@ -20,12 +22,14 @@ import com.google.gwt.dist.util.ZipCompressor;
 public class SessionManagerImpl implements SessionManager {
 
 	private ZipCompressor compressor;
+	private ZipDecompressor decompressor;
 	private Communicator communicator;
 	private Node node;
 
-	public SessionManagerImpl(Communicator communicator,
-			Node node, ZipCompressor compressor) {
+	public SessionManagerImpl(Communicator communicator, Node node,
+			ZipCompressor compressor, ZipDecompressor decompressor) {
 		this.compressor = compressor;
+		this.decompressor = decompressor;
 		this.communicator = communicator;
 		this.node = node;
 	}
@@ -73,18 +77,28 @@ public class SessionManagerImpl implements SessionManager {
 		if (response != null) {
 			currentState = ((ProcessingStateResponse) response)
 					.getCurrentState();
-			switch (currentState) {
-			case READY:
-				communicator.sendData(generateDataForProcessing(), this.node);
-				break;
-			case INPROGRESS:
-				System.out.println("Agent is in progress.");
-				break;
-			case COMPLETED:
-				System.out.println("Agent has completed compile perms.");
-				break;
-			default:
-				break;
+			if (currentState != null) {
+				switch (currentState) {
+				case READY:
+					communicator.sendData(generateDataForProcessing(),
+							this.node);
+					break;
+				case INPROGRESS:
+					System.out.println("Agent" + this.node.getIpaddress()
+							+ " is in progress.");
+					break;
+				case COMPLETED:
+					try {
+					byte[] retrievedData = communicator.retrieveData(this.node);
+					File temp = new File("uncompressed");
+					decompressor.decompressAndStoreToFile(retrievedData, temp);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}
@@ -95,7 +109,6 @@ public class SessionManagerImpl implements SessionManager {
 	 * @return
 	 */
 	private byte[] generateDataForProcessing() {
-		System.out.println("I should send some data.");
 		File source = new File(System.getProperty("user.dir"));
 
 		compressor.setExcludePattern(Pattern

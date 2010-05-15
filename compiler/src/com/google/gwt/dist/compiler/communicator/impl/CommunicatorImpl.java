@@ -1,5 +1,6 @@
 package com.google.gwt.dist.compiler.communicator.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -15,14 +16,15 @@ import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.communicator.Communicator;
+import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 
 public class CommunicatorImpl implements Communicator {
-	
+
 	private Socket client;
 
 	private static final Logger logger = Logger
 			.getLogger(CommunicatorImpl.class.getName());
-	
+
 	public Socket getClient() {
 		return this.client;
 	}
@@ -34,7 +36,7 @@ public class CommunicatorImpl implements Communicator {
 			server = new Socket(node.getIpaddress(), node.getPort());
 			InputStream is = server.getInputStream();
 			OutputStream os = server.getOutputStream();
-			
+
 			os.write(data);
 			server.shutdownOutput();
 
@@ -48,7 +50,8 @@ public class CommunicatorImpl implements Communicator {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends CommMessageResponse> T sendMessage(CommMessage<T> message, Node node) {
+	public <T extends CommMessageResponse> T sendMessage(
+			CommMessage<T> message, Node node) {
 		try {
 			Socket server = new Socket(node.getIpaddress(), node.getPort());
 			InputStream is = server.getInputStream();
@@ -75,7 +78,37 @@ public class CommunicatorImpl implements Communicator {
 		}
 		return message.getResponse();
 	}
-	
+
+	public byte[] retrieveData(Node node) {
+		byte[] retrievedData = null;
+		
+		try {
+			Socket server = new Socket(node.getIpaddress(), node.getPort());
+			InputStream is = server.getInputStream();
+			OutputStream os = server.getOutputStream();
+			
+			RequestProcessingResultMessage message = new RequestProcessingResultMessage();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			oos.writeObject(message);
+			server.shutdownOutput();
+			
+			ObjectInputStream receivedObject = new ObjectInputStream(is);
+			message = (RequestProcessingResultMessage)receivedObject.readObject();
+			retrievedData = message.getResponse().getResponseValue();
+
+			os.close();
+			is.close();
+			server.close();
+		} catch (UnknownHostException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, e.getMessage());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return retrievedData;
+	}
+
 	public void setClient(Socket client) {
 		this.client = client;
 	}

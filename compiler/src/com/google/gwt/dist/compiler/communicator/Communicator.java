@@ -10,7 +10,7 @@ import com.google.gwt.dist.comm.CommMessageResponse;
  * Provides abstraction layer for transport used by SessionManager.
  */
 public interface Communicator {
-	
+
 	Socket getClient();
 
 	/**
@@ -22,7 +22,17 @@ public interface Communicator {
 	 *            CommMessage which contains the query.
 	 * @return CommMessageResponse that is wrapped in the message.
 	 */
-	<T extends CommMessageResponse> T sendMessage(CommMessage<T> message, Node node);
+	<T extends CommMessageResponse> T sendMessage(CommMessage<T> message,
+			Node node);
+
+	/**
+	 * Retrieves data from the specified node.
+	 * 
+	 * @param n
+	 *            Node from which to retrieve the data.
+	 * @return Retrieved data as byte array.
+	 */
+	byte[] retrieveData(Node n);
 
 	/**
 	 * Send data to specified node.
@@ -33,7 +43,7 @@ public interface Communicator {
 	 *            Node to which to send data.
 	 */
 	void sendData(byte[] data, Node node);
-	
+
 	void setClient(Socket client);
 
 }

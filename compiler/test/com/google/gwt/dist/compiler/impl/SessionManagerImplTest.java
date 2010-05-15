@@ -8,19 +8,22 @@ import com.google.gwt.dist.Node;
 import com.google.gwt.dist.compiler.SessionManager;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.util.ZipCompressor;
+import com.google.gwt.dist.util.ZipDecompressor;
 
 public class SessionManagerImplTest {
 
-	ZipCompressor compressor;
 	Communicator communicator;
+	ZipCompressor compressor;
+	ZipDecompressor decompressor;
 	SessionManager sessionManager;
 	Node node;
 
 	@BeforeClass
 	public void init() {
-		compressor = mock(ZipCompressor.class);
 		communicator = mock(Communicator.class);
+		compressor = mock(ZipCompressor.class);
+		decompressor = mock (ZipDecompressor.class);
 		node = mock(Node.class);
-		sessionManager = new SessionManagerImpl(communicator, node, compressor);
+		sessionManager = new SessionManagerImpl(communicator, node, compressor, decompressor);
 	}
 }
