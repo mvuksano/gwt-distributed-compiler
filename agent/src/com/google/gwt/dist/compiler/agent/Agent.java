@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.google.gwt.dist.compiler.agent.impl.DataProcessorImpl;
-
 public class Agent extends Thread {
 
 	private ServerSocket server;
@@ -30,13 +28,15 @@ public class Agent extends Thread {
 				new File("config/applicationContext.xml").toString());
 		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		//DataProcessor dp = new DataProcessorMock(15000);
-		DataProcessor dp = (DataProcessorImpl) appContext.getBean("dataprocessor");
+		DataProcessor dp = (DataProcessor) appContext.getBean("dataProcessorMock");
 		executorService.execute(dp);
 		executorService.shutdown();		
 		while (true) {
-			ClientWorker worker = new ClientWorker(server.accept(), appContext);
-			
+			ClientWorker worker = (ClientWorker) appContext.getBean("clientWorker");
 			Thread t = new Thread(worker);
+			
+			worker.setClient(server.accept());
+			
 			t.start();
 		}
 	}

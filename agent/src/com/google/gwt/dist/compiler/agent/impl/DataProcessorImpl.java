@@ -17,6 +17,7 @@ import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dev.CompilePerms;
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
+import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
@@ -67,7 +68,7 @@ public class DataProcessorImpl implements DataProcessor, DataReceivedListener,
 	 */
 	public void compilePermsFinished() {
 		for (CompilePermsListener l : compilePermsListeners) {
-			l.onCompilePermsFinished();
+			l.onDataProcessorStateChanged(ProcessingState.TERMINATED);
 		}
 	}
 
@@ -147,5 +148,11 @@ public class DataProcessorImpl implements DataProcessor, DataReceivedListener,
 	public void run() {
 		while (true) {
 		}
+	}
+
+	@Override
+	public ProcessingState getCurrentState() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

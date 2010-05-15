@@ -4,13 +4,12 @@ import java.net.Socket;
 
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
-import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 
 
 /**
  * Interface that describes SessionManager which will perform within an agent.
  */
-public interface SessionManager extends CompilePermsListener {
+public interface SessionManager {
 	
 	/**
 	 * Gets communicator associated with session manager.

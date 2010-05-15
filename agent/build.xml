@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="gwt-distributed-compiler-agent" default="build" basedir=".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="gwt-distributed-compiler-agent" default="build" basedir=".">
   <property name="gwt.sdk" location="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
   <property name="core"     	location="../core"/>
+  <property name="dist"     	location="dist"/>
   <property name="jarfile.name" value="${module.name}.jar"/>
+  <property name="lib"     	    location="lib"/>
   <property name="module.name"  value="${ant.project.name}"/>
   <property name="src"          location="src"/>
   <property name="uncompressed.src"          location="build/uncompressed/src"/>
+	
+  <ivy:settings file="ivysettings.xml" />
 
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
@@ -19,9 +23,20 @@
 	<fileset dir="${build}"/>
   </path>
 	
+  <target name="clean" description="Cleans this project.">
+	<delete dir="${build}"/>
+	<delete dir="${classes}"/>
+	<delete dir="${dist}"/>
+  </target>
+	
+	<target name="resolve">
+	  <ivy:resolve/>
+	</target>
+	
   <target name="init" description="Create directories.">
   	<mkdir dir="${build}"/>
   	<mkdir dir="${classes}"/>
+  	<mkdir dir="${dist}"/>
   </target>
 
   <target name="javac" depends="init" description="Compile java source.">
@@ -40,10 +55,11 @@
       </manifest>
   	</jar>
   </target>
-
-  <target name="clean" description="Cleans this project.">
-  	<delete dir="${build}"/>
-  	<delete dir="${classes}"/>
+	
+  <target name="dist" depends="build" description="Deploy the project.">
+  	<copy todir="${dist}">
+  	  <fileset dir="${build}" />
+  	</copy>
   </target>
 
 </project>

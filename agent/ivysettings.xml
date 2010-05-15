@@ -1,0 +1,5 @@
+<ivysettings>
+  <settings defaultResolver="default"/>
+  <include url="${ivy.default.ivy.user.dir}/ivysettings-local.xml"/>
+  <include url="${ivy.default.ivy.user.dir}/ivysettings-default-chain.xml"/>
+</ivysettings>

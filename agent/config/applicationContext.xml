@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
 	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	http://www.springframework.org/schema/oxm
 	http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd
 	http://www.springframework.org/schema/task
@@ -17,6 +21,10 @@
           </entry>
         </map>
       </property>
+    </bean>
+    
+    <bean id="clientWorker" class="com.google.gwt.dist.compiler.agent.ClientWorker">
+    	<property name="sessionManager" ref="sessionManager"></property>
     </bean>
 
 	<bean id="dataprocessor"
@@ -33,11 +41,15 @@
 
 	<bean id="sessionManager"
 		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="thread">
+		<constructor-arg ref="dataProcessorMock"/>
 		<property name="communicator" ref="communicator"/>
+		<property name="decompressor" ref="zipDecompressor" />
+		<aop:scoped-proxy/>
 	</bean>
 
 	<bean id="communicator"
 		class="com.google.gwt.dist.compiler.agent.communicator.impl.CommunicatorImpl" scope="thread">
+		<aop:scoped-proxy/>
 	</bean>
 
 	<bean id="temporarystoragelocation" class="java.io.File">
@@ -47,21 +59,6 @@
 	<bean id="zipCompressor" class="com.google.gwt.dist.util.ZipCompressor" />
 
 	<bean id="zipDecompressor" class="com.google.gwt.dist.util.ZipDecompressor" />
-	
-	<bean id="registerSessionManagerWithDataProcessor"
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject">
-			<ref local="dataProcessorMock" />
-		</property>
-		<property name="targetMethod">
-			<value>addListener</value>
-		</property>
-		<property name="arguments">
-			<list>
-				<ref bean="sessionManager" />
-			</list>
-		</property>
-	</bean>
 	
 	<bean id="serverSocket" class="java.net.ServerSocket" scope="thread">
 	</bean>

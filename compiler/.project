@@ -18,12 +18,12 @@
 		<link>
 			<name>common</name>
 			<type>2</type>
-			<locationURI>GWT_DISTRIBUTED_COMPILER_CORE</locationURI>
+			<locationURI>GWT_DISTRIBUTED_COMPILER_CORE/src</locationURI>
 		</link>
 		<link>
 			<name>common-test</name>
 			<type>2</type>
-			<locationURI>GWT_DISTRIBUTED_COMPILER_CORE_TEST</locationURI>
+			<locationURI>GWT_DISTRIBUTED_COMPILER_CORE/test</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

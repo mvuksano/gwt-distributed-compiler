@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.google.gwt.core.ext.UnableToCompleteException;
-import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
+import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
 /**
@@ -14,27 +14,15 @@ import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 public interface DataProcessor extends Runnable, DataReceivedListener {
 
 	/**
-	 * Attach a CompilePermsListener.
-	 * 
-	 * @param listener
-	 *            Listener that will be notified of CompilePerms operation
-	 *            finished.
-	 */
-	void addListener(CompilePermsListener listener);
-
-	/**
 	 * This method is fired whenever CompilePerms operation is finished.
 	 */
 	void compilePermsFinished();
-
+	
 	/**
-	 * Detach a CompilePermsListener.
 	 * 
-	 * @param listener
-	 *            Listener that will be detached and will no longer be notified
-	 *            of CompilePerms operations finishing.
+	 * @return
 	 */
-	void removeListener(CompilePermsListener listener);
+	ProcessingState getCurrentState();
 
 	/**
 	 * Method should store input stream on disk so that it can be processed by

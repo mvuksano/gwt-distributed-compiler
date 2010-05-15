@@ -33,15 +33,10 @@
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/javassist-3.9.0.GA.jar"/>
 	<classpathentry kind="lib" path="lib/jta-1.1.jar"/>
-	<classpathentry kind="lib" path="D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-dev.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-user.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/doc/javadoc/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-dev.jar"/>
+	<classpathentry kind="lib" path="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-user.jar"/>
+	<classpathentry kind="lib" path="lib/cglib-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/com.springsource.org.aopalliance-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/com.springsource.org.objectweb.asm-3.2.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
