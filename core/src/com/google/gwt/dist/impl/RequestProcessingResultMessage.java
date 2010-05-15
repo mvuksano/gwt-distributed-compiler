@@ -11,6 +11,8 @@ import com.google.gwt.dist.comm.ReturnResultResponse;
 public class RequestProcessingResultMessage implements
 		CommMessage<ReturnResultResponse> {
 
+	ReturnResultResponse response;
+	
 	/**
 	 * Generated serial version UID.
 	 */
@@ -28,11 +30,12 @@ public class RequestProcessingResultMessage implements
 
 	@Override
 	public ReturnResultResponse getResponse() {
-		return null;
+		return this.response;
 	}
 
 	@Override
 	public void setResponse(ReturnResultResponse response) {
+		this.response = response;
 	}
 
 }
