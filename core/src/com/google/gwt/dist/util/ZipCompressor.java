@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -80,7 +81,7 @@ public class ZipCompressor {
 	 *            Directory to add to output stream.
 	 * @param pathPrefix
 	 *            Prefix to use for path (preserves folder structure).
-	 * @param regexpPattern
+	 * @param includeFilePattern
 	 *            Regular expression which acts as a filter. All the files that
 	 *            do not match that regular expression are not added to the
 	 *            stream.
@@ -89,7 +90,8 @@ public class ZipCompressor {
 	 * @throws IOException
 	 */
 	private void addFilesToPackage(File dir, String pathPrefix,
-			ZipOutputStream out, Pattern regexpPattern) throws IOException {
+			ZipOutputStream out, Pattern includeFilePattern)
+			throws IOException {
 		File[] list = dir.listFiles();
 		List<File> filteredList = new ArrayList<File>();
 
@@ -113,10 +115,10 @@ public class ZipCompressor {
 			if (f.isDirectory()) {
 				addFilesToPackage(f, pathPrefix + f.getName()
 						+ Util.getFolderSeparatorInZipArchive(), out,
-						regexpPattern);
+						includeFilePattern);
 			} else {
-				if (regexpPattern != null
-						&& !regexpPattern.matcher(f.getName()).matches()) {
+				if (includeFilePattern != null
+						&& !includeFilePattern.matcher(f.getName()).matches()) {
 					continue;
 				}
 				ZipEntry ze = new ZipEntry(pathPrefix + f.getName());
@@ -135,6 +137,10 @@ public class ZipCompressor {
 
 	public Pattern getExcludePattern() {
 		return this.excludeDirPattern;
+	}
+	
+	public ZipInputStream mergeOutputStreams(ZipOutputStream... z) {
+		return null;
 	}
 
 	public void setExcludePattern(Pattern excludePattern) {
