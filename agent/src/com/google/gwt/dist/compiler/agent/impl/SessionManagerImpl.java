@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.regex.Pattern;
 
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.comm.CommMessage;
@@ -17,6 +18,7 @@ import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.util.Util;
+import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
 /**
@@ -25,8 +27,9 @@ import com.google.gwt.dist.util.ZipDecompressor;
 public class SessionManagerImpl implements SessionManager, Runnable {
 
 	private Communicator communicator;
-	private DataProcessor dataProcessor;
+	private ZipCompressor compressor;
 	private ZipDecompressor decompressor;
+	private DataProcessor dataProcessor;
 
 	public SessionManagerImpl() {
 	}
@@ -38,7 +41,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	public Communicator getCommunicator() {
 		return this.communicator;
 	}
-	
+
 	public ZipDecompressor getDecompressor() {
 		return this.decompressor;
 	}
@@ -56,11 +59,11 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			if (isProcessingStateMessage(receivedData)) {
 				ProcessingStateMessage message = getCommMessage(receivedData);
 				message.setResponse(decideResponse(message));
-				System.out.println(message.getCommMessageType() + ", " + message.getResponse().getCurrentState());
+				System.out.println(message.getCommMessageType() + ", "
+						+ message.getResponse().getCurrentState());
 				communicator.sendData(Util.objectToByteArray(message), client);
 			} else {
 				File dirToStoreDataInto = new File("uncompressed");
-				// Store data on disk.
 				decompressor.decompressAndStoreToFile(receivedData,
 						dirToStoreDataInto);
 			}
@@ -73,8 +76,8 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		System.out.println("Finished Thread "
 				+ Thread.currentThread().getName());
 	}
-	
-	public void setDecompressor (ZipDecompressor decompressor) {
+
+	public void setDecompressor(ZipDecompressor decompressor) {
 		this.decompressor = decompressor;
 	}
 
@@ -102,10 +105,20 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			responseToReturn = message.getResponse();
 			break;
 		case QUERY:
-			responseToReturn = (T) new ProcessingStateResponse(getProcessingState());
+			responseToReturn = (T) new ProcessingStateResponse(
+					getProcessingState());
 			break;
 		case RETURN_RESULT:
-			responseToReturn = (T) new ReturnResultResponse();
+			try {
+				ReturnResultResponse response = new ReturnResultResponse();
+				byte[] data = compressor.archiveAndCompressDir(
+						new File("uncompressed"), Pattern.compile("permutation-[0-9+].js"))
+						.toByteArray();
+				response.setResponseValue(data);
+				responseToReturn = (T) response;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			break;
 		}
 		return responseToReturn;
