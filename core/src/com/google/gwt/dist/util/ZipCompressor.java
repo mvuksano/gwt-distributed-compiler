@@ -1,6 +1,7 @@
 package com.google.gwt.dist.util;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +31,21 @@ public class ZipCompressor {
 			.getLogger(ZipCompressor.class.getName());
 
 	public ByteArrayOutputStream archiveAndCompressDir(File directory) {
+		return archiveAndCompressDir(directory, false);
+	}
+
+	/**
+	 * Method compresses files in the directory.
+	 * 
+	 * @param directory
+	 *            Directory to compress.
+	 * @param preserveParentFolderName
+	 *            true if folder which is being compressed should be parent in
+	 *            the archive also.
+	 * @return Compressed output stream as byte array.
+	 */
+	public ByteArrayOutputStream archiveAndCompressDir(File directory,
+			boolean preserveParentFolderName) {
 		ByteArrayOutputStream destination = new ByteArrayOutputStream();
 		CheckedOutputStream checksum = new CheckedOutputStream(destination,
 				new Adler32());
@@ -38,7 +54,12 @@ public class ZipCompressor {
 		out.setMethod(ZipOutputStream.DEFLATED);
 
 		try {
-			addFilesToPackage(directory, "", out, null);
+			if (preserveParentFolderName) {
+				addFilesToPackage(directory, directory.getName()
+						+ Util.getFolderSeparatorInZipArchive(), out, null);
+			} else {
+				addFilesToPackage(directory, "", out, null);
+			}
 			out.close();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
@@ -90,8 +111,7 @@ public class ZipCompressor {
 	 * @throws IOException
 	 */
 	private void addFilesToPackage(File dir, String pathPrefix,
-			ZipOutputStream out, Pattern includeFilePattern)
-			throws IOException {
+			ZipOutputStream out, Pattern includeFilePattern) throws IOException {
 		File[] list = dir.listFiles();
 		List<File> filteredList = new ArrayList<File>();
 
@@ -124,7 +144,7 @@ public class ZipCompressor {
 				ZipEntry ze = new ZipEntry(pathPrefix + f.getName());
 				out.putNextEntry(ze);
 				InputStream in = new FileInputStream(f);
-				byte[] buff = new byte[2056];
+				byte[] buff = new byte[2048];
 				int bytesRead = 0;
 				while ((bytesRead = in.read(buff)) > -1) {
 					out.write(buff, 0, bytesRead);
@@ -138,9 +158,37 @@ public class ZipCompressor {
 	public Pattern getExcludePattern() {
 		return this.excludeDirPattern;
 	}
-	
-	public ZipInputStream mergeOutputStreams(ZipOutputStream... z) {
-		return null;
+
+	public ZipInputStream mergeZippedStreams(ZipInputStream... z) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CheckedOutputStream checksum = new CheckedOutputStream(baos,
+				new Adler32());
+		ZipOutputStream mergedStream = new ZipOutputStream(checksum);
+		mergedStream.setMethod(ZipOutputStream.DEFLATED);
+		try {
+			for (ZipInputStream zis : z) {
+				ZipEntry zipEntry = null;
+				while ((zipEntry = zis.getNextEntry()) != null) {
+					System.out.println(zipEntry.getName());
+					mergedStream.putNextEntry(zipEntry);
+					byte[] buff = new byte[2048];
+					int bytesRead = 0;
+					while ((bytesRead = zis.read(buff)) > -1) {
+						mergedStream.write(buff, 0, bytesRead);
+					}
+					mergedStream.flush();
+					mergedStream.closeEntry();
+					zis.closeEntry();
+				}
+			}
+			mergedStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		ZipInputStream zisNew = new ZipInputStream(bais);
+
+		return zisNew;
 	}
 
 	public void setExcludePattern(Pattern excludePattern) {

@@ -1,8 +1,14 @@
 package com.google.gwt.dist.compiler.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Pattern;
+import java.util.zip.Adler32;
+import java.util.zip.CheckedInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
@@ -88,13 +94,15 @@ public class SessionManagerImpl implements SessionManager {
 							+ " is in progress.");
 					break;
 				case COMPLETED:
-					try {
-					byte[] retrievedData = communicator.retrieveData(this.node);
-					File temp = new File("uncompressed");
-					decompressor.decompressAndStoreToFile(retrievedData, temp);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+//					try {
+//						byte[] retrievedData = communicator
+//								.retrieveData(this.node);
+//						File temp = new File("uncompressed");
+//						decompressor.decompressAndStoreToFile(retrievedData,
+//								temp);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
 					break;
 				default:
 					break;
@@ -111,9 +119,57 @@ public class SessionManagerImpl implements SessionManager {
 	private byte[] generateDataForProcessing() {
 		File source = new File(System.getProperty("user.dir"));
 
-		compressor.setExcludePattern(Pattern
-				.compile("bin|\\.settings\\.classpath\\.project"));
+		ByteArrayOutputStream srcFolder = compressor.archiveAndCompressDir(
+				new File(source + "\\src"), true);
 
-		return compressor.archiveAndCompressDir(source).toByteArray();
+		ByteArrayOutputStream workFolder = compressor.archiveAndCompressDir(
+				new File(source + "\\work"), true);
+
+		ByteArrayInputStream bais1 = new ByteArrayInputStream(srcFolder
+				.toByteArray());
+		CheckedInputStream checksum1 = new CheckedInputStream(bais1, new Adler32());
+		ZipInputStream zis1 = new ZipInputStream(checksum1);
+
+		ByteArrayInputStream bais2 = new ByteArrayInputStream(workFolder
+				.toByteArray());
+		CheckedInputStream checksum2 = new CheckedInputStream(bais2, new Adler32());
+		ZipInputStream zis2 = new ZipInputStream(checksum2);
+
+		ZipInputStream mergedStream = compressor.mergeZippedStreams(zis1, zis2);
+		
+		ByteArrayOutputStream dataAsByteArrayOutputStream = new ByteArrayOutputStream();
+		ZipOutputStream compressedResultStream = new ZipOutputStream(dataAsByteArrayOutputStream);
+
+		try {
+			ZipEntry ze = null;
+			while ((ze = mergedStream.getNextEntry()) != null) {
+				System.out.println(ze.getName());
+				compressedResultStream.putNextEntry(ze);
+				byte[] buff = new byte[2048];
+				int bytesRead = 0;
+				while ((bytesRead = mergedStream.read(buff)) > -1) {
+					compressedResultStream.write(buff, 0, bytesRead);
+				}
+				compressedResultStream.flush();
+				compressedResultStream.closeEntry();
+				mergedStream.closeEntry();
+			}
+			compressedResultStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			zis1.close();
+			zis2.close();
+			bais1.close();
+			bais2.close();
+			workFolder.close();
+			srcFolder.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return dataAsByteArrayOutputStream.toByteArray();
 	}
 }
