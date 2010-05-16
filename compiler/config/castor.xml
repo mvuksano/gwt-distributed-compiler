@@ -5,7 +5,7 @@
 <mapping>
 	<description>Description of the mapping</description>
 	<!-- mapping for class 'AgentSettings' -->
-	<class name="com.google.gwt.dist.compiler.AgentsSettings">
+	<class name="com.google.gwt.dist.AgentsSettings">
 		<map-to xml="nodes"/>
 		<field name="nodes" type="com.google.gwt.dist.impl.NodeImpl" collection="arraylist">
 			<bind-xml name="node" node="element"/>

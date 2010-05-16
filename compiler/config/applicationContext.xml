@@ -6,7 +6,7 @@
 	http://www.springframework.org/schema/oxm
 	http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd">
 
-	<bean id="application" class="com.google.gwt.dist.compiler.Application">
+	<bean id="application" class="com.google.gwt.dist.Application">
 		<property name="marshaller" ref="castorMarshaller" />
 		<property name="unmarshaller" ref="castorMarshaller" />
 	</bean>

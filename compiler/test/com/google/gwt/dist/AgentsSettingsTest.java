@@ -1,4 +1,4 @@
-package com.google.gwt.dist.compiler;
+package com.google.gwt.dist;
 
 import java.io.File;
 
@@ -8,6 +8,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.google.gwt.dist.AgentsSettings;
+import com.google.gwt.dist.Application;
 import com.google.gwt.dist.Node;
 
 /**

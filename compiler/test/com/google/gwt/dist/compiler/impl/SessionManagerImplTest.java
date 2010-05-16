@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import org.testng.annotations.BeforeClass;
 
 import com.google.gwt.dist.Node;
-import com.google.gwt.dist.compiler.SessionManager;
+import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;

@@ -12,11 +12,11 @@ import java.util.zip.ZipOutputStream;
 
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.comm.CommMessage.CommMessageType;
-import com.google.gwt.dist.compiler.SessionManager;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.util.ZipCompressor;
@@ -76,7 +76,7 @@ public class SessionManagerImpl implements SessionManager {
 		this.communicator = communicator;
 	}
 
-	public void start() {
+	public boolean start() {
 		ProcessingStateResponse response = sendMessageToAgent(new ProcessingStateMessage(
 				CommMessageType.QUERY));
 		ProcessingState currentState = null;
@@ -88,11 +88,11 @@ public class SessionManagerImpl implements SessionManager {
 				case READY:
 					communicator.sendData(generateDataForProcessing(),
 							this.node);
-					break;
+					return false;
 				case INPROGRESS:
 					System.out.println("Agent" + this.node.getIpaddress()
 							+ " is in progress.");
-					break;
+					return false;
 				case COMPLETED:
 					try {
 						byte[] retrievedData = communicator
@@ -103,12 +103,13 @@ public class SessionManagerImpl implements SessionManager {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					break;
+					return true;
 				default:
-					break;
+					return false;
 				}
 			}
 		}
+		return false;
 	}
 
 	/**

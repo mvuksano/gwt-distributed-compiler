@@ -1,4 +1,4 @@
-package com.google.gwt.dist.compiler;
+package com.google.gwt.dist;
 
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.comm.CommMessage;
@@ -61,6 +61,11 @@ public interface SessionManager extends Runnable {
 	 *            Communicator to be used.
 	 */
 	void setCommunicator(Communicator communicator);
-	
-	void start();
+
+	/**
+	 * Initiates message exchange with agent.
+	 * 
+	 * @return true if it is OK to start linking, else false;
+	 */
+	boolean start();
 }

@@ -4,14 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.dev.Link.LinkOptions;
-import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 
 /**
  * Linker implementation. Uses default gwt Linker which uses data which was
@@ -23,14 +19,6 @@ public class Link {
 
 	public Link(LinkOptions options) {
 		this.options = options;
-	}
-
-	public static void main(String[] args) {
-		TreeLogger logger = new PrintWriterTreeLogger();
-		ApplicationContext appContext = new FileSystemXmlApplicationContext(
-				new File("config/applicationContext.xml").toString());
-		Link linker = (Link) appContext.getBean("link");
-		linker.run(logger);
 	}
 
 	public void run(TreeLogger logger) {

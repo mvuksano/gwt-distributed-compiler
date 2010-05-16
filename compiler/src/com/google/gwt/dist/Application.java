@@ -1,4 +1,4 @@
-package com.google.gwt.dist.compiler;
+package com.google.gwt.dist;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,10 +16,14 @@ import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.XmlMappingException;
 
-import com.google.gwt.dist.Node;
+import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
+import com.google.gwt.dist.compiler.Precompile;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;
+import com.google.gwt.dist.linker.Link;
+import com.google.gwt.dist.linker.LinkOptionsImpl;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -49,6 +53,7 @@ public class Application {
 
 		List<Node> nodes = this.settings.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
+		// TODO: use springframework for this.
 		Communicator communicator = new CommunicatorImpl();
 		ZipCompressor compressor = new ZipCompressor();
 		ZipDecompressor decompressor = new ZipDecompressor();
@@ -56,15 +61,25 @@ public class Application {
 			sessionManagers.add(new SessionManagerImpl(communicator, n,
 					compressor, decompressor));
 		}
-		while (true) {
+
+		TreeLogger logger = new PrintWriterTreeLogger();
+		Precompile precompile = new Precompile();
+		precompile.run(logger);
+
+		boolean precompileFinished = false;
+		while (!precompileFinished) {
 			for (SessionManager sm : sessionManagers) {
-				sm.start();
+				precompileFinished = sm.start();
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 				}
 			}
 		}
+
+		LinkOptionsImpl linkOptions = new LinkOptionsImpl();
+		Link link = new Link(linkOptions);
+		link.run(logger);
 	}
 
 	public Marshaller getMarshaller() {

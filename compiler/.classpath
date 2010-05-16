@@ -23,7 +23,15 @@
 	<classpathentry kind="lib" path="lib/org.springframework.test-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.transaction-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-1.8.4.jar"/>
-	<classpathentry kind="lib" path="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-dev.jar"/>
-	<classpathentry kind="lib" path="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-user.jar"/>
+	<classpathentry kind="lib" path="D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-dev.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/gwt-user.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/D:/Devel/gwt/trunk/build/staging/gwt-0.0.0/doc/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
