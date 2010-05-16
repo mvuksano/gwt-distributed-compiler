@@ -1,17 +1,10 @@
 package com.google.gwt.dist.compiler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.Socket;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.ext.TreeLogger;
@@ -21,11 +14,7 @@ import com.google.gwt.dev.Precompile.PrecompileOptions;
 import com.google.gwt.dev.jjs.JJSOptionsImpl;
 import com.google.gwt.dev.jjs.JsOutputOption;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
-import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
-import com.google.gwt.dist.impl.ProcessingStateMessage;
-import com.google.gwt.dist.util.Util;
 
 /**
  * Compiler that will initiate GWT Java to JavaScript compilation process.
@@ -203,7 +192,6 @@ public class Compiler {
 	 * @throws URISyntaxException
 	 */
 	public static void main(String[] args) throws URISyntaxException {
-		// First step in GWT Java to Javascript is precompile
 		PrecompileOptions precompileOptions = new PrecompileOptionsImpl();
 		TreeLogger logger = new PrintWriterTreeLogger();
 
@@ -225,59 +213,5 @@ public class Compiler {
 		} catch (UnableToCompleteException e) {
 			logger.log(TreeLogger.ERROR, e.getMessage());
 		}
-
-		// Get compressed stream and send it to compiler agent.
-//		File source = new File(System.getProperty("user.dir"));
-//
-//		ZipCompressor compressor = new ZipCompressor();
-//		// TODO: this should be defined in a config file.
-//		compressor.setExcludePattern(Pattern
-//				.compile("bin|\\.settings\\.classpath\\.project"));
-//		Dispatcher dispatcher = new DispatcherZipImpl();
-//		try {
-//			dispatcher.dispatchData(compressor.archiveAndCompressDir(source),
-//					new NodeImpl("localhost", 3000));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-
-		while (true) {
-			try {
-				Socket server = new Socket("localhost", 3000);
-				InputStream is = server.getInputStream();
-				OutputStream os = server.getOutputStream();
-
-				CommMessage<ProcessingStateResponse> commMessage = new ProcessingStateMessage();
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(commMessage);
-				os.write(bos.toByteArray());
-				server.shutdownOutput();
-
-				byte[] buff = new byte[512];
-				int bytesRead = 0;
-				ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
-				while ((bytesRead = is.read(buff)) > -1) {
-					receivedObject.write(buff, 0, bytesRead);
-				}
-
-				System.out.println(((ProcessingStateMessage) Util
-						.byteArrayToObject(receivedObject.toByteArray()))
-						.getResponse());
-
-				os.close();
-				Thread.sleep(1000);
-			} catch (IOException e) {
-				PrecompileOptionsImpl.logger.log(Level.SEVERE, e.getMessage());
-			} catch (InterruptedException e) {
-				PrecompileOptionsImpl.logger.log(Level.SEVERE, e.getMessage());
-			}
-
-		}
-
-		// TODO:
-		// After perms have been compiled on remote machines transfer them to
-		// this one for linking.
-
 	}
 }

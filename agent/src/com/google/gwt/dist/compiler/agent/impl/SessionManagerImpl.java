@@ -2,7 +2,6 @@ package com.google.gwt.dist.compiler.agent.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -13,9 +12,9 @@ import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.comm.ReturnResultResponse;
-import com.google.gwt.dist.compiler.agent.DataProcessor;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
+import com.google.gwt.dist.compiler.agent.processor.DataProcessor;
 import com.google.gwt.dist.util.Util;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -40,7 +39,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	public Communicator getCommunicator() {
 		return this.communicator;
 	}
-	
+
 	public ZipCompressor getCompressor() {
 		return this.compressor;
 	}
@@ -57,27 +56,19 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		System.out
 				.println("Started Thread " + Thread.currentThread().getName());
 		System.out.println("Processing connection");
-		try {
-			byte[] receivedData = communicator.getData(client);
-			if (isCommMessage(receivedData)) {
-				CommMessage<CommMessageResponse> message = getCommMessage(receivedData);
-				message.setResponse(decideResponse(message));
-				communicator.sendData(Util.objectToByteArray(message), client);
-			} else {
-				File dirToStoreDataInto = new File("uncompressed");
-				decompressor.decompressAndStoreToFile(receivedData,
-						dirToStoreDataInto);
-			}
-			communicator.closeConnection(client);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		byte[] receivedData = communicator.getData(client);
+		if (isCommMessage(receivedData)) {
+			CommMessage<CommMessageResponse> message = getCommMessage(receivedData);
+			message.setResponse(decideResponse(message));
+			communicator.sendData(Util.objectToByteArray(message), client);
+		} else {
+			dataProcessor.onDataReceived(receivedData);
 		}
+		communicator.closeConnection(client);
 		System.out.println("Finished Thread "
 				+ Thread.currentThread().getName());
 	}
-	
+
 	public void setCompressor(ZipCompressor compressor) {
 		this.compressor = compressor;
 	}
@@ -119,10 +110,15 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		case RETURN_RESULT:
 			try {
 				ReturnResultResponse response = new ReturnResultResponse();
-				File folderFromWhichToPickData = new File(System.getProperty("user.dir"));
+				File folderFromWhichToPickData = new File(System
+						.getProperty("user.dir")
+						+ File.separator
+						+ "uncompressed"
+						+ File.separator
+						+ "work");
 				byte[] data = compressor.archiveAndCompressDir(
-						folderFromWhichToPickData, Pattern.compile("permutation-[0-9+].js"))
-						.toByteArray();
+						folderFromWhichToPickData,
+						Pattern.compile("permutation-[0-9+].js")).toByteArray();
 				response.setResponseValue(data);
 				responseToReturn = (T) response;
 			} catch (IOException e) {

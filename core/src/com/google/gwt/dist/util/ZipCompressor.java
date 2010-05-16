@@ -169,7 +169,6 @@ public class ZipCompressor {
 			for (ZipInputStream zis : z) {
 				ZipEntry zipEntry = null;
 				while ((zipEntry = zis.getNextEntry()) != null) {
-					System.out.println(zipEntry.getName());
 					mergedStream.putNextEntry(zipEntry);
 					byte[] buff = new byte[2048];
 					int bytesRead = 0;

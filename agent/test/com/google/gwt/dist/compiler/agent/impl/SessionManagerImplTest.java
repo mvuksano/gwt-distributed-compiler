@@ -28,7 +28,6 @@ public class SessionManagerImplTest {
 	@Test
 	public void compilePermsFinished() {
 		Assert.assertNotNull(((SessionManagerImpl)sessionManager).getCommunicator());
-		Assert.fail();
 	}
 	
 	@Test

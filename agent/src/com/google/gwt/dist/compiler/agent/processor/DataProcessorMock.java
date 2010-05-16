@@ -1,12 +1,9 @@
-package com.google.gwt.dist.compiler.agent.impl;
+package com.google.gwt.dist.compiler.agent.processor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
-import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dist.ProcessingState;
-import com.google.gwt.dist.compiler.agent.DataProcessor;
 
 /**
  * 
@@ -62,19 +59,11 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 	}
 
 	@Override
-	public void startCompilePerms() throws UnableToCompleteException,
-			MalformedURLException {
-
-	}
-
-	@Override
 	public void storeInputStreamOnDisk(byte[] receivedData)
 			throws FileNotFoundException, IOException {
 	}
 
 	@Override
 	public void onDataReceived(byte[] receivedData) {
-		mockProcessingState = ProcessingState.INPROGRESS;
-
 	}
 }

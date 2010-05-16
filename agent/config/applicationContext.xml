@@ -27,21 +27,20 @@
     	<property name="sessionManager" ref="sessionManager"></property>
     </bean>
 
-	<bean id="dataprocessor"
-		class="com.google.gwt.dist.compiler.agent.impl.DataProcessorImpl">
-		<constructor-arg ref="zipCompressor" />
+	<bean id="dataProcessor"
+		class="com.google.gwt.dist.compiler.agent.processor.DataProcessorImpl">
 		<constructor-arg ref="zipDecompressor" />
 		<constructor-arg ref="temporarystoragelocation" />
 	</bean>
 
 	<bean id="dataProcessorMock"
-		class="com.google.gwt.dist.compiler.agent.impl.DataProcessorMock">
+		class="com.google.gwt.dist.compiler.agent.processor.DataProcessorMock">
 		<constructor-arg value="15000" />
 	</bean>
 
 	<bean id="sessionManager"
 		class="com.google.gwt.dist.compiler.agent.impl.SessionManagerImpl" scope="thread">
-		<constructor-arg ref="dataProcessorMock"/>
+		<constructor-arg ref="dataProcessor"/>
 		<property name="communicator" ref="communicator"/>
 		<property name="compressor" ref="zipCompressor" />
 		<property name="decompressor" ref="zipDecompressor" />
@@ -62,6 +61,12 @@
 	<bean id="zipDecompressor" class="com.google.gwt.dist.util.ZipDecompressor" />
 	
 	<bean id="serverSocket" class="java.net.ServerSocket" scope="thread">
+	</bean>
+	
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="5" />
+		<property name="maxPoolSize" value="10" />
+		<property name="queueCapacity" value="25" />
 	</bean>
 
 </beans>

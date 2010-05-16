@@ -1,6 +1,5 @@
 package com.google.gwt.dist.compiler.communicator.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;

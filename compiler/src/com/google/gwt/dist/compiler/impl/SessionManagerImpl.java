@@ -94,15 +94,15 @@ public class SessionManagerImpl implements SessionManager {
 							+ " is in progress.");
 					break;
 				case COMPLETED:
-//					try {
-//						byte[] retrievedData = communicator
-//								.retrieveData(this.node);
-//						File temp = new File("uncompressed");
-//						decompressor.decompressAndStoreToFile(retrievedData,
-//								temp);
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
+					try {
+						byte[] retrievedData = communicator
+								.retrieveData(this.node);
+						File temp = new File("work");
+						decompressor.decompressAndStoreToFile(retrievedData,
+								temp);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					break;
 				default:
 					break;
@@ -143,7 +143,6 @@ public class SessionManagerImpl implements SessionManager {
 		try {
 			ZipEntry ze = null;
 			while ((ze = mergedStream.getNextEntry()) != null) {
-				System.out.println(ze.getName());
 				compressedResultStream.putNextEntry(ze);
 				byte[] buff = new byte[2048];
 				int bytesRead = 0;

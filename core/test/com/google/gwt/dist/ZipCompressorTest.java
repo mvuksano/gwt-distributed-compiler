@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -80,13 +79,13 @@ public class ZipCompressorTest {
 				"test-folder1/test-file2.txt", "test-folder2/test-file1.txt",
 				"test-folder2/test-file2.txt" };
 
-		InflaterInputStream result = zipCompressor.mergeZippedStreams(z1, z2);
+		ZipInputStream result = zipCompressor.mergeZippedStreams(z1, z2);
 
 		ZipEntry zipEntry;
 		int counter = 0;
-//		while ((zipEntry = result.getNextEntry()) != null) {
-//			Assert.assertEquals(zipEntry.getName(),
-//					expectedZipEntryNames[counter++]);
-//		}
+		while ((zipEntry = result.getNextEntry()) != null) {
+			Assert.assertEquals(zipEntry.getName(),
+					expectedZipEntryNames[counter++]);
+		}
 	}
 }
