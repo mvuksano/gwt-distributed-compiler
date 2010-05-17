@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="gwt-distributed-compiler" default="build" basedir=".">
+  <target name="build" description="Build the product.">
+    <ant antfile="${basedir}/agent/build.xml" useNativeBasedir="true" target="build"/>
+  </target>
+</project>
