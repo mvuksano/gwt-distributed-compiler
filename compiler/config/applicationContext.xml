@@ -22,5 +22,8 @@
 	
 	<bean id="linkOptions" class="com.google.gwt.dist.linker.LinkOptionsImpl">
 	</bean>
+	
+	<bean id="precompileOptions" class="com.google.gwt.dist.compiler.PrecompileOptionsImpl">
+	</bean>
 
 </beans>

@@ -1,13 +1,9 @@
 package com.google.gwt.dist.compiler.agent.processor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -18,7 +14,6 @@ import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.impl.CompilePermsOptionsImpl;
 import com.google.gwt.dist.util.Util;
-import com.google.gwt.dist.util.ZipCompressor;
 
 /**
  * CompilePermsService executes actual CompilePerms operation. This is a long
@@ -27,14 +22,12 @@ import com.google.gwt.dist.util.ZipCompressor;
  */
 public class CompilePermsService implements Runnable {
 
-	private ZipCompressor compressor;
 	private CompilePermsListener listener;
 	private File tempStorage;
 
 	public CompilePermsService(CompilePermsListener listener) {
-		this.compressor = new ZipCompressor();
 		this.listener = listener;
-		this.tempStorage = new File("uncompressed");
+		this.tempStorage = new File("uncompressed"); // TODO: spring.
 	}
 
 	public void compilePermsFinished() {
@@ -67,21 +60,9 @@ public class CompilePermsService implements Runnable {
 			compilePermsStarted();
 			new CompilePerms(options).run(logger);
 			compilePermsFinished();
-
-			File dirToCompress = new File(tempStorage + File.separator);
-			ByteArrayOutputStream compressedOutput = null;
-			compressedOutput = compressor.archiveAndCompressDir(dirToCompress,
-					Pattern.compile("permutation-[0-9+].js"));
-			File zippedOutputFile = new File("test.zip");
-			zippedOutputFile.createNewFile();
-			FileOutputStream fos = new FileOutputStream(zippedOutputFile);
-			fos.write(compressedOutput.toByteArray());
-			fos.close();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (UnableToCompleteException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
