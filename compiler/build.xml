@@ -10,9 +10,13 @@
 
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
-  	<fileset dir="lib" includes="test*.jar" />
+    <fileset dir="lib" includes="*.jar" />
   </path>
 	
+  <target name="build" depends="javac" description="Build this project." >
+    <jar destfile="${build}\${module.name}.jar" basedir="${classes}" />
+  </target>
+
   <target name="init" description="Create directories.">
   	<mkdir dir="${build}"/>
   	<mkdir dir="${classes}"/>
@@ -27,17 +31,8 @@
     </javac>
   </target>
 
-  <target name="build" depends="javac" description="Build this project." >
-    <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
-  	  <manifest>
-  	    <attribute name="Main-Class" value="com.google.gwt.dist.compiler.Compiler"/>
-  	  </manifest>
-  	</jar>
-  </target>
-
   <target name="clean" description="Cleans this project.">
   	<delete dir="${build}"/>
   	<delete dir="${classes}"/>
   </target>
-
 </project>
