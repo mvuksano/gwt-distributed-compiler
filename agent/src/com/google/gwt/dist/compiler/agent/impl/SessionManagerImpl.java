@@ -103,7 +103,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		case DELIVERY_DATA:
 			System.out.println("Data was delivered.");
 			dataProcessor.onDataReceived(((SendDataMessage) message)
-					.getResponse().getPayload());
+					.getResponse());
 			break;
 		case ECHO:
 			responseToReturn = message.getResponse();

@@ -18,6 +18,7 @@ import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.comm.ReturnResultResponse;
+import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
@@ -54,7 +55,7 @@ public class CommunicatorImpl implements Communicator {
 	/**
 	 * Notify DataReceivedListeners about data transfer being finished.
 	 */
-	public void dataReceived(byte[] receivedData) {
+	public void dataReceived(SendDataPayload receivedData) {
 		for (DataReceivedListener l : dataReceivedListeners) {
 			l.onDataReceived(receivedData);
 		}
