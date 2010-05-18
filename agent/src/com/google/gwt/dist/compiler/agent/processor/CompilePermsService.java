@@ -12,7 +12,7 @@ import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
-import com.google.gwt.dist.compiler.agent.impl.CompilePermsOptionsImpl;
+import com.google.gwt.dist.perms.CompilePermsOptionsImpl;
 import com.google.gwt.dist.util.Util;
 
 /**

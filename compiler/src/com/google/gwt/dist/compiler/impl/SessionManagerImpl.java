@@ -11,6 +11,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import com.google.gwt.dev.CompilerOptions;
+import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.SessionManager;
@@ -22,6 +23,7 @@ import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.impl.SendDataMessage;
+import com.google.gwt.dist.perms.CompilePermsOptionsImpl;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -93,6 +95,8 @@ public class SessionManagerImpl implements SessionManager {
 					message.setOptions(options);
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
+					CompilePermsOptions compilePermsOptions = new CompilePermsOptionsImpl(options);
+					payload.setOptions(compilePermsOptions);
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);
 					return false;
