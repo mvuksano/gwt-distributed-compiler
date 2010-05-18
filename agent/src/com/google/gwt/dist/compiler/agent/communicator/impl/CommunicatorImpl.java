@@ -18,10 +18,10 @@ import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.comm.ReturnResultResponse;
-import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
+import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 
 public class CommunicatorImpl implements Communicator {
@@ -63,7 +63,7 @@ public class CommunicatorImpl implements Communicator {
 	public byte[] getData(Socket client) {
 		logger.log(Level.INFO, "Getting data from client: "
 				+ client.getInetAddress());
-		
+
 		ByteArrayOutputStream receivedObject = null;
 		try {
 			InputStream is = client.getInputStream();
@@ -75,7 +75,7 @@ public class CommunicatorImpl implements Communicator {
 			while ((bytesRead = is.read(buff)) > -1) {
 				receivedObject.write(buff, 0, bytesRead);
 			}
-			
+
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
 					"There was a problem while getting data from client "
@@ -89,22 +89,24 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	/**
-	 * Processes the incoming CommMessage and returns a modified one. CANDIDATE
-	 * FOR REMOVAL.
+	 * Processes the incoming CommMessage and returns a modified one.
 	 * 
 	 * @param message
 	 *            The message to process.
 	 * @return Updated message.
 	 */
-	public CommMessage<ProcessingStateResponse> processCommMessage(
-			CommMessage<ProcessingStateResponse> message) {
-		ProcessingStateResponse response = new ProcessingStateResponse();
-		if (message.getCommMessageType() == CommMessageType.QUERY) {
+	public <T extends CommMessageResponse> CommMessage<T> processCommMessage(CommMessage<T> message) {
+		switch (message.getCommMessageType()) {
+		case DELIVERY_DATA:
+			System.out.println("REceived data!");
+			break;
+		case QUERY:
+			ProcessingStateResponse response = new ProcessingStateResponse();
 			((ProcessingStateResponse) response)
 					.setCurrentState(this.sessionManager.getProcessingState());
-			message.setResponse(response);
+			((ProcessingStateMessage)message).setResponse(response);
+			break;
 		}
-		message.setResponse(response);
 		return message;
 	}
 
@@ -141,18 +143,13 @@ public class CommunicatorImpl implements Communicator {
 				receivedObject.write(buff, 0, bytesRead);
 			}
 
-			// Check if received stream is CommMessage or not.
-			CommMessage<ProcessingStateResponse> commMessage = getCommMessage(receivedObject);
-			if (commMessage != null) {
-				commMessage = processCommMessage(commMessage);
-				commMessage.setResponse(decideResponse(commMessage));
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(commMessage);
-				os.write(bos.toByteArray());
-			} else {
-				dataReceived(receivedObject.toByteArray());
-			}
+			CommMessage<CommMessageResponse> commMessage = getCommMessage(receivedObject);
+			//commMessage = processCommMessage(commMessage);
+			commMessage.setResponse(decideResponse(commMessage));
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			oos.writeObject(commMessage);
+			os.write(bos.toByteArray());
 			client.shutdownOutput();
 			is.close();
 			os.close();
@@ -163,13 +160,13 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private CommMessage<ProcessingStateResponse> getCommMessage(
+	private <T extends CommMessageResponse> CommMessage<T> getCommMessage(
 			ByteArrayOutputStream baos) {
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(baos
 					.toByteArray());
 			ObjectInputStream ois = new ObjectInputStream(bis);
-			return (CommMessage<ProcessingStateResponse>) ois.readObject();
+			return (CommMessage<T>) ois.readObject();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 		}

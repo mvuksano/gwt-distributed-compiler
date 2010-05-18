@@ -1,7 +1,7 @@
 <ivysettings>
 	<settings defaultResolver="default" />
 	<properties file="ivysettings.properties" />
-	<settings defaultCache="${cache.dir}" defaultResolver="default-chain" checkUpToDate="false" />
+	<settings defaultResolver="default-chain" checkUpToDate="false" />
 	<resolvers>
 		<chain name="default-chain">
 		<ibiblio name="ibiblio" />

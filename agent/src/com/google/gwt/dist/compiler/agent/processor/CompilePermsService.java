@@ -22,6 +22,7 @@ import com.google.gwt.dist.util.Util;
  */
 public class CompilePermsService implements Runnable {
 
+	private CompilePermsOptions options;
 	private CompilePermsListener listener;
 	private File tempStorage;
 
@@ -35,6 +36,10 @@ public class CompilePermsService implements Runnable {
 	
 	public CompilePermsListener getCompilePermsListener() {
 		return this.listener;
+	}
+	
+	public CompilePermsOptions getCompilePermsOptions() {
+		return this.options;
 	}
 
 	@Override
@@ -50,7 +55,7 @@ public class CompilePermsService implements Runnable {
 
 			// Compile Perms using the input data stored in tempStorage.
 			List<String> moduleNames = new ArrayList<String>();
-			moduleNames.add("com.hypersimple.HyperSimple");
+			moduleNames.add("hr.tkd.orka.Taekwondo_club_orka");
 			File workDir = new File("uncompressed" + File.separator + "work");
 
 			final CompilePermsOptions options = new CompilePermsOptionsImpl();
@@ -77,6 +82,10 @@ public class CompilePermsService implements Runnable {
 	
 	public void setCompilePermsListener(CompilePermsListener listener) {
 		this.listener = listener;
+	}
+	
+	public void setCompilePermsOptions(CompilePermsOptions options) {
+		this.options = options;
 	}
 
 }
