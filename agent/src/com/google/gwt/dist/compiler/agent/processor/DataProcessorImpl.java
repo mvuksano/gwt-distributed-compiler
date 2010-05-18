@@ -20,6 +20,7 @@ import com.google.gwt.dist.util.ZipDecompressor;
 public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 		DataReceivedListener, Runnable {
 
+	private CompilePermsService compilePermsService;
 	private ZipDecompressor decompressor;
 	private ProcessingState state;
 	private File tempStorage;
@@ -45,11 +46,15 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 		executorService = Executors.newFixedThreadPool(5);
 	}
 	
+	public CompilePermsService getCompilePermsService() {
+		return this.compilePermsService;
+	}
+
 	@Override
 	public ProcessingState getCurrentState() {
 		return this.state;
 	}
-	
+
 	@Override
 	public void onDataProcessorStateChanged(ProcessingState state) {
 		this.state = state;
@@ -59,7 +64,7 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	public void onDataReceived(byte[] receivedData) {
 		try {
 			storeInputStreamOnDisk(receivedData);
-			executorService.execute(new CompilePermsService(this));
+			executorService.execute(compilePermsService);
 			executorService.shutdown();
 		} catch (MalformedURLException e) {
 			logger.log(Level.INFO, e.getMessage());
@@ -80,6 +85,10 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 		}
 	}
 	
+	public void setCompilePermsService(CompilePermsService compilePermsService) {
+		this.compilePermsService = compilePermsService;
+	}
+
 	/**
 	 * Stores input stream on disk.
 	 * 

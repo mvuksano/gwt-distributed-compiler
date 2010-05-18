@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="gwt-distributed-compiler-agent" default="build" basedir=".">
-  <property name="gwt.sdk" location="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0" />
+  <property name="gwt.sdk" location="D:/Devel/gwt/trunk/build/staging/gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
+  <property name="config"     	location="config"/>
   <property name="core"     	location="../core"/>
   <property name="dist"     	location="dist"/>
   <property name="jarfile.name" value="${module.name}.jar"/>
@@ -13,9 +14,13 @@
 	
   <ivy:settings file="ivysettings.xml" />
 
+  <path id="lib.class.path">
+  	<fileset dir="lib" includes="*.jar" />
+  </path>
+	
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
-  	<fileset dir="lib" includes="*.jar" />
+  	<pathelement path="${lib.class.path}"/>
   </path>
 	
   <path id="exec.class.path">
@@ -29,13 +34,13 @@
 	<delete dir="${dist}"/>
   </target>
 	
-	<target name="resolve">
-	  <ivy:resolve/>
-	</target>
+  <target name="resolve">
+    <ivy:resolve/>
+  </target>
 	
-	<target name="retrieve">
-	  <ivy:retrieve/>
-	</target>
+  <target name="retrieve">
+    <ivy:retrieve/>
+  </target>
 	
   <target name="init" description="Create directories.">
   	<mkdir dir="${build}"/>
@@ -44,7 +49,7 @@
   </target>
 
   <target name="javac" depends="init" description="Compile java source.">
-    <javac srcdir="..\core" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
+    <javac srcdir="..\core\src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
   	<javac srcdir="src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
@@ -53,16 +58,22 @@
   </target>
 
   <target name="build" depends="javac" description="Build this project." >
+  	<manifestclasspath property="manifest.classpath" jarfile="${build}\${module.name}.jar">
+  	  <classpath refid="lib.class.path" />
+  	</manifestclasspath>
     <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
-      <manifest>
-        <attribute name="Main-Class" value="com.google.gwt.dist.compiler.agent.Agent"/>
-      </manifest>
   	</jar>
   </target>
 	
   <target name="dist" depends="build" description="Deploy the project.">
   	<copy todir="${dist}">
   	  <fileset dir="${build}" />
+  	</copy>
+  	<copy todir="${dist}\lib">
+  		<fileset dir="${lib}" />
+  	</copy>
+  	<copy todir="${dist}\config">
+  		<fileset dir="${config}" />
   	</copy>
   </target>
 

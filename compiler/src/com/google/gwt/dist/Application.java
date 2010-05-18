@@ -17,8 +17,16 @@ import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.XmlMappingException;
 
 import com.google.gwt.core.ext.TreeLogger;
+import com.google.gwt.dev.ArgProcessorBase;
+import com.google.gwt.dev.CompileTaskOptions;
+import com.google.gwt.dev.CompilerOptions;
+import com.google.gwt.dev.util.arg.ArgHandlerLogLevel;
+import com.google.gwt.dev.util.arg.ArgHandlerModuleName;
+import com.google.gwt.dev.util.arg.ArgHandlerTreeLoggerFlag;
+import com.google.gwt.dev.util.arg.ArgHandlerWorkDirRequired;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.compiler.Precompile;
+import com.google.gwt.dist.compiler.PrecompileOptionsImpl;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;
@@ -28,6 +36,29 @@ import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
 public class Application {
+
+	/**
+	 * As the name suggests, DistCompilerArgProcessor is used to process
+	 * arguments passed through command line.
+	 */
+	static class DistCompilerArgProcessor extends ArgProcessorBase {
+		public DistCompilerArgProcessor(CompileTaskOptions options) {
+			registerHandler(new ArgHandlerLogLevel(options));
+			registerHandler(new ArgHandlerTreeLoggerFlag(options));
+			registerHandler(new ArgHandlerWorkDirRequired(options));
+			registerHandler(new ArgHandlerModuleName(options) {
+				@Override
+				public String getPurpose() {
+					return super.getPurpose() + " to compile";
+				}
+			});
+		}
+
+		@Override
+		protected String getName() {
+			return DistCompilerArgProcessor.class.getName();
+		}
+	}
 
 	private Marshaller marshaller;
 	private Unmarshaller unmarshaller;
@@ -42,14 +73,14 @@ public class Application {
 				new File("config/applicationContext.xml").toString());
 		Application app = (Application) appContext.getBean("application");
 		app.loadSettings();
-		app.start();
+		CompilerOptions options = (CompilerOptions) appContext
+				.getBean("compilerOptions");
+		if (new DistCompilerArgProcessor(options).processArgs(args)) {
+			app.start(options);
+		}
 	}
 
-	public Application() {
-
-	}
-
-	public void start() {
+	public void start(CompilerOptions options) {
 
 		List<Node> nodes = this.settings.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
@@ -63,7 +94,9 @@ public class Application {
 		}
 
 		TreeLogger logger = new PrintWriterTreeLogger();
-		Precompile precompile = new Precompile();
+		PrecompileOptionsImpl precompileOptions = new PrecompileOptionsImpl(
+				options);
+		Precompile precompile = new Precompile(precompileOptions);
 		precompile.run(logger);
 
 		boolean precompileFinished = false;
@@ -77,7 +110,7 @@ public class Application {
 			}
 		}
 
-		LinkOptionsImpl linkOptions = new LinkOptionsImpl();
+		LinkOptionsImpl linkOptions = new LinkOptionsImpl(options);
 		Link link = new Link(linkOptions);
 		link.run(logger);
 	}

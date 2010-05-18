@@ -15,6 +15,7 @@ import com.google.gwt.dist.comm.ReturnResultResponse;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.processor.DataProcessor;
+import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.Util;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -62,7 +63,6 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			message.setResponse(decideResponse(message));
 			communicator.sendData(Util.objectToByteArray(message), client);
 		} else {
-			dataProcessor.onDataReceived(receivedData);
 		}
 		communicator.closeConnection(client);
 		System.out.println("Finished Thread "
@@ -100,6 +100,11 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			CommMessage<T> message) {
 		T responseToReturn = null;
 		switch (message.getCommMessageType()) {
+		case DELIVERY_DATA:
+			System.out.println("Data was delivered.");
+			dataProcessor.onDataReceived(((SendDataMessage) message)
+					.getResponse().getPayload());
+			break;
 		case ECHO:
 			responseToReturn = message.getResponse();
 			break;

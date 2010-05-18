@@ -26,11 +26,17 @@
     <bean id="clientWorker" class="com.google.gwt.dist.compiler.agent.ClientWorker">
     	<property name="sessionManager" ref="sessionManager"></property>
     </bean>
+    
+    <bean id="compilePermsService" class="com.google.gwt.dist.compiler.agent.processor.CompilePermsService">
+    	<constructor-arg ref="temporarystoragelocation" />
+    	<property name="compilePermsListener" ref="dataProcessor"/>
+    </bean>
 
 	<bean id="dataProcessor"
 		class="com.google.gwt.dist.compiler.agent.processor.DataProcessorImpl">
 		<constructor-arg ref="zipDecompressor" />
 		<constructor-arg ref="temporarystoragelocation" />
+		<property name="compilePermsService" ref="compilePermsService"/>
 	</bean>
 
 	<bean id="dataProcessorMock"

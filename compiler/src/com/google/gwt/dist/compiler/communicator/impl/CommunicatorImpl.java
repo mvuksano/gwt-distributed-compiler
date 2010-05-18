@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
-import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 
@@ -62,18 +61,15 @@ public class CommunicatorImpl implements Communicator {
 
 			ObjectInputStream ois = new ObjectInputStream(is);
 			message = (CommMessage<T>) ois.readObject();
-			System.out
-					.println(((ProcessingStateResponse) message.getResponse())
-							.getCurrentState());
 			os.close();
 			is.close();
 			server.close();
 		} catch (UnknownHostException e) {
-			logger.log(Level.SEVERE, e.getMessage());
+			e.printStackTrace();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage());
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			logger.log(Level.SEVERE, e.getMessage());
+			e.printStackTrace();
 		}
 		return message.getResponse();
 	}

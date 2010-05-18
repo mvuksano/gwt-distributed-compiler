@@ -16,9 +16,11 @@ import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
+import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
+import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -86,8 +88,11 @@ public class SessionManagerImpl implements SessionManager {
 			if (currentState != null) {
 				switch (currentState) {
 				case READY:
-					communicator.sendData(generateDataForProcessing(),
-							this.node);
+					CommMessage<SendDataPayload> message = new SendDataMessage();
+					SendDataPayload payload = new SendDataPayload();
+					payload.setPayload(generateDataForProcessing());
+					message.setResponse(payload);
+					communicator.sendMessage(message, this.node);
 					return false;
 				case INPROGRESS:
 					System.out.println("Agent" + this.node.getIpaddress()
@@ -128,18 +133,21 @@ public class SessionManagerImpl implements SessionManager {
 
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(srcFolder
 				.toByteArray());
-		CheckedInputStream checksum1 = new CheckedInputStream(bais1, new Adler32());
+		CheckedInputStream checksum1 = new CheckedInputStream(bais1,
+				new Adler32());
 		ZipInputStream zis1 = new ZipInputStream(checksum1);
 
 		ByteArrayInputStream bais2 = new ByteArrayInputStream(workFolder
 				.toByteArray());
-		CheckedInputStream checksum2 = new CheckedInputStream(bais2, new Adler32());
+		CheckedInputStream checksum2 = new CheckedInputStream(bais2,
+				new Adler32());
 		ZipInputStream zis2 = new ZipInputStream(checksum2);
 
 		ZipInputStream mergedStream = compressor.mergeZippedStreams(zis1, zis2);
-		
+
 		ByteArrayOutputStream dataAsByteArrayOutputStream = new ByteArrayOutputStream();
-		ZipOutputStream compressedResultStream = new ZipOutputStream(dataAsByteArrayOutputStream);
+		ZipOutputStream compressedResultStream = new ZipOutputStream(
+				dataAsByteArrayOutputStream);
 
 		try {
 			ZipEntry ze = null;
