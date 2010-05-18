@@ -102,7 +102,7 @@ public class Application {
 		boolean precompileFinished = false;
 		while (!precompileFinished) {
 			for (SessionManager sm : sessionManagers) {
-				precompileFinished = sm.start();
+				precompileFinished = sm.start(options);
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {

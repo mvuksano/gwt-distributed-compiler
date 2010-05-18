@@ -1,10 +1,12 @@
 package com.google.gwt.dist.impl;
 
+import com.google.gwt.dev.CompilerOptions;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.SendDataPayload;
 
 public class SendDataMessage implements CommMessage<SendDataPayload> {
 
+	private CompilerOptions options;
 	private SendDataPayload payload;
 	private CommMessageType type;
 	
@@ -18,10 +20,18 @@ public class SendDataMessage implements CommMessage<SendDataPayload> {
 	public CommMessageType getCommMessageType() {
 		return this.type;
 	}
+	
+	public CompilerOptions getOptions() {
+		return this.options;
+	}
 
 	@Override
 	public SendDataPayload getResponse() {
 		return this.payload;
+	}
+	
+	public void setOptions(CompilerOptions options) {
+		this.options = options;
 	}
 
 	@Override

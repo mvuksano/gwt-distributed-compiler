@@ -1,6 +1,6 @@
 package com.google.gwt.dist;
 
-import com.google.gwt.dist.Node;
+import com.google.gwt.dev.CompilerOptions;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.compiler.communicator.Communicator;
@@ -67,5 +67,5 @@ public interface SessionManager extends Runnable {
 	 * 
 	 * @return true if it is OK to start linking, else false;
 	 */
-	boolean start();
+	boolean start(CompilerOptions options);
 }
