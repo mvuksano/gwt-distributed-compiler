@@ -1,4 +1,4 @@
-apackage com.google.gwt.dist.compiler.agent.communicator.impl;
+package com.google.gwt.dist.compiler.agent.communicator.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -64,7 +64,7 @@ public class CommunicatorImpl implements Communicator {
 	public byte[] getData(Socket client) {
 		logger.log(Level.INFO, "Getting data from client: "
 				+ client.getInetAddress());
-		
+
 		ByteArrayOutputStream receivedObject = null;
 		try {
 			InputStream is = client.getInputStream();
@@ -76,7 +76,7 @@ public class CommunicatorImpl implements Communicator {
 			while ((bytesRead = is.read(buff)) > -1) {
 				receivedObject.write(buff, 0, bytesRead);
 			}
-			
+
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
 					"There was a problem while getting data from client "
@@ -144,16 +144,12 @@ public class CommunicatorImpl implements Communicator {
 
 			// Check if received stream is CommMessage or not.
 			CommMessage<ProcessingStateResponse> commMessage = getCommMessage(receivedObject);
-			if (commMessage != null) {
-				commMessage = processCommMessage(commMessage);
-				commMessage.setResponse(decideResponse(commMessage));
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(commMessage);
-				os.write(bos.toByteArray());
-			} else {
-				dataReceived(receivedObject.toByteArray());
-			}
+			commMessage = processCommMessage(commMessage);
+			commMessage.setResponse(decideResponse(commMessage));
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			oos.writeObject(commMessage);
+			os.write(bos.toByteArray());
 			client.shutdownOutput();
 			is.close();
 			os.close();
@@ -188,7 +184,7 @@ public class CommunicatorImpl implements Communicator {
 		T responseToReturn = null;
 		switch (message.getCommMessageType()) {
 		case DELIVERY_DATA:
-			
+
 			break;
 		case ECHO:
 			responseToReturn = message.getResponse();
