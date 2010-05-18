@@ -25,13 +25,16 @@ public class CompilePermsService implements Runnable {
 	private CompilePermsListener listener;
 	private File tempStorage;
 
-	public CompilePermsService(CompilePermsListener listener) {
-		this.listener = listener;
-		this.tempStorage = new File("uncompressed"); // TODO: spring.
+	public CompilePermsService(File tempStorage) {
+		this.tempStorage = tempStorage;
 	}
 
 	public void compilePermsFinished() {
 		listener.onDataProcessorStateChanged(ProcessingState.COMPLETED);
+	}
+	
+	public CompilePermsListener getCompilePermsListener() {
+		return this.listener;
 	}
 
 	@Override
@@ -70,6 +73,10 @@ public class CompilePermsService implements Runnable {
 
 	public void compilePermsStarted() {
 		listener.onDataProcessorStateChanged(ProcessingState.INPROGRESS);
+	}
+	
+	public void setCompilePermsListener(CompilePermsListener listener) {
+		this.listener = listener;
 	}
 
 }
