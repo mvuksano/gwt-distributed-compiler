@@ -1,6 +1,19 @@
 <ivysettings>
-  <settings defaultResolver="default"/>
-  <include url="${ivy.default.ivy.user.dir}/ivysettings-local.xml"/>
-  <include url="${ivy.default.ivy.user.dir}/ivysettings-springsource-erb.xml"/>
-  <include url="${ivy.default.ivy.user.dir}/ivysettings-default-chain.xml"/>
+	<settings defaultResolver="default" />
+	<properties file="ivysettings.properties" />
+	<settings defaultCache="${cache.dir}" defaultResolver="default-chain" checkUpToDate="false" />
+	<resolvers>
+		<chain name="default-chain">
+		<ibiblio name="ibiblio" />
+		<url name="com.springsource.repository.bundles.release">
+			<ivy pattern="http://repository.springsource.com/ivy/bunles/release/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+			<artifact pattern="http://repository.springsource.com/ivy/bundles/release/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+		</url>
+
+		<url name="com.springsource.repository.bundles.external">
+			<ivy pattern="http://repository.springsource.com/ivy/bundles/external/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+			<artifact pattern="http://repository.springsource.com/ivy/bundles/external/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
+		</url>
+		</chain>
+	</resolvers>
 </ivysettings>

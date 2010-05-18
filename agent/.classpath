@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="common"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=file%3A%2Fivysettings.xml&amp;loadSettingsOnDemand=false&amp;propertyFiles="/>
 	<classpathentry kind="lib" path="lib/testng-5.12.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.aop-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.asm-3.0.2.RELEASE.jar"/>
