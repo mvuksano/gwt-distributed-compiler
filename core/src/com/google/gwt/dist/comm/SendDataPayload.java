@@ -2,6 +2,7 @@ package com.google.gwt.dist.comm;
 
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 
+@SuppressWarnings("serial")
 public class SendDataPayload implements CommMessageResponse {
 
 	private CompilePermsOptions options;

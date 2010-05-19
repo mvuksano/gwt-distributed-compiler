@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.dist.compiler.impl;
+package com.google.gwt.dist.compiler;
 
 import java.io.File;
 import java.io.Serializable;
@@ -26,6 +26,7 @@ import com.google.gwt.dev.CompileTaskOptions;
 /**
  * Concrete class to implement compiler task options.
  */
+@SuppressWarnings("serial")
 public class CompileTaskOptionsImpl implements CompileTaskOptions, Serializable {
 
   private Type logLevel;

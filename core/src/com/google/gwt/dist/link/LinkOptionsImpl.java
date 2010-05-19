@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 
 import com.google.gwt.dev.Link.LinkOptions;
-import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
+import com.google.gwt.dist.compiler.CompileTaskOptionsImpl;
 
 /**
  * Options for Link.

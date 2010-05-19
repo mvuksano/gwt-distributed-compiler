@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.google.gwt.dev.CompilerOptions;
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
-import com.google.gwt.dist.compiler.impl.CompileTaskOptionsImpl;
+import com.google.gwt.dist.compiler.CompileTaskOptionsImpl;
 
 /**
  * Concrete class to implement compiler perm options.
