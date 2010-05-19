@@ -16,14 +16,19 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>common</name>
-			<type>2</type>
-			<location>D:/Devel/open-source/gwt-distributed-compiler/core/src</location>
-		</link>
-		<link>
 			<name>common-test</name>
 			<type>2</type>
-			<location>D:/Devel/open-source/gwt-distributed-compiler/core/test</location>
+			<location>/home/markovuksanovic/D::/Devel/open-source/gwt-distributed-compiler/core/test</location>
+		</link>
+		<link>
+			<name>core</name>
+			<type>2</type>
+			<locationURI>GWT_DISTRIBUTED_COMPILER_CORE/src</locationURI>
+		</link>
+		<link>
+			<name>core-test</name>
+			<type>2</type>
+			<locationURI>GWT_DISTRIBUTED_COMPILER_CORE/test</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
