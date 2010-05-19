@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.comm.SendDataPayload;
 
 /**
  * 
@@ -59,11 +60,11 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 	}
 
 	@Override
-	public void storeInputStreamOnDisk(byte[] receivedData)
+	public void storeInputStreamOnDisk(SendDataPayload receivedData)
 			throws FileNotFoundException, IOException {
 	}
 
 	@Override
-	public void onDataReceived(byte[] receivedData) {
+	public void onDataReceived(SendDataPayload receivedData) {
 	}
 }

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
 /**
@@ -27,7 +28,7 @@ public interface DataProcessor extends Runnable, DataReceivedListener {
 	 *            Directory which will be used to store the data for processing
 	 *            by CompilePerms.
 	 */
-	void storeInputStreamOnDisk(byte[] receivedData)
+	void storeInputStreamOnDisk(SendDataPayload receivedData)
 			throws FileNotFoundException, IOException; 
 
 }

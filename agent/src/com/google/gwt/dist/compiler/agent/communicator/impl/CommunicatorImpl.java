@@ -18,6 +18,7 @@ import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
 import com.google.gwt.dist.comm.ReturnResultResponse;
+import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
@@ -54,7 +55,7 @@ public class CommunicatorImpl implements Communicator {
 	/**
 	 * Notify DataReceivedListeners about data transfer being finished.
 	 */
-	public void dataReceived(byte[] receivedData) {
+	public void dataReceived(SendDataPayload receivedData) {
 		for (DataReceivedListener l : dataReceivedListeners) {
 			l.onDataReceived(receivedData);
 		}
@@ -63,7 +64,7 @@ public class CommunicatorImpl implements Communicator {
 	public byte[] getData(Socket client) {
 		logger.log(Level.INFO, "Getting data from client: "
 				+ client.getInetAddress());
-		
+
 		ByteArrayOutputStream receivedObject = null;
 		try {
 			InputStream is = client.getInputStream();
@@ -75,7 +76,7 @@ public class CommunicatorImpl implements Communicator {
 			while ((bytesRead = is.read(buff)) > -1) {
 				receivedObject.write(buff, 0, bytesRead);
 			}
-			
+
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
 					"There was a problem while getting data from client "
@@ -151,7 +152,10 @@ public class CommunicatorImpl implements Communicator {
 				oos.writeObject(commMessage);
 				os.write(bos.toByteArray());
 			} else {
-				dataReceived(receivedObject.toByteArray());
+				ByteArrayInputStream bais = new ByteArrayInputStream(
+						receivedObject.toByteArray());
+				ObjectInputStream ois = new ObjectInputStream(bais);
+				dataReceived((SendDataPayload) ois.readObject());
 			}
 			client.shutdownOutput();
 			is.close();
@@ -159,9 +163,16 @@ public class CommunicatorImpl implements Communicator {
 			client.close(); // ???
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, e.getMessage());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * THIS NEEDS TO BE REWORKED.
+	 * @param baos
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private CommMessage<ProcessingStateResponse> getCommMessage(
 			ByteArrayOutputStream baos) {

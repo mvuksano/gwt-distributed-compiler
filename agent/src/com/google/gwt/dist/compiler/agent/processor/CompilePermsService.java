@@ -2,7 +2,6 @@ package com.google.gwt.dist.compiler.agent.processor;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.ext.TreeLogger;
@@ -23,6 +22,7 @@ import com.google.gwt.dist.util.Util;
 public class CompilePermsService implements Runnable {
 
 	private CompilePermsListener listener;
+	private List<String> moduleNames;
 	private File tempStorage;
 
 	public CompilePermsService(File tempStorage) {
@@ -49,8 +49,6 @@ public class CompilePermsService implements Runnable {
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
 
 			// Compile Perms using the input data stored in tempStorage.
-			List<String> moduleNames = new ArrayList<String>();
-			moduleNames.add("com.hypersimple.HyperSimple");
 			File workDir = new File("uncompressed" + File.separator + "work");
 
 			final CompilePermsOptions options = new CompilePermsOptionsImpl();
@@ -73,6 +71,10 @@ public class CompilePermsService implements Runnable {
 
 	public void compilePermsStarted() {
 		listener.onDataProcessorStateChanged(ProcessingState.INPROGRESS);
+	}
+	
+	public void setModuleNames(List<String> moduleNames) {
+		this.moduleNames = moduleNames;
 	}
 	
 	public void setCompilePermsListener(CompilePermsListener listener) {

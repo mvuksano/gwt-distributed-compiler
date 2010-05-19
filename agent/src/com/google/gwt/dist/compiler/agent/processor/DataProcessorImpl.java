@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.dist.ProcessingState;
+import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -61,9 +62,10 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	}
 
 	@Override
-	public void onDataReceived(byte[] receivedData) {
+	public void onDataReceived(SendDataPayload receivedData) {
 		try {
 			storeInputStreamOnDisk(receivedData);
+			compilePermsService.setModuleNames(receivedData.getModuleNames());
 			executorService.execute(compilePermsService);
 			executorService.shutdown();
 		} catch (MalformedURLException e) {
@@ -95,8 +97,8 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public void storeInputStreamOnDisk(byte[] receivedData)
+	public void storeInputStreamOnDisk(SendDataPayload receivedData)
 			throws FileNotFoundException, IOException {
-		decompressor.decompressAndStoreToFile(receivedData, this.tempStorage);
+		decompressor.decompressAndStoreToFile(receivedData.getPayload(), this.tempStorage);
 	}
 }

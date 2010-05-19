@@ -1,8 +1,6 @@
 package com.google.gwt.dist.linker;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -22,20 +20,12 @@ public class Link {
 	}
 
 	public void run(TreeLogger logger) {
-		List<String> moduleNames = new ArrayList<String>();
-		moduleNames.add("com.hypersimple.HyperSimple");
-		File workDir = new File("work");
-		File warDir = new File("www");
-		File extraDir = new File("extra");
-
-		options.setModuleNames(moduleNames);
-		options.setWorkDir(workDir);
-		options.setWarDir(warDir);
-		options.setExtraDir(extraDir);
-
 		try {
+			options.setWarDir(new File("www")); // TODO: remove this hardcorded
+												// stuff.
 			new com.google.gwt.dev.Link(options).run(logger);
 		} catch (UnableToCompleteException e) {
+			e.printStackTrace();
 			logger.log(Type.ERROR, e.getMessage());
 		}
 	}

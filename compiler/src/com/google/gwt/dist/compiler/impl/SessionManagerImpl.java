@@ -10,6 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.google.gwt.dev.CompilerOptions;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.SessionManager;
@@ -78,7 +79,7 @@ public class SessionManagerImpl implements SessionManager {
 		this.communicator = communicator;
 	}
 
-	public boolean start() {
+	public boolean start(CompilerOptions options) {
 		ProcessingStateResponse response = sendMessageToAgent(new ProcessingStateMessage(
 				CommMessageType.QUERY));
 		ProcessingState currentState = null;
@@ -91,6 +92,7 @@ public class SessionManagerImpl implements SessionManager {
 					CommMessage<SendDataPayload> message = new SendDataMessage();
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
+					payload.setModuleNames(options.getModuleNames());
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);
 					return false;
