@@ -26,7 +26,6 @@ import com.google.gwt.dev.util.arg.ArgHandlerTreeLoggerFlag;
 import com.google.gwt.dev.util.arg.ArgHandlerWorkDirRequired;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.compiler.Precompile;
-import com.google.gwt.dist.compiler.PrecompileOptionsImpl;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;

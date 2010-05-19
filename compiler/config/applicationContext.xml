@@ -20,13 +20,13 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="compilerOptions" class="com.google.gwt.dist.compiler.CompilerOptionsImpl">
+	<bean id="compilerOptions" class="com.google.gwt.dist.CompilerOptionsImpl">
 	</bean>
 	
-	<bean id="linkOptions" class="com.google.gwt.dist.linker.LinkOptionsImpl">
+	<bean id="linkOptions" class="com.google.gwt.dist.link.LinkOptionsImpl">
 	</bean>
 	
-	<bean id="precompileOptions" class="com.google.gwt.dist.compiler.PrecompileOptionsImpl">
+	<bean id="precompileOptions" class="com.google.gwt.dist.PrecompileOptionsImpl">
 	</bean>
 
 </beans>

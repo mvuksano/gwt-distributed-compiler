@@ -65,7 +65,7 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	public void onDataReceived(SendDataPayload receivedData) {
 		try {
 			storeInputStreamOnDisk(receivedData);
-			compilePermsService.setModuleNames(receivedData.getModuleNames());
+			compilePermsService.setOptions(receivedData.getCompilePermsOptions());
 			executorService.execute(compilePermsService);
 			executorService.shutdown();
 		} catch (MalformedURLException e) {

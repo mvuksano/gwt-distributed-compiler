@@ -20,7 +20,7 @@ public class CompilePermsOptionsImpl extends CompileTaskOptionsImpl implements
 	}
 
 	public CompilePermsOptionsImpl(CompilerOptions other) {
-		copyFrom(other);
+		super.copyFrom(other);
 	}
 
 	public void copyFrom(CompilePermsOptions other) {

@@ -1,4 +1,4 @@
-package com.google.gwt.dist.compiler;
+package com.google.gwt.dist;
 
 import java.io.File;
 import java.io.Serializable;

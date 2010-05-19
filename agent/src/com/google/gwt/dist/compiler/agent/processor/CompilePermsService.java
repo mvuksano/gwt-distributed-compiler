@@ -2,7 +2,6 @@ package com.google.gwt.dist.compiler.agent.processor;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.List;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -11,7 +10,6 @@ import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
-import com.google.gwt.dist.compiler.agent.impl.CompilePermsOptionsImpl;
 import com.google.gwt.dist.util.Util;
 
 /**
@@ -22,7 +20,12 @@ import com.google.gwt.dist.util.Util;
 public class CompilePermsService implements Runnable {
 
 	private CompilePermsListener listener;
-	private List<String> moduleNames;
+	private CompilePermsOptions options;
+
+	public CompilePermsOptions getOptions() {
+		return options;
+	}
+
 	private File tempStorage;
 
 	public CompilePermsService(File tempStorage) {
@@ -32,7 +35,7 @@ public class CompilePermsService implements Runnable {
 	public void compilePermsFinished() {
 		listener.onDataProcessorStateChanged(ProcessingState.COMPLETED);
 	}
-	
+
 	public CompilePermsListener getCompilePermsListener() {
 		return this.listener;
 	}
@@ -49,15 +52,10 @@ public class CompilePermsService implements Runnable {
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
 
 			// Compile Perms using the input data stored in tempStorage.
-			File workDir = new File("uncompressed" + File.separator + "work");
-
-			final CompilePermsOptions options = new CompilePermsOptionsImpl();
-
-			options.setModuleNames(moduleNames);
-			options.setWorkDir(workDir);
 			int perms[] = { 0, 1, 2, 3, 4, 5 };
 			options.setPermsToCompile(perms);
-			
+			options.setWorkDir(new File(tempStorage + File.separator + options.getWorkDir()));
+
 			compilePermsStarted();
 			new CompilePerms(options).run(logger);
 			compilePermsFinished();
@@ -72,13 +70,13 @@ public class CompilePermsService implements Runnable {
 	public void compilePermsStarted() {
 		listener.onDataProcessorStateChanged(ProcessingState.INPROGRESS);
 	}
-	
-	public void setModuleNames(List<String> moduleNames) {
-		this.moduleNames = moduleNames;
-	}
-	
+
 	public void setCompilePermsListener(CompilePermsListener listener) {
 		this.listener = listener;
+	}
+
+	public void setOptions(CompilePermsOptions options) {
+		this.options = options;
 	}
 
 }

@@ -16,6 +16,7 @@
 package com.google.gwt.dist.compiler.impl;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import com.google.gwt.dev.CompileTaskOptions;
 /**
  * Concrete class to implement compiler task options.
  */
-public class CompileTaskOptionsImpl implements CompileTaskOptions {
+public class CompileTaskOptionsImpl implements CompileTaskOptions, Serializable {
 
   private Type logLevel;
   private final List<String> moduleNames = new ArrayList<String>();
