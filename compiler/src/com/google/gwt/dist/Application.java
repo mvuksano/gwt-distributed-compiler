@@ -1,8 +1,7 @@
 package com.google.gwt.dist;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -11,7 +10,8 @@ import java.util.logging.Logger;
 import javax.xml.transform.stream.StreamSource;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.XmlMappingException;
@@ -63,14 +63,15 @@ public class Application {
 	private Marshaller marshaller;
 	private Unmarshaller unmarshaller;
 	private AgentsSettings settings;
-	private static String AGENTS_SETTINGS_FILE_LOCATION = "config/config.xml";
+	private static String AGENTS_SETTINGS_FILE_LOCATION = "config.xml";
 
 	private static final Logger logger = Logger.getLogger(Application.class
 			.getName());
 
 	public static void main(String[] args) {
-		ApplicationContext appContext = new FileSystemXmlApplicationContext(
-				new File("config/applicationContext.xml").toString());
+		ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+//		ApplicationContext appContext = new FileSystemXmlApplicationContext(
+//				new File("/config/applicationContext.xml").toString());
 		Application app = (Application) appContext.getBean("application");
 		app.loadSettings();
 		CompilerOptions options = (CompilerOptions) appContext
@@ -132,9 +133,9 @@ public class Application {
 	 * Candidate for refactoring - File might be supplied as parameter.
 	 */
 	protected AgentsSettings loadSettings() {
-		FileInputStream is = null;
+		InputStream is = null;
 		try {
-			is = new FileInputStream(new File(AGENTS_SETTINGS_FILE_LOCATION));
+			is = new ClassPathResource(AGENTS_SETTINGS_FILE_LOCATION).getInputStream();
 			this.settings = (AgentsSettings) this.unmarshaller
 					.unmarshal(new StreamSource(is));
 		} catch (XmlMappingException e) {

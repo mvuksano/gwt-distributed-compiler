@@ -1,13 +1,14 @@
 package com.google.gwt.dist.compiler;
 
 import java.io.File;
+import java.io.Serializable;
 
 import com.google.gwt.dev.CompilerOptions;
 import com.google.gwt.dist.link.LinkOptionsImpl;
 import com.google.gwt.dist.precompile.PrecompileOptionsImpl;
 
 public class CompilerOptionsImpl extends PrecompileOptionsImpl implements
-		CompilerOptions {
+		CompilerOptions, Serializable {
 
 	private LinkOptionsImpl linkOptions = new LinkOptionsImpl();
 	private int localWorkers;

@@ -11,7 +11,7 @@
 		<property name="unmarshaller" ref="castorMarshaller" />
 	</bean>
 	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-		<property name="mappingLocation" value="config/castor.xml" />
+		<property name="mappingLocation" value="classpath:castor.xml" />
 	</bean>
 	
 	<bean id="link" class="com.google.gwt.dist.linker.Link">
