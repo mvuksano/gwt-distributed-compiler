@@ -91,7 +91,8 @@ public class SessionManagerImpl implements SessionManager {
 			if (currentState != null) {
 				switch (currentState) {
 				case READY:
-					CommMessage<SendDataPayload> message = new SendDataMessage();
+					SendDataMessage message = new SendDataMessage();
+					message.setOptions(options);
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
 					CompilePermsOptions cpOptions = new CompilePermsOptionsImpl(options);

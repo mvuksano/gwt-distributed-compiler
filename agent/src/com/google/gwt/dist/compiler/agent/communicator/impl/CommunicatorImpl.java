@@ -197,6 +197,9 @@ public class CommunicatorImpl implements Communicator {
 			CommMessage<T> message) {
 		T responseToReturn = null;
 		switch (message.getCommMessageType()) {
+		case DELIVERY_DATA:
+
+			break;
 		case ECHO:
 			responseToReturn = message.getResponse();
 			break;

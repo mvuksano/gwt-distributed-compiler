@@ -24,5 +24,9 @@ public class SendDataPayload implements CommMessageResponse {
 	public void setPayload(byte[] data) {
 		this.data = data;
 	}
-
+	
+	public void setOptions(CompilePermsOptions moduleNames) {
+		this.options = moduleNames;
+	}
+	
 }
