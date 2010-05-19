@@ -30,8 +30,8 @@ import com.google.gwt.dist.compiler.PrecompileOptionsImpl;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;
+import com.google.gwt.dist.link.LinkOptionsImpl;
 import com.google.gwt.dist.linker.Link;
-import com.google.gwt.dist.linker.LinkOptionsImpl;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 

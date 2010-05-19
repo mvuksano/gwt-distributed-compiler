@@ -22,6 +22,7 @@ import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.impl.SendDataMessage;
+import com.google.gwt.dist.perms.CompilePermsOptionsImpl;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -92,6 +93,7 @@ public class SessionManagerImpl implements SessionManager {
 					CommMessage<SendDataPayload> message = new SendDataMessage();
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
+					payload.setCompilerOptions(new CompilePermsOptionsImpl(options));
 					payload.setModuleNames(options.getModuleNames());
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);

@@ -3,7 +3,7 @@ package com.google.gwt.dist.compiler;
 import java.io.File;
 
 import com.google.gwt.dev.CompilerOptions;
-import com.google.gwt.dist.linker.LinkOptionsImpl;
+import com.google.gwt.dist.link.LinkOptionsImpl;
 
 public class CompilerOptionsImpl extends PrecompileOptionsImpl implements
 		CompilerOptions {
