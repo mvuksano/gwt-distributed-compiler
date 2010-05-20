@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="/gwt-distributed-compiler-agent/lib/com.springsource.org.objectweb.asm-3.2.0.jar"/>
 	<classpathentry kind="var" path="GWT_HOME/gwt-dev.jar"/>
 	<classpathentry kind="var" path="GWT_HOME/gwt-user.jar"/>
+	<classpathentry kind="lib" path="lib/guava-r04.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
