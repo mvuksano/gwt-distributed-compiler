@@ -3,6 +3,7 @@ package com.google.gwt.dist;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -88,8 +89,6 @@ public class Application {
 	public static void main(String[] args) {
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
 				"applicationContext.xml");
-		// ApplicationContext appContext = new FileSystemXmlApplicationContext(
-		// new File("/config/applicationContext.xml").toString());
 		Application app = (Application) appContext.getBean("application");
 		app.loadSettings();
 		CompilerOptions options = (CompilerOptions) appContext
@@ -108,10 +107,9 @@ public class Application {
 		Precompile precompile = new Precompile(precompileOptions);
 		precompile.run(treeLogger);
 
-		boolean precompileFinished = false;
 		CompilePermsOptions compilePermsOptions = new CompilePermsOptionsImpl(
 				options);
-		compilePermsOptions.setPermsToCompile(new int[] { 1, 2, 3, 4, 5 });
+		compilePermsOptions.setPermsToCompile(new int[] { 0, 1, 2, 3, 4, 5 });
 		Map<Node, int[]> distributionMatrix = distributor.distribute(
 				compilePermsOptions.getPermsToCompile(), nodes);
 
@@ -124,9 +122,15 @@ public class Application {
 					customizedCompilePermsOptions, compressor, decompressor));
 		}
 
-		while (!precompileFinished) {
+		Map<SessionManager, Boolean> sessionManagerStatusList = new HashMap<SessionManager, Boolean>();
+		for (SessionManager sm : sessionManagers) {
+			sessionManagerStatusList.put(sm, Boolean.valueOf(false));
+		}
+
+		while (!allSessionManagersFinished(sessionManagers,
+				sessionManagerStatusList)) {
 			for (SessionManager sm : sessionManagers) {
-				precompileFinished = sm.start(options);
+				sessionManagerStatusList.put(sm, sm.start());
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
@@ -184,5 +188,17 @@ public class Application {
 
 	public void setUnmarshaller(Unmarshaller um) {
 		this.unmarshaller = um;
+	}
+
+	protected boolean allSessionManagersFinished(
+			List<SessionManager> sessionManagers,
+			Map<SessionManager, Boolean> sessionManagerStatusList) {
+		boolean finished = true;
+		for (SessionManager s : sessionManagers) {
+			if (sessionManagerStatusList.get(s) == Boolean.valueOf(false)) {
+				finished = false;
+			}
+		}
+		return finished;
 	}
 }

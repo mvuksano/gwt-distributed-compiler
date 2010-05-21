@@ -10,7 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import com.google.gwt.dev.CompilerOptions;
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
@@ -23,7 +22,6 @@ import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
 import com.google.gwt.dist.impl.SendDataMessage;
-import com.google.gwt.dist.perms.CompilePermsOptionsImpl;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -32,6 +30,7 @@ import com.google.gwt.dist.util.ZipDecompressor;
  */
 public class SessionManagerImpl implements SessionManager {
 
+	private CompilePermsOptions compilePermsOptions;
 	private ZipCompressor compressor;
 	private ZipDecompressor decompressor;
 	private Communicator communicator;
@@ -40,6 +39,7 @@ public class SessionManagerImpl implements SessionManager {
 	public SessionManagerImpl(Communicator communicator, Node node,
 			CompilePermsOptions options, ZipCompressor compressor,
 			ZipDecompressor decompressor) {
+		this.compilePermsOptions = options;
 		this.compressor = compressor;
 		this.decompressor = decompressor;
 		this.communicator = communicator;
@@ -82,7 +82,7 @@ public class SessionManagerImpl implements SessionManager {
 		this.communicator = communicator;
 	}
 
-	public boolean start(CompilerOptions options) {
+	public boolean start() {
 		ProcessingStateResponse response = sendMessageToAgent(new ProcessingStateMessage(
 				CommMessageType.QUERY));
 		ProcessingState currentState = null;
@@ -93,18 +93,14 @@ public class SessionManagerImpl implements SessionManager {
 				switch (currentState) {
 				case READY:
 					SendDataMessage message = new SendDataMessage();
-					message.setOptions(options);
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
-					CompilePermsOptions cpOptions = new CompilePermsOptionsImpl(
-							options);
-					cpOptions.setLocalWorkers(2);
-					payload.setCompilePermsOptions(cpOptions);
+					payload.setCompilePermsOptions(compilePermsOptions);
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);
 					return false;
 				case INPROGRESS:
-					System.out.println("Agent" + this.node.getIpaddress()
+					System.out.println("Agent " + this.node.getIpaddress()
 							+ " is in progress.");
 					return false;
 				case COMPLETED:

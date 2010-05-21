@@ -21,7 +21,7 @@ public class Link {
 
 	public void run(TreeLogger logger) {
 		try {
-			options.setWarDir(new File("www")); // TODO: remove this hardcorded
+			options.setWarDir(new File("war")); // TODO: remove this hardcorded
 												// stuff.
 			new com.google.gwt.dev.Link(options).run(logger);
 		} catch (UnableToCompleteException e) {

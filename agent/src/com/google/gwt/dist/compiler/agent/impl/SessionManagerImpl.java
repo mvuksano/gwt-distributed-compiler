@@ -54,9 +54,6 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	}
 
 	public void processConnection(Socket client) {
-		System.out
-				.println("Started Thread " + Thread.currentThread().getName());
-		System.out.println("Processing connection");
 		byte[] receivedData = communicator.getData(client);
 		if (isCommMessage(receivedData)) {
 			CommMessage<CommMessageResponse> message = getCommMessage(receivedData);
@@ -65,8 +62,6 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		} else {
 		}
 		communicator.closeConnection(client);
-		System.out.println("Finished Thread "
-				+ Thread.currentThread().getName());
 	}
 
 	public void setCompressor(ZipCompressor compressor) {
