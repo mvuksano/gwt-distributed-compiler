@@ -7,11 +7,33 @@
 	http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd">
 
 	<bean id="application" class="com.google.gwt.dist.Application">
+		<constructor-arg name="communicator" ref="communicator"/>
+		<constructor-arg name="compressor" ref="compressor"/>
+		<constructor-arg name="decompressor" ref="decompressor"/>
+		<constructor-arg name="distributor" ref="distributor"/>
+		<constructor-arg name="treeLogger" ref="treeLogger"/>
 		<property name="marshaller" ref="castorMarshaller" />
 		<property name="unmarshaller" ref="castorMarshaller" />
 	</bean>
+	
 	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
 		<property name="mappingLocation" value="classpath:castor.xml" />
+	</bean>
+	
+	
+	<bean id="communicator" class="com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl">
+	</bean>
+	
+	<bean id="compilerOptions" class="com.google.gwt.dist.compiler.CompilerOptionsImpl">
+	</bean>
+	
+	<bean id="compressor" class="com.google.gwt.dist.util.ZipCompressor">
+	</bean>
+	
+	<bean id="decompressor" class="com.google.gwt.dist.util.ZipDecompressor">
+	</bean>
+	
+	<bean id="distributor" class="com.google.gwt.dist.compiler.communicator.impl.DistributorImpl">
 	</bean>
 	
 	<bean id="link" class="com.google.gwt.dist.linker.Link">
@@ -20,13 +42,12 @@
 		</constructor-arg>
 	</bean>
 	
-	<bean id="compilerOptions" class="com.google.gwt.dist.compiler.CompilerOptionsImpl">
-	</bean>
-	
 	<bean id="linkOptions" class="com.google.gwt.dist.link.LinkOptionsImpl">
 	</bean>
 	
 	<bean id="precompileOptions" class="com.google.gwt.dist.precompile.PrecompileOptionsImpl">
 	</bean>
+	
+	<bean id="treeLogger" class="com.google.gwt.dev.util.log.PrintWriterTreeLogger"/>
 
 </beans>

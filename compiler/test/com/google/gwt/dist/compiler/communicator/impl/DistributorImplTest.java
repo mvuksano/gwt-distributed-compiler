@@ -34,7 +34,7 @@ public class DistributorImplTest {
 		nodes.add(node2);
 		
 		Distributor distributor = new DistributorImpl();
-		Map<Node, int[]> distributed = distributor.distribute(options, nodes);
+		Map<Node, int[]> distributed = distributor.distribute(new int[] { 0, 1, 2, 3, 4, 5 }, nodes);
 		
 		Assert.assertEquals(distributed.get(node1).length, 3);
 		Assert.assertEquals(distributed.get(node2).length, 3);

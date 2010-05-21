@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,17 +21,18 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.dev.ArgProcessorBase;
 import com.google.gwt.dev.CompileTaskOptions;
 import com.google.gwt.dev.CompilerOptions;
+import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dev.util.arg.ArgHandlerLogLevel;
 import com.google.gwt.dev.util.arg.ArgHandlerModuleName;
 import com.google.gwt.dev.util.arg.ArgHandlerTreeLoggerFlag;
 import com.google.gwt.dev.util.arg.ArgHandlerWorkDirRequired;
-import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.compiler.Precompile;
 import com.google.gwt.dist.compiler.communicator.Communicator;
-import com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl;
+import com.google.gwt.dist.compiler.communicator.Distributor;
 import com.google.gwt.dist.compiler.impl.SessionManagerImpl;
 import com.google.gwt.dist.link.LinkOptionsImpl;
 import com.google.gwt.dist.linker.Link;
+import com.google.gwt.dist.perms.CompilePermsOptionsImpl;
 import com.google.gwt.dist.precompile.PrecompileOptionsImpl;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -60,7 +62,12 @@ public class Application {
 		}
 	}
 
+	private Communicator communicator;
+	private ZipCompressor compressor;
+	private ZipDecompressor decompressor;
+	private Distributor distributor;
 	private Marshaller marshaller;
+	private TreeLogger treeLogger;
 	private Unmarshaller unmarshaller;
 	private AgentsSettings settings;
 	private static String AGENTS_SETTINGS_FILE_LOCATION = "config.xml";
@@ -68,10 +75,21 @@ public class Application {
 	private static final Logger logger = Logger.getLogger(Application.class
 			.getName());
 
+	public Application(Communicator communicator, ZipCompressor compressor,
+			ZipDecompressor decompressor, Distributor distributor,
+			TreeLogger treeLogger) {
+		this.communicator = communicator;
+		this.compressor = compressor;
+		this.decompressor = decompressor;
+		this.distributor = distributor;
+		this.treeLogger = treeLogger;
+	}
+
 	public static void main(String[] args) {
-		ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
-//		ApplicationContext appContext = new FileSystemXmlApplicationContext(
-//				new File("/config/applicationContext.xml").toString());
+		ApplicationContext appContext = new ClassPathXmlApplicationContext(
+				"applicationContext.xml");
+		// ApplicationContext appContext = new FileSystemXmlApplicationContext(
+		// new File("/config/applicationContext.xml").toString());
 		Application app = (Application) appContext.getBean("application");
 		app.loadSettings();
 		CompilerOptions options = (CompilerOptions) appContext
@@ -85,22 +103,27 @@ public class Application {
 
 		List<Node> nodes = this.settings.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
-		// TODO: use springframework for this.
-		Communicator communicator = new CommunicatorImpl();
-		ZipCompressor compressor = new ZipCompressor();
-		ZipDecompressor decompressor = new ZipDecompressor();
-		for (Node n : nodes) {
-			sessionManagers.add(new SessionManagerImpl(communicator, n,
-					compressor, decompressor));
-		}
-
-		TreeLogger logger = new PrintWriterTreeLogger();
 		PrecompileOptionsImpl precompileOptions = new PrecompileOptionsImpl(
 				options);
 		Precompile precompile = new Precompile(precompileOptions);
-		precompile.run(logger);
+		precompile.run(treeLogger);
 
 		boolean precompileFinished = false;
+		CompilePermsOptions compilePermsOptions = new CompilePermsOptionsImpl(
+				options);
+		compilePermsOptions.setPermsToCompile(new int[] { 1, 2, 3, 4, 5 });
+		Map<Node, int[]> distributionMatrix = distributor.distribute(
+				compilePermsOptions.getPermsToCompile(), nodes);
+
+		for (Node n : nodes) {
+			CompilePermsOptions customizedCompilePermsOptions = new CompilePermsOptionsImpl(
+					options);
+			customizedCompilePermsOptions.setPermsToCompile(distributionMatrix
+					.get(n));
+			sessionManagers.add(new SessionManagerImpl(communicator, n,
+					customizedCompilePermsOptions, compressor, decompressor));
+		}
+
 		while (!precompileFinished) {
 			for (SessionManager sm : sessionManagers) {
 				precompileFinished = sm.start(options);
@@ -113,7 +136,7 @@ public class Application {
 
 		LinkOptionsImpl linkOptions = new LinkOptionsImpl(options);
 		Link link = new Link(linkOptions);
-		link.run(logger);
+		link.run(treeLogger);
 	}
 
 	public Marshaller getMarshaller() {
@@ -135,7 +158,8 @@ public class Application {
 	protected AgentsSettings loadSettings() {
 		InputStream is = null;
 		try {
-			is = new ClassPathResource(AGENTS_SETTINGS_FILE_LOCATION).getInputStream();
+			is = new ClassPathResource(AGENTS_SETTINGS_FILE_LOCATION)
+					.getInputStream();
 			this.settings = (AgentsSettings) this.unmarshaller
 					.unmarshal(new StreamSource(is));
 		} catch (XmlMappingException e) {

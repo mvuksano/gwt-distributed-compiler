@@ -38,7 +38,8 @@ public class SessionManagerImpl implements SessionManager {
 	private Node node;
 
 	public SessionManagerImpl(Communicator communicator, Node node,
-			ZipCompressor compressor, ZipDecompressor decompressor) {
+			CompilePermsOptions options, ZipCompressor compressor,
+			ZipDecompressor decompressor) {
 		this.compressor = compressor;
 		this.decompressor = decompressor;
 		this.communicator = communicator;
@@ -95,7 +96,8 @@ public class SessionManagerImpl implements SessionManager {
 					message.setOptions(options);
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
-					CompilePermsOptions cpOptions = new CompilePermsOptionsImpl(options);
+					CompilePermsOptions cpOptions = new CompilePermsOptionsImpl(
+							options);
 					cpOptions.setLocalWorkers(2);
 					payload.setCompilePermsOptions(cpOptions);
 					message.setResponse(payload);

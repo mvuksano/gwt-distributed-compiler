@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import org.testng.annotations.BeforeClass;
 
+import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.compiler.communicator.Communicator;
@@ -13,6 +14,7 @@ import com.google.gwt.dist.util.ZipDecompressor;
 public class SessionManagerImplTest {
 
 	Communicator communicator;
+	CompilePermsOptions compilePermsOptions;
 	ZipCompressor compressor;
 	ZipDecompressor decompressor;
 	SessionManager sessionManager;
@@ -21,9 +23,10 @@ public class SessionManagerImplTest {
 	@BeforeClass
 	public void init() {
 		communicator = mock(Communicator.class);
+		compilePermsOptions = mock(CompilePermsOptions.class);
 		compressor = mock(ZipCompressor.class);
 		decompressor = mock (ZipDecompressor.class);
 		node = mock(Node.class);
-		sessionManager = new SessionManagerImpl(communicator, node, compressor, decompressor);
+		sessionManager = new SessionManagerImpl(communicator, node, compilePermsOptions, compressor, decompressor);
 	}
 }

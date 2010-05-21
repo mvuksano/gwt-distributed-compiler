@@ -7,11 +7,8 @@ import java.util.Map;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gwt.dev.CompilerOptions;
-import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.compiler.communicator.Distributor;
-import com.google.gwt.dist.perms.CompilePermsOptionsImpl;
 
 /**
  * Distributor implementation. This is the most simple distribution
@@ -28,9 +25,9 @@ public class DistributorImpl implements Distributor {
 	 *            Nodes across which to distribute.
 	 * @return Map which maps an array of permutations to a node.
 	 */
-	public Map<Node, int[]> distribute(CompilePermsOptions options, List<Node> nodes) {
+	public Map<Node, int[]> distribute(int[] permsToDistribute, List<Node> nodes) {
 		Multimap<Node, Integer> map = HashMultimap.create();
-		for (int i = 0; i < options.getPermsToCompile().length; i++) {
+		for (int i = 0; i < permsToDistribute.length; i++) {
 			int temp = i % nodes.size();
 			map.put(nodes.get(temp), Integer.valueOf(i));
 		}
