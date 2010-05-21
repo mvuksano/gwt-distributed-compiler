@@ -55,9 +55,6 @@ public class CompilePermsService implements Runnable {
 			TreeLogger logger = new PrintWriterTreeLogger();
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
 
-			// Compile Perms using the input data stored in tempStorage.
-			int perms[] = { 0, 1, 2, 3, 4, 5 };
-			options.setPermsToCompile(perms);
 			options.setWorkDir(new File(tempStorage + File.separator + options.getWorkDir()));
 
 			compilePermsStarted();
