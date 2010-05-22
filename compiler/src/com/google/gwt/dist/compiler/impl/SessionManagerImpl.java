@@ -131,10 +131,10 @@ public class SessionManagerImpl implements SessionManager {
 		File source = new File(System.getProperty("user.dir"));
 
 		ByteArrayOutputStream srcFolder = compressor.archiveAndCompressDir(
-				new File(source + "\\src"), true);
+				new File(source + File.separator + "src"), true);
 
 		ByteArrayOutputStream workFolder = compressor.archiveAndCompressDir(
-				new File(source + "\\work"), true);
+				new File(source + File.separator + "work"), true);
 
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(srcFolder
 				.toByteArray());

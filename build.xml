@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="gwt-distributed-compiler" default="build" basedir=".">
-  <target name="build" description="Build the product.">
+  <target name="clean" description="Clean.">
+    <delete dir="{dist}"/>
+  </target>
+
+  <target name="init" description="Initialize.">
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="build" description="Run build target for each of the components.">
+    <ant antfile="${basedir}/compiler/build.xml" useNativeBasedir="true" target="build"/>
     <ant antfile="${basedir}/agent/build.xml" useNativeBasedir="true" target="build"/>
   </target>
+
+  <target name="dist" depends="build" description="Run dist target for each of the components.">
+    <ant antfile="${basedir}/compiler/build.xml" useNativeBasedir="true" target="dist"/>
+    <ant antfile="${basedir}/agent/build.xml" useNativeBasedir="true" target="dist"/>
+  </target>
+
 </project>

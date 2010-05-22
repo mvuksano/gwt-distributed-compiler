@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="gwt-distributed-compiler-client" default="build" basedir=".">
-  <property name="gwt.sdk" location="D:\Devel\gwt\trunk\build\staging\gwt-0.0.0" />
+  <property name="gwt.sdk"      location="\home\markovuksanovic\devel\gwt\trunk\build\staging\gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
   <property name="core"     	location="../core"/>
@@ -46,5 +46,8 @@
 
   <target name="build" depends="copy" description="Build this project." >
     <jar destfile="${build}\${module.name}.jar" basedir="${classes}" />
+  </target>
+
+  <target name="dist" depends="build" description="Create distributable files." >
   </target>
 </project>
