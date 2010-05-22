@@ -1,5 +1,5 @@
 <ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
-    <info organisation="com.google.gwt.dist" module="gwt-distributed-compiler-agent"/>
+    <info organisation="com.google.gwt.dist" module="gwt-distributed-compiler-compiler"/>
     <dependencies>
       <dependency org="org.apache.log4j" name="com.springsource.org.apache.log4j" rev="1.2.15" />
       <dependency org="org.aopalliance" name="com.springsource.org.aopalliance" rev="1.0.0" />
@@ -7,3 +7,4 @@
       <dependency org="org.springframework" name="org.springframework.context" rev="3.0.2.RELEASE" />
     </dependencies>
 </ivy-module>
+

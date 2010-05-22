@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="gwt-distributed-compiler-client" default="build" basedir=".">
-  <property name="gwt.sdk"      location="\home\markovuksanovic\devel\gwt\trunk\build\staging\gwt-0.0.0" />
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="gwt-distributed-compiler-client" default="build" basedir=".">
+  <property name="gwt.sdk"      location="D:\devel\gwt\trunk\build\staging\gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
   <property name="core"     	location="../core"/>
@@ -8,7 +8,9 @@
   <property name="module.name"  value="${ant.project.name}"/>
   <property name="lib"          location="lib"/>
   <property name="module.name"  value="${ant.project.name}"/>
-
+	
+  <ivy:settings file="ivysettings.xml" />
+	
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
     <fileset dir="${lib}" includes="*.jar" />
@@ -19,7 +21,12 @@
   	<delete dir="${classes}"/>
   </target>
 	
-  <target name="init" description="Create directories.">
+  <target name="retrieve">
+	<ivy:resolve/>
+	<ivy:retrieve/>
+  </target>
+	
+  <target name="init" depends="retrieve" description="Create directories.">
   	<mkdir dir="${build}"/>
   	<mkdir dir="${classes}"/>
   </target>
