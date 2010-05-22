@@ -14,38 +14,26 @@
 	
   <ivy:settings file="ivysettings.xml" />
 
-  <path id="lib.class.path">
-  	<fileset dir="lib" includes="*.jar" />
-  </path>
-	
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
-  	<pathelement path="${lib.class.path}"/>
-  </path>
-	
-  <path id="exec.class.path">
-	<fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
-	<fileset dir="${build}"/>
+    <fileset dir="${lib}" />
   </path>
 	
   <target name="clean" description="Cleans this project.">
-	<delete dir="${build}"/>
-	<delete dir="${classes}"/>
-	<delete dir="${dist}"/>
-  </target>
-	
-  <target name="resolve">
-    <ivy:resolve/>
+    <delete dir="${build}"/>
+    <delete dir="${classes}"/>
+    <delete dir="${dist}"/>
   </target>
 	
   <target name="retrieve">
+    <ivy:resolve/>
     <ivy:retrieve/>
   </target>
 	
-  <target name="init" description="Create directories.">
-  	<mkdir dir="${build}"/>
-  	<mkdir dir="${classes}"/>
-  	<mkdir dir="${dist}"/>
+  <target name="init" depends="retrieve" description="Create directories.">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${classes}"/>
+    <mkdir dir="${dist}"/>
   </target>
 
   <target name="javac" depends="init" description="Compile java source.">
@@ -58,23 +46,21 @@
   </target>
 
   <target name="build" depends="javac" description="Build this project." >
-  	<manifestclasspath property="manifest.classpath" jarfile="${build}\${module.name}.jar">
-  	  <classpath refid="lib.class.path" />
-  	</manifestclasspath>
     <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
-  	</jar>
+    </jar>
   </target>
 	
   <target name="dist" depends="build" description="Deploy the project.">
-  	<copy todir="${dist}">
-  	  <fileset dir="${build}" />
-  	</copy>
-  	<copy todir="${dist}\lib">
-  		<fileset dir="${lib}" />
-  	</copy>
-  	<copy todir="${dist}\config">
-  		<fileset dir="${config}" />
-  	</copy>
+    <copy todir="${dist}">
+      <fileset dir="${build}" />
+    </copy>
+    <copy todir="${dist}\lib">
+      <fileset dir="${lib}" />
+    </copy>
+    <copy todir="${dist}\config">
+      <fileset dir="${config}" />
+    </copy>
+    <copy file="start.sh" todir="${dist}"/>
   </target>
 
 </project>

@@ -1,7 +1,8 @@
 <ivy-module version="2.0">
     <info organisation="apache" module="hello-ivy"/>
     <dependencies>
-    	<dependency org="org.aopalliance" name="com.springsource.org.aopalliance" rev="1.0.0" />
-    	<dependency org="org.apache.commons" name="com.springsource.org.apache.commons.logging" rev="1.1.1" />
+      <dependency org="org.springframework" name="org.springframework.context" rev="3.0.2.RELEASE" />
+      <dependency org="org.aopalliance" name="com.springsource.org.aopalliance" rev="1.0.0" />
+      <dependency org="org.apache.commons" name="com.springsource.org.apache.commons.logging" rev="1.1.1" />
     </dependencies>
 </ivy-module>
