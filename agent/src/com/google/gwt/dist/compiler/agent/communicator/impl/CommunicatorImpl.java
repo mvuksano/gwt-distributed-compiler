@@ -1,7 +1,5 @@
 package com.google.gwt.dist.compiler.agent.communicator.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -16,10 +14,7 @@ import java.util.regex.Pattern;
 
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessageResponse;
-import com.google.gwt.dist.comm.ProcessingStateResponse;
-import com.google.gwt.dist.comm.ReturnResultResponse;
 import com.google.gwt.dist.comm.SendDataPayload;
-import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
@@ -61,64 +56,40 @@ public class CommunicatorImpl implements Communicator {
 		}
 	}
 
-	public byte[] getData(Socket client) {
+	@SuppressWarnings("unchecked")
+	public CommMessage<CommMessageResponse> getData(Socket client) {
 		logger.log(Level.INFO, "Getting data from client: "
 				+ client.getInetAddress());
-
-		ByteArrayOutputStream receivedObject = null;
+		CommMessage<CommMessageResponse> message = null;
 		try {
 			InputStream is = client.getInputStream();
-
-			// Read contents of the stream and store it into a byte array.
-			byte[] buff = new byte[512];
-			int bytesRead = 0;
-			receivedObject = new ByteArrayOutputStream();
-			while ((bytesRead = is.read(buff)) > -1) {
-				receivedObject.write(buff, 0, bytesRead);
-			}
-
+			ObjectInputStream ois = new ObjectInputStream(is);
+			message = (CommMessage<CommMessageResponse>) ois.readObject();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE,
-					"There was a problem while getting data from client "
-							+ client.getInetAddress());
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-		return receivedObject.toByteArray();
+
+		return message;
 	}
 
 	public SessionManager getSessionManager() {
 		return this.sessionManager;
 	}
 
-	/**
-	 * Processes the incoming CommMessage and returns a modified one. CANDIDATE
-	 * FOR REMOVAL.
-	 * 
-	 * @param message
-	 *            The message to process.
-	 * @return Updated message.
-	 */
-	public CommMessage<ProcessingStateResponse> processCommMessage(
-			CommMessage<ProcessingStateResponse> message) {
-		ProcessingStateResponse response = new ProcessingStateResponse();
-		if (message.getCommMessageType() == CommMessageType.QUERY) {
-			((ProcessingStateResponse) response)
-					.setCurrentState(this.sessionManager.getProcessingState());
-			message.setResponse(response);
-		}
-		message.setResponse(response);
-		return message;
-	}
-
 	public void setSessionManager(SessionManager sessionManager) {
 		this.sessionManager = sessionManager;
 	}
 
-	public void sendData(byte[] data, Socket client) {
-		OutputStream os;
+	public void sendData(CommMessage<CommMessageResponse> message, Socket client) {
 		try {
-			os = client.getOutputStream();
-			os.write(data);
-			client.shutdownOutput();
+			OutputStream os = client.getOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			oos.writeObject(message);
+			oos.flush();
+			oos.close();
+			os.close();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,
 					"There was a problem while sending data to client "
@@ -128,89 +99,11 @@ public class CommunicatorImpl implements Communicator {
 
 	@Override
 	public void serveClient(Socket client) {
-		try {
-			logger.log(Level.INFO, "Accepted a connection from: "
-					+ client.getInetAddress());
-			OutputStream os = client.getOutputStream();
-			InputStream is = client.getInputStream();
 
-			// Read contents of the stream and store it into a byte array.
-			byte[] buff = new byte[512];
-			int bytesRead = 0;
-			ByteArrayOutputStream receivedObject = new ByteArrayOutputStream();
-			while ((bytesRead = is.read(buff)) > -1) {
-				receivedObject.write(buff, 0, bytesRead);
-			}
-
-			// Check if received stream is CommMessage or not.
-			CommMessage<ProcessingStateResponse> commMessage = getCommMessage(receivedObject);
-			if (commMessage != null) {
-				commMessage = processCommMessage(commMessage);
-				commMessage.setResponse(decideResponse(commMessage));
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(bos);
-				oos.writeObject(commMessage);
-				os.write(bos.toByteArray());
-			} else {
-				ByteArrayInputStream bais = new ByteArrayInputStream(
-						receivedObject.toByteArray());
-				ObjectInputStream ois = new ObjectInputStream(bais);
-				dataReceived((SendDataPayload) ois.readObject());
-			}
-			client.shutdownOutput();
-			is.close();
-			os.close();
-			client.close(); // ???
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage());
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * THIS NEEDS TO BE REWORKED.
-	 * @param baos
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private CommMessage<ProcessingStateResponse> getCommMessage(
-			ByteArrayOutputStream baos) {
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(baos
-					.toByteArray());
-			ObjectInputStream ois = new ObjectInputStream(bis);
-			return (CommMessage<ProcessingStateResponse>) ois.readObject();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
-		}
-		return null;
 	}
 
 	@Override
 	public void addDataReceivedListener(DataReceivedListener listener) {
 		dataReceivedListeners.add(listener);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends CommMessageResponse> T decideResponse(
-			CommMessage<T> message) {
-		T responseToReturn = null;
-		switch (message.getCommMessageType()) {
-		case DELIVERY_DATA:
-
-			break;
-		case ECHO:
-			responseToReturn = message.getResponse();
-			break;
-		case QUERY:
-			responseToReturn = (T) new ProcessingStateResponse(
-					this.sessionManager.getProcessingState());
-			break;
-		case RETURN_RESULT:
-			responseToReturn = (T) new ReturnResultResponse();
-			break;
-		}
-		return responseToReturn;
 	}
 }

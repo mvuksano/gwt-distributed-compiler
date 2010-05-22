@@ -122,10 +122,7 @@ public class Application {
 					customizedCompilePermsOptions, compressor, decompressor));
 		}
 
-		Map<SessionManager, Boolean> sessionManagerStatusList = new HashMap<SessionManager, Boolean>();
-		for (SessionManager sm : sessionManagers) {
-			sessionManagerStatusList.put(sm, Boolean.valueOf(false));
-		}
+		Map<SessionManager, Boolean> sessionManagerStatusList = initializeSessionManagerStatusList(sessionManagers);
 
 		while (!allSessionManagersFinished(sessionManagers,
 				sessionManagerStatusList)) {
@@ -200,5 +197,14 @@ public class Application {
 			}
 		}
 		return finished;
+	}
+
+	private Map<SessionManager, Boolean> initializeSessionManagerStatusList(
+			List<SessionManager> sessionManagers) {
+		Map<SessionManager, Boolean> sessionManagerStatusList = new HashMap<SessionManager, Boolean>();
+		for (SessionManager sm : sessionManagers) {
+			sessionManagerStatusList.put(sm, Boolean.valueOf(false));
+		}
+		return sessionManagerStatusList;
 	}
 }

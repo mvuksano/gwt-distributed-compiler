@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nodes>
 	<node>
-		<ipaddress>192.168.1.239</ipaddress>
-		<port>3000</port>
-	</node>
-	<node>
 		<ipaddress>localhost</ipaddress>
 		<port>3000</port>
 	</node>

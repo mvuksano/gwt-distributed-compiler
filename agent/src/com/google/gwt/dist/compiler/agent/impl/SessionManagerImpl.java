@@ -1,9 +1,7 @@
 package com.google.gwt.dist.compiler.agent.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
@@ -16,7 +14,6 @@ import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.processor.DataProcessor;
 import com.google.gwt.dist.impl.SendDataMessage;
-import com.google.gwt.dist.util.Util;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -54,13 +51,9 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	}
 
 	public void processConnection(Socket client) {
-		byte[] receivedData = communicator.getData(client);
-		if (isCommMessage(receivedData)) {
-			CommMessage<CommMessageResponse> message = getCommMessage(receivedData);
-			message.setResponse(decideResponse(message));
-			communicator.sendData(Util.objectToByteArray(message), client);
-		} else {
-		}
+		CommMessage<CommMessageResponse> message = communicator.getData(client);
+		message.setResponse(decideResponse(message));
+		communicator.sendData(message, client);
 		communicator.closeConnection(client);
 	}
 
@@ -74,20 +67,6 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 
 	public void setCommunicator(Communicator communicator) {
 		this.communicator = communicator;
-	}
-
-	@SuppressWarnings("unchecked")
-	private CommMessage<CommMessageResponse> getCommMessage(byte[] data) {
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(data);
-			ObjectInputStream ois = new ObjectInputStream(bis);
-			return (CommMessage<CommMessageResponse>) ois.readObject();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
-		} catch (ClassCastException e) {
-			return null;
-		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,14 +106,6 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			break;
 		}
 		return responseToReturn;
-	}
-
-	private boolean isCommMessage(byte[] receivedData) {
-		CommMessage<?> message = getCommMessage(receivedData);
-		if (message != null) {
-			return true;
-		}
-		return false;
 	}
 
 	@Override

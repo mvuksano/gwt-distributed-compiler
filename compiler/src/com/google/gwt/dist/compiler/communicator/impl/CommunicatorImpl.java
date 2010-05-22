@@ -79,19 +79,21 @@ public class CommunicatorImpl implements Communicator {
 		
 		try {
 			Socket server = new Socket(node.getIpaddress(), node.getPort());
-			InputStream is = server.getInputStream();
 			OutputStream os = server.getOutputStream();
+			InputStream is = server.getInputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(os); oos.flush();
 			
 			RequestProcessingResultMessage message = new RequestProcessingResultMessage();
-			ObjectOutputStream oos = new ObjectOutputStream(os);
 			oos.writeObject(message);
-			server.shutdownOutput();
-			
-			ObjectInputStream receivedObject = new ObjectInputStream(is);
-			message = (RequestProcessingResultMessage)receivedObject.readObject();
+			oos.flush();
+
+			ObjectInputStream ois = new ObjectInputStream(is);
+			message = (RequestProcessingResultMessage)ois.readObject();
 			retrievedData = message.getResponse().getResponseValue();
 
+			oos.close();
 			os.close();
+			ois.close();
 			is.close();
 			server.close();
 		} catch (UnknownHostException e) {
