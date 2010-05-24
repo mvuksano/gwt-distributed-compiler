@@ -3,11 +3,12 @@
   <test name="com.google.gwt.dist.compiler">
     <classes>
        <class name="com.google.gwt.dist.compiler.AgentsSettingsTest" />
+       <class name="com.google.gwt.dist.compiler.ApplicationTest" />
     </classes>
   </test>
-  <test name="com.google.gwt.dist.compiler.communicator">
+  <test name="com.google.gwt.dist.compiler.communicator.impl">
     <classes>
-       <class name="com.google.gwt.dist.compiler.communicator.CommunicatorTest" />
+       <class name="com.google.gwt.dist.compiler.communicator.impl.DistributorImplTest" />
     </classes>
   </test>
   <test name="com.google.gwt.dist.compiler.impl">

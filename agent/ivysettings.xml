@@ -3,9 +3,8 @@
 	<settings defaultResolver="default-chain" />
 	<resolvers>
 		<chain name="default-chain">
-		<ibiblio name="ibiblio" />
 		<ibiblio name="oss.sonatype.content.google-with-staging" m2compatible="true" root="http://oss.sonatype.org/content/groups/google-with-staging" /> 
-
+		<ibiblio name="oss.sonatype.central" m2compatible="true" root="http://oss.sonatype.org/service/local/repositories/central/content"/>
 		<url name="com.springsource.repository.bundles.release">
 			<ivy pattern="http://repository.springsource.com/ivy/bunles/release/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />
 			<artifact pattern="http://repository.springsource.com/ivy/bundles/release/[organisation]/[module]/[revision]/[artifact]-[revision].[ext]" />

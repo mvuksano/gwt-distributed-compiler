@@ -19,6 +19,8 @@
     <fileset dir="${lib}" />
   </path>
 	
+  <taskdef name="testng" classpathref="project.class.path" classname="org.testng.TestNGAntTask" />
+
   <target name="clean" description="Cleans this project.">
     <delete dir="${build}"/>
     <delete dir="${classes}"/>
@@ -40,15 +42,30 @@
     <javac srcdir="..\core\src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
-  	<javac srcdir="src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
+    <javac srcdir="src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
+    <javac srcdir="test" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+ <target name="test" depends="javac" description="Run tests.">
+    <testng>
+      <classpath>
+        <path refid="project.class.path"/>
+        <pathelement location="classes"/>
+      </classpath>
+      <classfileset dir="classes" includes="**/*Test.class"/>
+    </testng>
   </target>
 
   <target name="build" depends="javac" description="Build this project." >
     <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
     </jar>
   </target>
+
+
 	
   <target name="dist" depends="build" description="Deploy the project.">
     <copy todir="${dist}">
