@@ -1,19 +1,22 @@
 package com.google.gwt.dist;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.UUID;
 
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.XmlMappingException;
@@ -71,10 +74,9 @@ public class Application {
 	private TreeLogger treeLogger;
 	private Unmarshaller unmarshaller;
 	private AgentsSettings settings;
-	private static String AGENTS_SETTINGS_FILE_LOCATION = "config.xml";
+	private static String AGENTS_SETTINGS = "config.xml";
 
-	private static final Logger logger = Logger.getLogger(Application.class
-			.getName());
+	private static final Logger logger = Logger.getLogger(Application.class);
 
 	public Application(Communicator communicator, ZipCompressor compressor,
 			ZipDecompressor decompressor, Distributor distributor,
@@ -90,7 +92,11 @@ public class Application {
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
 				"applicationContext.xml");
 		Application app = (Application) appContext.getBean("application");
-		app.loadSettings();
+		Resource resource = new ClassPathResource(AGENTS_SETTINGS);
+		app.loadSettings(resource);
+		if (!app.validUUID(app.getSettings())){
+			app.saveSettings(resource);
+		}
 		CompilerOptions options = (CompilerOptions) appContext
 				.getBean("compilerOptions");
 		if (new DistCompilerArgProcessor(options).processArgs(args)) {
@@ -151,28 +157,43 @@ public class Application {
 	public Unmarshaller getUnmarshaller() {
 		return this.unmarshaller;
 	}
+	
+	/**
+	 * Check if correct settings are present.
+	 * @param settings Settings to be checked.
+	 * @return True if correct settings were present. False otherwise.
+	 */
+	protected boolean validUUID(AgentsSettings settings) {
+		if (settings.getUUID().equals("")) {
+			settings.setUUID(UUID.randomUUID().toString());
+			return false;
+		}
+		return true;
+	}
 
 	/**
 	 * Loads settings from Application.AGENTS_SETTINGS_FILE_LOCATION TODO:
 	 * Candidate for refactoring - File might be supplied as parameter.
 	 */
-	protected AgentsSettings loadSettings() {
+	protected AgentsSettings loadSettings(Resource resource) {
 		InputStream is = null;
 		try {
-			is = new ClassPathResource(AGENTS_SETTINGS_FILE_LOCATION)
-					.getInputStream();
+			is = resource.getInputStream();
 			this.settings = (AgentsSettings) this.unmarshaller
 					.unmarshal(new StreamSource(is));
 		} catch (XmlMappingException e) {
-			logger.log(Level.SEVERE, e.getMessage());
+			logger.error("There was a problem while mapping xml file: "
+					+ e.getMessage());
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage());
+			logger.error("Error while reading file: " + e.getMessage());
 		} finally {
 			if (is != null) {
 				try {
 					is.close();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, e.getMessage());
+					logger
+							.error("There was a problem closing configuration file: "
+									+ e.getMessage());
 				}
 			}
 		}
@@ -182,9 +203,29 @@ public class Application {
 	public void setMarshaller(Marshaller m) {
 		this.marshaller = m;
 	}
+	
+	public void setSettings(AgentsSettings settings) {
+		this.settings = settings;
+	}
 
 	public void setUnmarshaller(Unmarshaller um) {
 		this.unmarshaller = um;
+	}
+
+	public void saveSettings(Resource resource ) {
+		try {
+			FileWriter writer = new FileWriter(resource.getFile());
+			marshaller.marshal(this.settings, new StreamResult(writer));
+			writer.close();
+		} catch (XmlMappingException e) {
+			logger.error("There was a problem while mapping xml file: "
+					+ e.getMessage());
+		} catch (IOException e) {
+			logger
+					.error("There was a problem with reading or writing to the configuration file: "
+							+ e.getMessage());
+		}
+
 	}
 
 	protected boolean allSessionManagersFinished(

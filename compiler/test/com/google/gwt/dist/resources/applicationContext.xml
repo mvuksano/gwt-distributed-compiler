@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/oxm
+	http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd">
+
+	<bean id="application" class="com.google.gwt.dist.Application">
+		<constructor-arg name="communicator" ref="communicator"/>
+		<constructor-arg name="compressor" ref="compressor"/>
+		<constructor-arg name="decompressor" ref="decompressor"/>
+		<constructor-arg name="distributor" ref="distributor"/>
+		<constructor-arg name="treeLogger" ref="treeLogger"/>
+		<property name="marshaller" ref="castorMarshaller" />
+		<property name="unmarshaller" ref="castorMarshaller" />
+	</bean>
+	
+	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
+		<property name="mappingLocation" value="classpath:castor.xml" />
+	</bean>
+	
+	
+	<bean id="communicator" class="com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl">
+	</bean>
+	
+	<bean id="compilerOptions" class="com.google.gwt.dist.compiler.CompilerOptionsImpl">
+	</bean>
+	
+	<bean id="compressor" class="com.google.gwt.dist.util.ZipCompressor">
+	</bean>
+	
+	<bean id="decompressor" class="com.google.gwt.dist.util.ZipDecompressor">
+	</bean>
+	
+	<bean id="distributor" class="com.google.gwt.dist.compiler.communicator.impl.DistributorImpl">
+	</bean>
+	
+	<bean id="link" class="com.google.gwt.dist.linker.Link">
+		<constructor-arg>
+			<ref bean="linkOptions" />
+		</constructor-arg>
+	</bean>
+	
+	<bean id="linkOptions" class="com.google.gwt.dist.link.LinkOptionsImpl">
+	</bean>
+	
+	<bean id="precompileOptions" class="com.google.gwt.dist.precompile.PrecompileOptionsImpl">
+	</bean>
+	
+	<bean id="treeLogger" class="com.google.gwt.dev.util.log.PrintWriterTreeLogger"/>
+
+</beans>

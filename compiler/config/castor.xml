@@ -3,23 +3,23 @@
 "http://castor.exolab.org/mapping.dtd">
 
 <mapping>
-	<description>Description of the mapping</description>
-	<!-- mapping for class 'AgentSettings' -->
 	<class name="com.google.gwt.dist.AgentsSettings">
-		<map-to xml="nodes"/>
-		<field name="nodes" type="com.google.gwt.dist.impl.NodeImpl" collection="arraylist">
-			<bind-xml name="node" node="element"/>
+		<map-to xml="settings" />
+		<field name="UUID" type="java.lang.String">
+			<bind-xml name="uuid" node="element" />
+		</field>
+		<field name="nodes" type="com.google.gwt.dist.impl.NodeImpl"
+			collection="arraylist">
+			<bind-xml name="node" node="element" location="nodes" />
 		</field>
 	</class>
 
-	<!-- mapping for class 'NodeImpl' -->
 	<class name="com.google.gwt.dist.impl.NodeImpl">
 		<field name="ipaddress" type="string">
-			<bind-xml name="ipaddress" node="element"/>
+			<bind-xml name="ipaddress" node="element" />
 		</field>
 		<field name="port" type="integer">
-			<bind-xml name="port" node="element"/>
+			<bind-xml name="port" node="element" />
 		</field>
 	</class>
-
 </mapping>

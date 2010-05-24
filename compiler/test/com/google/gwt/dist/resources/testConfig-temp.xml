@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings><uuid>2ba1c8a3-2928-4546-a41d-085bb2051d72</uuid><nodes><node><ipaddress>localhost</ipaddress><port>3000</port></node><node><ipaddress>192.168.1.239</ipaddress><port>3000</port></node></nodes></settings>
