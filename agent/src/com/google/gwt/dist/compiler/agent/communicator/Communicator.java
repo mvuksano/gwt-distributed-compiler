@@ -3,7 +3,7 @@ package com.google.gwt.dist.compiler.agent.communicator;
 import java.net.Socket;
 
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.events.DataReceivedListener;
 
@@ -30,7 +30,7 @@ public interface Communicator {
 	 * Gets data from a client
 	 * @return
 	 */
-	CommMessage<CommMessageResponse> getData(Socket client);
+	CommMessage<CommMessagePayload> getData(Socket client);
 	
 	SessionManager getSessionManager();
 	
@@ -38,7 +38,7 @@ public interface Communicator {
 	 * Send data towards a client. 
 	 * @param client
 	 */
-	void sendData(CommMessage<CommMessageResponse> message, Socket client);
+	void sendData(CommMessage<CommMessagePayload> message, Socket client);
 	
 	void setSessionManager(SessionManager sessionManager);
 

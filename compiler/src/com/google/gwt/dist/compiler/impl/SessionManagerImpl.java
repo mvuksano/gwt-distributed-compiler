@@ -11,16 +11,19 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
+import com.google.gwt.dist.Application;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
+import com.google.gwt.dist.comm.ReturnResultPayload;
 import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.ProcessingStateMessage;
+import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -30,15 +33,17 @@ import com.google.gwt.dist.util.ZipDecompressor;
  */
 public class SessionManagerImpl implements SessionManager {
 
+	private Application application;
 	private CompilePermsOptions compilePermsOptions;
 	private ZipCompressor compressor;
 	private ZipDecompressor decompressor;
 	private Communicator communicator;
 	private Node node;
 
-	public SessionManagerImpl(Communicator communicator, Node node,
-			CompilePermsOptions options, ZipCompressor compressor,
-			ZipDecompressor decompressor) {
+	public SessionManagerImpl(Application application,
+			Communicator communicator, Node node, CompilePermsOptions options,
+			ZipCompressor compressor, ZipDecompressor decompressor) {
+		this.application = application;
 		this.compilePermsOptions = options;
 		this.compressor = compressor;
 		this.decompressor = decompressor;
@@ -65,7 +70,7 @@ public class SessionManagerImpl implements SessionManager {
 		communicator.sendData(data, node);
 	}
 
-	public <T extends CommMessageResponse> T sendMessageToAgent(
+	public <T extends CommMessagePayload> T sendMessageToAgent(
 			CommMessage<T> message) {
 		T response = communicator.sendMessage(message, this.node);
 		return response;
@@ -91,22 +96,30 @@ public class SessionManagerImpl implements SessionManager {
 					.getCurrentState();
 			if (currentState != null) {
 				switch (currentState) {
-				case READY:
+				case READY: {
 					SendDataMessage message = new SendDataMessage();
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
 					payload.setCompilePermsOptions(compilePermsOptions);
+					payload.setUUID(application.getSettings().getUUID());
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);
 					return false;
-				case INPROGRESS:
+				}
+				case INPROGRESS: {
 					System.out.println("Agent " + this.node.getIpaddress()
 							+ " is in progress.");
 					return false;
-				case COMPLETED:
+				}
+				case COMPLETED: {
 					try {
-						byte[] retrievedData = communicator
-								.retrieveData(this.node);
+						RequestProcessingResultMessage message = new RequestProcessingResultMessage();
+						ReturnResultPayload payload = new ReturnResultPayload();
+						payload
+								.setUUID(application.getSettings().getUUID());
+						message.setResponse(payload);
+						byte[] retrievedData = communicator.retrieveData(
+								message, this.node);
 						File temp = new File("work");
 						decompressor.decompressAndStoreToFile(retrievedData,
 								temp);
@@ -114,6 +127,7 @@ public class SessionManagerImpl implements SessionManager {
 						e.printStackTrace();
 					}
 					return true;
+				}
 				default:
 					return false;
 				}

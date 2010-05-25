@@ -1,7 +1,7 @@
 package com.google.gwt.dist;
 
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 
 /**
@@ -51,7 +51,7 @@ public interface SessionManager extends Runnable {
 	 * @param message
 	 *            CommMessage to be sent.
 	 */
-	<T extends CommMessageResponse> T sendMessageToAgent(CommMessage<T> message);
+	<T extends CommMessagePayload> T sendMessageToAgent(CommMessage<T> message);
 
 	/**
 	 * Sets communicator to be used.

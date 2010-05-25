@@ -7,12 +7,13 @@ import java.util.regex.Pattern;
 
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
 import com.google.gwt.dist.comm.ProcessingStateResponse;
-import com.google.gwt.dist.comm.ReturnResultResponse;
+import com.google.gwt.dist.comm.ReturnResultPayload;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.processor.DataProcessor;
+import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
@@ -51,7 +52,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	}
 
 	public void processConnection(Socket client) {
-		CommMessage<CommMessageResponse> message = communicator.getData(client);
+		CommMessage<CommMessagePayload> message = communicator.getData(client);
 		message.setResponse(decideResponse(message));
 		communicator.sendData(message, client);
 		communicator.closeConnection(client);
@@ -70,7 +71,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends CommMessageResponse> T decideResponse(
+	private <T extends CommMessagePayload> T decideResponse(
 			CommMessage<T> message) {
 		T responseToReturn = null;
 		switch (message.getCommMessageType()) {
@@ -88,18 +89,19 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			break;
 		case RETURN_RESULT:
 			try {
-				ReturnResultResponse response = new ReturnResultResponse();
+				ReturnResultPayload payload = new ReturnResultPayload();
+				payload = ((RequestProcessingResultMessage)message).getResponse();
 				File folderFromWhichToPickData = new File(System
 						.getProperty("user.dir")
 						+ File.separator
-						+ "uncompressed"
+						+ payload.getUUID()
 						+ File.separator
 						+ "work");
 				byte[] data = compressor.archiveAndCompressDir(
 						folderFromWhichToPickData,
 						Pattern.compile("permutation-[0-9+].js")).toByteArray();
-				response.setResponseValue(data);
-				responseToReturn = (T) response;
+				payload.setResponseValue(data);
+				responseToReturn = (T) payload;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

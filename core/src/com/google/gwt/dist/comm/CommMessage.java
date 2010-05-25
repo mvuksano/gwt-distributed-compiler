@@ -6,7 +6,7 @@ import java.io.Serializable;
  * The definition for object that is used by client and agent for
  * intercommunication.
  */
-public interface CommMessage<T extends CommMessageResponse> extends
+public interface CommMessage<T extends CommMessagePayload> extends
 		Serializable {
 
 	/**

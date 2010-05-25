@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
 import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
@@ -57,14 +57,14 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public CommMessage<CommMessageResponse> getData(Socket client) {
+	public CommMessage<CommMessagePayload> getData(Socket client) {
 		logger.log(Level.INFO, "Getting data from client: "
 				+ client.getInetAddress());
-		CommMessage<CommMessageResponse> message = null;
+		CommMessage<CommMessagePayload> message = null;
 		try {
 			InputStream is = client.getInputStream();
 			ObjectInputStream ois = new ObjectInputStream(is);
-			message = (CommMessage<CommMessageResponse>) ois.readObject();
+			message = (CommMessage<CommMessagePayload>) ois.readObject();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -82,7 +82,7 @@ public class CommunicatorImpl implements Communicator {
 		this.sessionManager = sessionManager;
 	}
 
-	public void sendData(CommMessage<CommMessageResponse> message, Socket client) {
+	public void sendData(CommMessage<CommMessagePayload> message, Socket client) {
 		try {
 			OutputStream os = client.getOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(os);

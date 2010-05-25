@@ -21,16 +21,7 @@ public class CompilePermsService implements Runnable {
 
 	private CompilePermsOptions options;
 	private CompilePermsListener listener;
-
-	public CompilePermsOptions getOptions() {
-		return options;
-	}
-
-	private File tempStorage;
-
-	public CompilePermsService(File tempStorage) {
-		this.tempStorage = tempStorage;
-	}
+	private String uuid;
 
 	public void compilePermsFinished() {
 		listener.onDataProcessorStateChanged(ProcessingState.COMPLETED);
@@ -47,7 +38,7 @@ public class CompilePermsService implements Runnable {
 	@Override
 	public void run() {
 		try {
-			File uncompressedSrc = new File(tempStorage + File.separator
+			File uncompressedSrc = new File(uuid + File.separator
 					+ "src" + File.separator);
 
 			Util.addUrl(uncompressedSrc.toURI().toURL());
@@ -55,7 +46,7 @@ public class CompilePermsService implements Runnable {
 			TreeLogger logger = new PrintWriterTreeLogger();
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
 
-			options.setWorkDir(new File(tempStorage + File.separator + options.getWorkDir()));
+			options.setWorkDir(new File(uuid + File.separator + options.getWorkDir()));
 
 			compilePermsStarted();
 			new CompilePerms(options).run(logger);
@@ -80,8 +71,9 @@ public class CompilePermsService implements Runnable {
 		this.options = options;
 	}
 
-	public void setOptions(CompilePermsOptions options) {
+	public void initialize(CompilePermsOptions options, String uuid) {
 		this.options = options;
+		this.uuid = uuid;
 	}
 
 }

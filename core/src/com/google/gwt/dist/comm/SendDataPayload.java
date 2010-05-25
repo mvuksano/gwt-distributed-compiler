@@ -3,18 +3,22 @@ package com.google.gwt.dist.comm;
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 
 @SuppressWarnings("serial")
-public class SendDataPayload implements CommMessageResponse {
+public class SendDataPayload implements CommMessagePayload {
 
-	private CompilePermsOptions options;
 	private byte[] data;
+	private CompilePermsOptions options;
+	private String uuid;
 
+	public CompilePermsOptions getCompilePermsOptions() {
+		return this.options;
+	}
 
 	public byte[] getPayload() {
 		return this.data;
 	}
-
-	public CompilePermsOptions getCompilePermsOptions() {
-		return this.options;
+	
+	public String getUUID() {
+		return this.uuid;
 	}
 
 	public void setCompilePermsOptions(CompilePermsOptions options) {
@@ -23,10 +27,9 @@ public class SendDataPayload implements CommMessageResponse {
 
 	public void setPayload(byte[] data) {
 		this.data = data;
-	}
+	}	
 	
-	public void setOptions(CompilePermsOptions moduleNames) {
-		this.options = moduleNames;
+	public void setUUID(String uuid) {
+		this.uuid = uuid;
 	}
-	
 }

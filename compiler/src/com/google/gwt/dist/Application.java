@@ -124,7 +124,8 @@ public class Application {
 					options);
 			customizedCompilePermsOptions.setPermsToCompile(distributionMatrix
 					.get(n));
-			sessionManagers.add(new SessionManagerImpl(communicator, n,
+			// TODO: This should be injected with Spring.
+			sessionManagers.add(new SessionManagerImpl(this, communicator, n,
 					customizedCompilePermsOptions, compressor, decompressor));
 		}
 

@@ -2,7 +2,7 @@ package com.google.gwt.dist.comm;
 
 import com.google.gwt.dist.ProcessingState;
 
-public class ProcessingStateResponse implements CommMessageResponse {
+public class ProcessingStateResponse implements CommMessagePayload {
 
 	/**
 	 * 

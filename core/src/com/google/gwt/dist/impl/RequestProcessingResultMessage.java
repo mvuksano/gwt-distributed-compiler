@@ -1,7 +1,7 @@
 package com.google.gwt.dist.impl;
 
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.ReturnResultResponse;
+import com.google.gwt.dist.comm.ReturnResultPayload;
 
 /**
  * This message is used to notify agent that it should return Processing result
@@ -9,9 +9,9 @@ import com.google.gwt.dist.comm.ReturnResultResponse;
  * setResponse are present only to fulfill the interface requirements.
  */
 public class RequestProcessingResultMessage implements
-		CommMessage<ReturnResultResponse> {
+		CommMessage<ReturnResultPayload> {
 
-	ReturnResultResponse response;
+	ReturnResultPayload response;
 	
 	/**
 	 * Generated serial version UID.
@@ -29,12 +29,12 @@ public class RequestProcessingResultMessage implements
 	}
 
 	@Override
-	public ReturnResultResponse getResponse() {
+	public ReturnResultPayload getResponse() {
 		return this.response;
 	}
 
 	@Override
-	public void setResponse(ReturnResultResponse response) {
+	public void setResponse(ReturnResultPayload response) {
 		this.response = response;
 	}
 

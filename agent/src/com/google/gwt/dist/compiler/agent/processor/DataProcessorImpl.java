@@ -24,7 +24,6 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	private CompilePermsService compilePermsService;
 	private ZipDecompressor decompressor;
 	private ProcessingState state;
-	private File tempStorage;
 
 	private ExecutorService executorService;
 
@@ -40,13 +39,12 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	 *            Directory that will be used as a temporary storage during
 	 *            processing.
 	 */
-	public DataProcessorImpl(ZipDecompressor decompressor, File tempStorage) {
+	public DataProcessorImpl(ZipDecompressor decompressor) {
 		this.decompressor = decompressor;
-		this.tempStorage = tempStorage;
 		state = ProcessingState.READY;
 		executorService = Executors.newFixedThreadPool(5);
 	}
-	
+
 	public CompilePermsService getCompilePermsService() {
 		return this.compilePermsService;
 	}
@@ -65,7 +63,8 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	public void onDataReceived(SendDataPayload receivedData) {
 		try {
 			storeInputStreamOnDisk(receivedData);
-			compilePermsService.setOptions(receivedData.getCompilePermsOptions());
+			compilePermsService.initialize(receivedData
+					.getCompilePermsOptions(), receivedData.getUUID());
 			executorService.execute(compilePermsService);
 			executorService.shutdown();
 		} catch (MalformedURLException e) {
@@ -86,7 +85,7 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 			}
 		}
 	}
-	
+
 	public void setCompilePermsService(CompilePermsService compilePermsService) {
 		this.compilePermsService = compilePermsService;
 	}
@@ -99,6 +98,7 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	 */
 	public void storeInputStreamOnDisk(SendDataPayload receivedData)
 			throws FileNotFoundException, IOException {
-		decompressor.decompressAndStoreToFile(receivedData.getPayload(), this.tempStorage);
+		decompressor.decompressAndStoreToFile(receivedData.getPayload(),
+				new File(receivedData.getUUID()));
 	}
 }

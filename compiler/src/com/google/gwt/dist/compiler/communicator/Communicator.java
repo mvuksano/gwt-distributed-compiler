@@ -4,7 +4,8 @@ import java.net.Socket;
 
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
+import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 
 /**
  * Provides abstraction layer for transport used by SessionManager.
@@ -22,7 +23,7 @@ public interface Communicator {
 	 *            CommMessage which contains the query.
 	 * @return CommMessageResponse that is wrapped in the message.
 	 */
-	<T extends CommMessageResponse> T sendMessage(CommMessage<T> message,
+	<T extends CommMessagePayload> T sendMessage(CommMessage<T> message,
 			Node node);
 
 	/**
@@ -30,9 +31,12 @@ public interface Communicator {
 	 * 
 	 * @param n
 	 *            Node from which to retrieve the data.
+	 * @param message
+	 *            M
 	 * @return Retrieved data as byte array.
 	 */
-	byte[] retrieveData(Node n);
+	byte[] retrieveData(RequestProcessingResultMessage message,
+			Node n);
 
 	/**
 	 * Send data to specified node.

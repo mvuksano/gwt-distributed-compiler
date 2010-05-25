@@ -7,5 +7,5 @@ import java.io.Serializable;
  * All objects that should be send as part of CommMessage response should
  * implement this interface.
  */
-public interface CommMessageResponse extends Serializable {
+public interface CommMessagePayload extends Serializable {
 }

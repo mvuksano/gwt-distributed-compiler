@@ -12,7 +12,8 @@ import java.util.logging.Logger;
 
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.comm.CommMessage;
-import com.google.gwt.dist.comm.CommMessageResponse;
+import com.google.gwt.dist.comm.CommMessagePayload;
+import com.google.gwt.dist.comm.ReturnResultPayload;
 import com.google.gwt.dist.compiler.communicator.Communicator;
 import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 
@@ -48,8 +49,8 @@ public class CommunicatorImpl implements Communicator {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends CommMessageResponse> T sendMessage(
-			CommMessage<T> message, Node node) {
+	public <T extends CommMessagePayload> T sendMessage(CommMessage<T> message,
+			Node node) {
 		try {
 			Socket server = new Socket(node.getIpaddress(), node.getPort());
 			InputStream is = server.getInputStream();
@@ -74,22 +75,25 @@ public class CommunicatorImpl implements Communicator {
 		return message.getResponse();
 	}
 
-	public byte[] retrieveData(Node node) {
+	@Override
+	public byte[] retrieveData(RequestProcessingResultMessage message, Node node) {
 		byte[] retrievedData = null;
-		
+
 		try {
 			Socket server = new Socket(node.getIpaddress(), node.getPort());
 			OutputStream os = server.getOutputStream();
 			InputStream is = server.getInputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(os); oos.flush();
-			
-			RequestProcessingResultMessage message = new RequestProcessingResultMessage();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			oos.flush();
+
 			oos.writeObject(message);
 			oos.flush();
 
 			ObjectInputStream ois = new ObjectInputStream(is);
-			message = (RequestProcessingResultMessage)ois.readObject();
-			retrievedData = message.getResponse().getResponseValue();
+			RequestProcessingResultMessage returnedMessage = (RequestProcessingResultMessage) ois
+					.readObject();
+			ReturnResultPayload returnedPayload = returnedMessage.getResponse();
+			retrievedData = returnedPayload.getResponseValue();
 
 			oos.close();
 			os.close();

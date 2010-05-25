@@ -31,7 +31,8 @@ public class ApplicationTest {
 	SessionManager sessionManager2;
 
 	private static String APPLICATION_CONTEXT_FILE_LOCATION = "test/com/google/gwt/dist/resources/applicationContext.xml";
-	private static String APPLICATION_SETTINGS = "test/com/google/gwt/dist/resources/testConfig.xml";
+	private static String APPLICATION_SETTINGS_NO_UUID = "test/com/google/gwt/dist/resources/testConfig-no-uuid.xml";
+	private static String APPLICATION_SETTINGS_WITH_UUID = "test/com/google/gwt/dist/resources/testConfig-with-uuid.xml";
 	private static String APPLICATION_SETTINGS_TEMP = "test/com/google/gwt/dist/resources/testConfig-temp.xml";
 
 	@BeforeClass
@@ -73,7 +74,7 @@ public class ApplicationTest {
 		appContext = new FileSystemXmlApplicationContext(
 				APPLICATION_CONTEXT_FILE_LOCATION);
 		app = (Application) appContext.getBean("application");
-		Resource inputResource = new FileSystemResource(APPLICATION_SETTINGS);
+		Resource inputResource = new FileSystemResource(APPLICATION_SETTINGS_NO_UUID);
 		app.loadSettings(inputResource);
 		File temp = new File(APPLICATION_SETTINGS_TEMP);
 		try {
@@ -90,6 +91,7 @@ public class ApplicationTest {
 
 		app.loadSettings(outputResource);
 		Assert.assertTrue(!(app.getSettings().getUUID().equals("")));
+		temp.delete();
 	}
 
 	/**
@@ -97,7 +99,13 @@ public class ApplicationTest {
 	 */
 	@Test
 	public void testUsingExistingUUID() {
-		// TODO
+		appContext = new FileSystemXmlApplicationContext(
+				APPLICATION_CONTEXT_FILE_LOCATION);
+		app = (Application) appContext.getBean("application");
+		Resource inputResource = new FileSystemResource(APPLICATION_SETTINGS_WITH_UUID);
+		app.loadSettings(inputResource);
+		Assert.assertTrue(app.getSettings().getUUID().equals("de6a4ca0-950a-4d11-8085-dd9354a8b512"));
+		Assert.assertTrue(app.validUUID(app.getSettings()));
 	}
 
 }
