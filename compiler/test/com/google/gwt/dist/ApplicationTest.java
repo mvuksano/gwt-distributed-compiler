@@ -30,7 +30,7 @@ public class ApplicationTest {
 	SessionManager sessionManager1;
 	SessionManager sessionManager2;
 
-	private static String APPLICATION_CONTEXT_FILE_LOCATION = "test/com/google/gwt/dist/resources/applicationContext.xml";
+	private static String APPLICATION_CONTEXT_FILE_LOCATION = "test/com/google/gwt/dist/resources/applicationContext-test.xml";
 	private static String APPLICATION_SETTINGS_NO_UUID = "test/com/google/gwt/dist/resources/testConfig-no-uuid.xml";
 	private static String APPLICATION_SETTINGS_WITH_UUID = "test/com/google/gwt/dist/resources/testConfig-with-uuid.xml";
 	private static String APPLICATION_SETTINGS_TEMP = "test/com/google/gwt/dist/resources/testConfig-temp.xml";

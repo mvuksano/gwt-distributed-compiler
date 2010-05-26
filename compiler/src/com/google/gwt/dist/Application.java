@@ -77,7 +77,7 @@ public class Application {
 	private static String AGENTS_SETTINGS = "config.xml";
 
 	private static final Logger logger = Logger.getLogger(Application.class);
-
+	
 	public Application(Communicator communicator, ZipCompressor compressor,
 			ZipDecompressor decompressor, Distributor distributor,
 			TreeLogger treeLogger) {

@@ -66,7 +66,6 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 			compilePermsService.initialize(receivedData
 					.getCompilePermsOptions(), receivedData.getUUID());
 			executorService.execute(compilePermsService);
-			executorService.shutdown();
 		} catch (MalformedURLException e) {
 			logger.log(Level.INFO, e.getMessage());
 		} catch (FileNotFoundException e) {
@@ -74,6 +73,10 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 		} catch (IOException e) {
 			logger.log(Level.INFO, e.getMessage());
 		}
+	}
+	
+	public void reset() {
+		this.state = ProcessingState.READY;
 	}
 
 	@Override

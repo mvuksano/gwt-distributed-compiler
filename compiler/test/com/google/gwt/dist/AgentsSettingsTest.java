@@ -1,7 +1,5 @@
 package com.google.gwt.dist;
 
-import java.io.File;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -15,17 +13,17 @@ import org.testng.annotations.Test;
  */
 public class AgentsSettingsTest {
 
-	private ApplicationContext context;
+	private ApplicationContext context = null;
 	private Application app;
 	
-	private static String APPLICATION_CONTEXT_FILE_LOCATION = "test/com/google/gwt/dist/resources/applicationContext.xml";
-	private static String APPLICATION_SETTINGS = "test/com/google/gwt/dist/resources/testConfig.xml";
+	private static String APPLICATION_CONTEXT_FILE_LOCATION = "test/com/google/gwt/dist/resources/applicationContext-test.xml";
+	private static String APPLICATION_SETTINGS = "test/com/google/gwt/dist/resources/testConfig-no-uuid.xml";
 
 	@BeforeClass
-	public void init() {
-		context = new FileSystemXmlApplicationContext(new File(
-				APPLICATION_CONTEXT_FILE_LOCATION).toString());
-		app = context.getBean(Application.class);
+	public void setUp() {
+		context = new FileSystemXmlApplicationContext(
+				APPLICATION_CONTEXT_FILE_LOCATION);
+		app = (Application)context.getBean("application");
 	}
 	
 	@Test

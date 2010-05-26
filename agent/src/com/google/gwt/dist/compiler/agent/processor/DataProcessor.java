@@ -17,6 +17,11 @@ public interface DataProcessor extends Runnable, DataReceivedListener {
 	 * @return
 	 */
 	ProcessingState getCurrentState();
+	
+	/**
+	 * Set DataProcessor's state to ProcessingStateReady. 
+	 */
+	void reset();
 
 	/**
 	 * Method should store input stream on disk so that it can be processed by

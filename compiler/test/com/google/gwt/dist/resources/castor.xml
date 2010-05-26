@@ -1,0 +1,25 @@
+<!DOCTYPE databases PUBLIC
+"-//EXOLAB/Castor Mapping DTD Version 1.0//EN"
+"http://castor.exolab.org/mapping.dtd">
+
+<mapping>
+	<class name="com.google.gwt.dist.AgentsSettings">
+		<map-to xml="settings" />
+		<field name="UUID" type="java.lang.String">
+			<bind-xml name="uuid" node="element" />
+		</field>
+		<field name="nodes" type="com.google.gwt.dist.impl.NodeImpl"
+			collection="arraylist">
+			<bind-xml name="node" node="element" location="nodes" />
+		</field>
+	</class>
+
+	<class name="com.google.gwt.dist.impl.NodeImpl">
+		<field name="ipaddress" type="string">
+			<bind-xml name="ipaddress" node="element" />
+		</field>
+		<field name="port" type="integer">
+			<bind-xml name="port" node="element" />
+		</field>
+	</class>
+</mapping>

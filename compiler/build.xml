@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="gwt-distributed-compiler-client" default="build" basedir=".">
-  <property name="gwt.sdk"      location="\home\markovuksanovic\devel\gwt\trunk\build\staging\gwt-0.0.0" />
+  <property name="gwt.sdk"      location="D:\devel\gwt\trunk\build\staging\gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
+  <property name="config"     	location="config"/>
   <property name="core"     	location="../core"/>
   <property name="jarfile.name" value="${module.name}.jar"/>
   <property name="module.name"  value="${ant.project.name}"/>
@@ -14,9 +15,10 @@
   <path id="project.class.path">
     <fileset dir="${gwt.sdk}" includes="gwt-*.jar"/>
     <fileset dir="${lib}" includes="*.jar" />
+    <fileset dir="${config}" includes="*.*" />
   </path>
 
-  <taskdef name="testng" classpathref="project.class.path" classname="org.testng.TestNGAntTask" />
+  <taskdef resource="testngtasks" classpath="${lib}\testng-5.12.jar"/>
 
   <target name="clean" description="Cleans this project.">
   	<delete dir="${build}"/>
@@ -28,13 +30,13 @@
 	<ivy:retrieve/>
   </target>
 	
-  <target name="init" depends="retrieve" description="Create directories.">
+  <target name="init" description="Create directories.">
   	<mkdir dir="${build}"/>
   	<mkdir dir="${classes}"/>
   </target>
 
   <target name="javac" depends="init" description="Compile java source.">
-    <javac srcdir="..\core" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
+    <javac srcdir="..\core\src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
     <javac srcdir="src" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
@@ -57,12 +59,12 @@
   </target>
 
   <target name="test" depends="javac" description="Run tests.">
-    <testng>
-      <classpath>
+    <testng haltOnfailure="true">
+	  <classpath>
+	    <pathelement location="${classes}"/>
         <path refid="project.class.path"/>
-	<pathelement location="classes"/>
-      </classpath>
-      <classfileset dir="classes" includes="**/*Test.class"/>
+	  </classpath>
+      <xmlfileset dir="test" includes="**/All.xml"/>
     </testng>
   </target>
 

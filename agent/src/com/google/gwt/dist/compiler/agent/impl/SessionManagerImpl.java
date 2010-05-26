@@ -102,6 +102,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 						Pattern.compile("permutation-[0-9+].js")).toByteArray();
 				payload.setResponseValue(data);
 				responseToReturn = (T) payload;
+				dataProcessor.reset();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

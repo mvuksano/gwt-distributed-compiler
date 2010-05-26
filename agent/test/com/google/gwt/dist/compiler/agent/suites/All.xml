@@ -5,9 +5,4 @@
        <class name="com.google.gwt.dist.compiler.agent.impl.SessionManagerImplTest" />
     </classes>
   </test>
-  <test name="com.google.gwt.dist.compiler.agent.communicator.impl">
-    <classes>
-       <class name="com.google.gwt.dist.compiler.agent.communicator.impl.CommunicatorImplTest" />
-    </classes>
-  </test>
 </suite>

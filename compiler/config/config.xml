@@ -4,11 +4,11 @@
   </uuid>
   <nodes>
     <node>
-      <ipaddress>localhost</ipaddress>
+      <ipaddress>192.168.1.239</ipaddress>
       <port>3000</port>
     </node>
     <node>
-      <ipaddress>192.168.1.23</ipaddress>
+      <ipaddress>localhost</ipaddress>
       <port>3000</port>
     </node>
   </nodes>

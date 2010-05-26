@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="gwt-distributed-compiler-agent" default="build" basedir=".">
-  <property name="gwt.sdk" location="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0" />
+  <property name="gwt.sdk" location="D:/devel/gwt/trunk/build/staging/gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
   <property name="config"     	location="config"/>
@@ -32,7 +32,7 @@
     <ivy:retrieve/>
   </target>
 	
-  <target name="init" depends="retrieve" description="Create directories.">
+  <target name="init" description="Create directories.">
     <mkdir dir="${build}"/>
     <mkdir dir="${classes}"/>
     <mkdir dir="${dist}"/>
@@ -50,13 +50,13 @@
     </javac>
   </target>
 
- <target name="test" depends="javac" description="Run tests.">
-    <testng>
-      <classpath>
+  <target name="test" depends="javac" description="Run tests.">
+    <testng haltOnfailure="true">
+	  <classpath>
+	    <pathelement location="${classes}"/>
         <path refid="project.class.path"/>
-        <pathelement location="classes"/>
-      </classpath>
-      <classfileset dir="classes" includes="**/*Test.class"/>
+	  </classpath>
+      <xmlfileset dir="test" includes="**/All.xml"/>
     </testng>
   </target>
 

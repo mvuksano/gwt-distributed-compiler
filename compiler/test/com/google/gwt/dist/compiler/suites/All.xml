@@ -1,9 +1,9 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="All Unit Tests" parallel="methods" thread-count="2">
-  <test name="com.google.gwt.dist.compiler">
+<suite name="All Unit Tests">
+  <test name="com.google.gwt.dist">
     <classes>
-       <class name="com.google.gwt.dist.compiler.AgentsSettingsTest" />
-       <class name="com.google.gwt.dist.compiler.ApplicationTest" />
+       <class name="com.google.gwt.dist.AgentsSettingsTest" />
+       <class name="com.google.gwt.dist.ApplicationTest" />
     </classes>
   </test>
   <test name="com.google.gwt.dist.compiler.communicator.impl">
@@ -11,12 +11,13 @@
        <class name="com.google.gwt.dist.compiler.communicator.impl.DistributorImplTest" />
     </classes>
   </test>
+    <!-- 
   <test name="com.google.gwt.dist.compiler.impl">
     <classes>
        <class name="com.google.gwt.dist.compiler.impl.SessionManagerImplTest" />
     </classes>
   </test>
-  <!-- 
+
   <test name="com.google.gwt.dist.linker">
     <classes>
       <class name="com.google.gwt.dist.linker.LinkOptionsImplTest" />

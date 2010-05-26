@@ -67,4 +67,8 @@ public class DataProcessorMock implements DataProcessor, Runnable {
 	@Override
 	public void onDataReceived(SendDataPayload receivedData) {
 	}
+	
+	public void reset(){
+		mockProcessingState = ProcessingState.READY;
+	}
 }
