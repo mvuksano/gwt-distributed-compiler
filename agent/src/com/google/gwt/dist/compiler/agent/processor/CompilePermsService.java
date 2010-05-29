@@ -2,6 +2,8 @@ package com.google.gwt.dist.compiler.agent.processor;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -10,7 +12,6 @@ import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
-import com.google.gwt.dist.util.Util;
 
 /**
  * CompilePermsService executes actual CompilePerms operation. This is a long
@@ -30,7 +31,7 @@ public class CompilePermsService implements Runnable {
 	public CompilePermsListener getCompilePermsListener() {
 		return this.listener;
 	}
-	
+
 	public CompilePermsOptions getCompilePermsOptions() {
 		return this.options;
 	}
@@ -38,18 +39,30 @@ public class CompilePermsService implements Runnable {
 	@Override
 	public void run() {
 		try {
-			File uncompressedSrc = new File(uuid + File.separator
-					+ "src" + File.separator);
+			File uncompressedSrc = new File(uuid + File.separator + "src"
+					+ File.separator);
 
-			Util.addUrl(uncompressedSrc.toURI().toURL());
+			File uncompressedLib = new File(uuid + File.separator + "lib"
+					+ File.separator);
 
 			TreeLogger logger = new PrintWriterTreeLogger();
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
 
-			options.setWorkDir(new File(uuid + File.separator + options.getWorkDir()));
+			options.setWorkDir(new File(uuid + File.separator
+					+ options.getWorkDir()));
 
 			compilePermsStarted();
+			
+			ClassLoader prevClassLoader = Thread.currentThread().getContextClassLoader();
+			URLClassLoader urlClassLoader = new URLClassLoader(new URL[] {
+					uncompressedSrc.toURI().toURL(),
+					uncompressedLib.toURI().toURL() });
+			
+			Thread.currentThread().setContextClassLoader(urlClassLoader);
+			
 			new CompilePerms(options).run(logger);
+			
+			Thread.currentThread().setContextClassLoader(prevClassLoader);
 			compilePermsFinished();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -66,7 +79,7 @@ public class CompilePermsService implements Runnable {
 	public void setCompilePermsListener(CompilePermsListener listener) {
 		this.listener = listener;
 	}
-	
+
 	public void setCompilePermsOptions(CompilePermsOptions options) {
 		this.options = options;
 	}

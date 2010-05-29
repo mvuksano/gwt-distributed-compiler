@@ -1,0 +1,1 @@
+java -classpath D:\Devel\open-source\gwt-distributed-compiler\agent\build\lib\*;D:\Devel\gwt\trunk\build\staging\gwt-0.0.0\*;D:\Devel\open-source\gwt-distributed-compiler\agent\build\* com.google.gwt.dist.compiler.agent.Agent

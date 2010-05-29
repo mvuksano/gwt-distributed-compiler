@@ -17,7 +17,7 @@
 	<bean id="communicator" class="com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl">
 	</bean>
 	
-	<bean id="distOptions" class="com.google.gwt.dist.util.options.DistOptionsImpl">
+	<bean id="distOptions" class="com.google.gwt.dist.util.options.DistCompilerOptionsImpl">
 	</bean>
 	
 	<bean id="compressor" class="com.google.gwt.dist.util.ZipCompressor">

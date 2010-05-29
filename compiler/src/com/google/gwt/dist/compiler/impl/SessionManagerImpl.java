@@ -147,7 +147,7 @@ public class SessionManagerImpl implements SessionManager {
 				new File(source + File.separator + "work"), true);
 
 		ByteArrayOutputStream libFolder = compressor.archiveAndCompressDir(
-				new File(source + File.separator + "lib"), true);
+				new File(source + File.separator + distCompilePermsOptions.getGwtClassPath()), true);
 
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(srcFolder
 				.toByteArray());

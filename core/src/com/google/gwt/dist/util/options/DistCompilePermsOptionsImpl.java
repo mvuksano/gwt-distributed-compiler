@@ -1,5 +1,6 @@
 package com.google.gwt.dist.util.options;
 
+import java.io.File;
 import java.io.Serializable;
 
 
@@ -10,12 +11,14 @@ public class DistCompilePermsOptionsImpl extends CompileTaskOptionsImpl
 		implements DistCompilePermsOptions, Serializable {
 
 	private static final long serialVersionUID = -4757085237535925396L;
+	private File gwtClassPath;
 	private int localWorkers;
 	private int[] permsToCompile;
 	private String uuid;
 
 	public DistCompilePermsOptionsImpl(DistCompilerOptions other) {
 		super.copyFrom(other);
+		setGwtClassPath(other.getGwtClassPath());
 		setUUID(other.getUUID());
 	}
 
@@ -53,5 +56,15 @@ public class DistCompilePermsOptionsImpl extends CompileTaskOptionsImpl
 
 	public void setUUID(String uuid) {
 		this.uuid = uuid;
+	}
+
+	@Override
+	public File getGwtClassPath() {
+		return this.gwtClassPath;
+	}
+
+	@Override
+	public void setGwtClassPath(File classpath) {
+		this.gwtClassPath = classpath;
 	}
 }

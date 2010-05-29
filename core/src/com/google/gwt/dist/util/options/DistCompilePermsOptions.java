@@ -6,6 +6,6 @@ import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 /**
  * Defines CompilePerms options for distributed compiler.
  */
-public interface DistCompilePermsOptions extends CompileTaskOptions, CompilePermsOptions, OptionUUID {
+public interface DistCompilePermsOptions extends CompileTaskOptions, CompilePermsOptions, OptionUUID, OptionClassPath {
 
 }
