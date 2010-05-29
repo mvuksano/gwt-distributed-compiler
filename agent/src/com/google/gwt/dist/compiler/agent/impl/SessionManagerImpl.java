@@ -90,7 +90,8 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 		case RETURN_RESULT:
 			try {
 				ReturnResultPayload payload = new ReturnResultPayload();
-				payload = ((RequestProcessingResultMessage)message).getResponse();
+				payload = ((RequestProcessingResultMessage) message)
+						.getResponse();
 				File folderFromWhichToPickData = new File(System
 						.getProperty("user.dir")
 						+ File.separator
@@ -102,13 +103,27 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 						Pattern.compile("permutation-[0-9+].js")).toByteArray();
 				payload.setResponseValue(data);
 				responseToReturn = (T) payload;
-				dataProcessor.reset();
+
+				deleteDataStoredOnDisk(payload);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			break;
 		}
 		return responseToReturn;
+	}
+
+	/**
+	 * Deletes data store on disk, for a compiler identified by uuid contained
+	 * in payload.
+	 * 
+	 * @param payload
+	 *            Payload which contains information about what data to delete.
+	 */
+	private void deleteDataStoredOnDisk(ReturnResultPayload payload) {
+		new File(System.getProperty("user.dir") + File.separator
+				+ payload.getUUID()).delete();
+		dataProcessor.reset();
 	}
 
 	@Override
