@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
@@ -38,36 +40,40 @@ public class CompilePermsService implements Runnable {
 
 	@Override
 	public void run() {
+		ClassLoader prevClassLoader = null;
 		try {
-			File uncompressedSrc = new File(uuid + File.separator + "src"
-					+ File.separator);
+			List<URL> classpathURLs = new ArrayList<URL>();
+			classpathURLs.add(new File(uuid + File.separator + "src"
+					+ File.separator).toURI().toURL());
 
 			File uncompressedLib = new File(uuid + File.separator + "lib"
 					+ File.separator);
 
+			for (File f : uncompressedLib.listFiles()) {
+				classpathURLs.add(f.toURI().toURL());
+			}
+
 			TreeLogger logger = new PrintWriterTreeLogger();
 			((PrintWriterTreeLogger) logger).setMaxDetail(TreeLogger.INFO);
-
 			options.setWorkDir(new File(uuid + File.separator
 					+ options.getWorkDir()));
 
 			compilePermsStarted();
-			
-			ClassLoader prevClassLoader = Thread.currentThread().getContextClassLoader();
-			URLClassLoader urlClassLoader = new URLClassLoader(new URL[] {
-					uncompressedSrc.toURI().toURL(),
-					uncompressedLib.toURI().toURL() });
-			
+
+			prevClassLoader = Thread.currentThread().getContextClassLoader();
+			URLClassLoader urlClassLoader = URLClassLoader.newInstance(
+					classpathURLs.toArray(new URL[] {}), prevClassLoader);
 			Thread.currentThread().setContextClassLoader(urlClassLoader);
-			
+
 			new CompilePerms(options).run(logger);
-			
-			Thread.currentThread().setContextClassLoader(prevClassLoader);
+
 			compilePermsFinished();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (UnableToCompleteException e) {
 			e.printStackTrace();
+		} finally {
+			Thread.currentThread().setContextClassLoader(prevClassLoader);
 		}
 
 	}
