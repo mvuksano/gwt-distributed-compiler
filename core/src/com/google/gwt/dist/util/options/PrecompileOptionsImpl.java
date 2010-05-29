@@ -1,4 +1,4 @@
-package com.google.gwt.dist.precompile;
+package com.google.gwt.dist.util.options;
 
 import java.io.File;
 import java.io.Serializable;
@@ -6,8 +6,10 @@ import java.io.Serializable;
 import com.google.gwt.dev.Precompile.PrecompileOptions;
 import com.google.gwt.dev.jjs.JJSOptionsImpl;
 import com.google.gwt.dev.jjs.JsOutputOption;
-import com.google.gwt.dist.compiler.CompileTaskOptionsImpl;
 
+/**
+ * Concrete class to implement Precompile task options.
+ */
 @SuppressWarnings("serial")
 public class PrecompileOptionsImpl extends CompileTaskOptionsImpl implements
 		PrecompileOptions, Serializable {

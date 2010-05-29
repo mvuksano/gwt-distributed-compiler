@@ -59,6 +59,22 @@ public class Util {
 	public static String getFolderSeparatorInZipArchive() {
 		return "/";
 	}
+	
+
+	/**
+	 * Get MD5, which is stored as a byte array, as a String representation.
+	 * 
+	 * @param md5 byte array to be converted into a string.
+	 * @return String representation of the MD5.
+	 */
+	public static String getMD5AsHex(byte[] md5) {
+		String result = "";
+		for (int i = 0; i < md5.length; i++) {
+			result += Integer.toString((md5[i] & 0xff) + 0x100, 16)
+					.substring(1);
+		}
+		return result;
+	}
 
 	/**
 	 * Converts array of bytes into object.

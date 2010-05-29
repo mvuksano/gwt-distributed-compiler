@@ -1,7 +1,7 @@
 package com.google.gwt.dist.compiler.agent.impl;
 
 import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
-import com.google.gwt.dist.compiler.CompileTaskOptionsImpl;
+import com.google.gwt.dist.util.options.CompileTaskOptionsImpl;
 
 /**
  * Concrete class to implement compiler perm options.

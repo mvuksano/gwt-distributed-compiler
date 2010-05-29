@@ -4,11 +4,12 @@
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
   <property name="config"     	location="config"/>
-  <property name="core"     	location="../core"/>
+  <property name="core"     	  location="../core"/>
+  <property name="dist"         location="dist"/>
   <property name="jarfile.name" value="${module.name}.jar"/>
-  <property name="module.name"  value="${ant.project.name}"/>
   <property name="lib"          location="lib"/>
   <property name="module.name"  value="${ant.project.name}"/>
+  <property name="test"         location="test"/>
 	
   <ivy:settings file="ivysettings.xml" />
 	
@@ -26,13 +27,14 @@
   </target>
 	
   <target name="retrieve">
-	<ivy:resolve/>
-	<ivy:retrieve/>
+	  <ivy:resolve/>
+	  <ivy:retrieve/>
   </target>
 	
   <target name="init" description="Create directories.">
   	<mkdir dir="${build}"/>
   	<mkdir dir="${classes}"/>
+    <mkdir dir="${dist}"/>
   </target>
 
   <target name="javac" depends="init" description="Compile java source.">
@@ -45,33 +47,35 @@
     <javac srcdir="test" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
+    <copy todir="classes">
+      <fileset dir="${config}" />
+    </copy>
   </target>
 	
-  <target name="copy" depends="javac" description="Copy resources.">
-  	<mkdir dir="${build}\config"/>
-  	<copy todir="${build}\config">
-  	  <fileset dir="config"/>
-	</copy>
-  	<mkdir dir="${build}\lib"/>
-  	<copy todir="${build}\lib">
-  	  <fileset dir="${lib}"/>
-	</copy>
-  </target>
-
   <target name="test" depends="javac" description="Run tests.">
     <testng haltOnfailure="true">
-	  <classpath>
-	    <pathelement location="${classes}"/>
-        <path refid="project.class.path"/>
-	  </classpath>
-      <xmlfileset dir="test" includes="**/All.xml"/>
+      <classpath>
+        <pathelement location="${classes}"/>
+          <path refid="project.class.path"/>
+      </classpath>
+        <xmlfileset dir="${test}" includes="**/All.xml"/>
     </testng>
   </target>
 
-  <target name="build" depends="copy" description="Build this project." >
-    <jar destfile="${build}\${module.name}.jar" basedir="${classes}" />
+  <target name="build" depends="javac" description="Build this project." >
+    <jar destfile="${build}\${module.name}.jar" basedir="${classes}" />    
+    <mkdir dir="${build}\config"/>
+    <copy todir="${build}\config">
+      <fileset dir="config"/>
+    </copy>
+    <mkdir dir="${build}\lib"/>
+    <copy todir="${build}\lib">
+      <fileset dir="${lib}"/>
+    </copy>
   </target>
-
+  
   <target name="dist" depends="build" description="Create distributable files." >
+    <tar basedir="${build}" destfile="${dist}/${module.name}.tar.bz2" compression="bzip2" />
+    <zip basedir="${build}" destfile="${dist}/${module.name}.zip" compress="true" />
   </target>
 </project>

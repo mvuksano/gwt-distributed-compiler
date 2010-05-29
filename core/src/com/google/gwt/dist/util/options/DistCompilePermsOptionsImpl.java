@@ -1,32 +1,33 @@
-package com.google.gwt.dist.perms;
+package com.google.gwt.dist.util.options;
 
 import java.io.Serializable;
 
-import com.google.gwt.dev.CompilerOptions;
-import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
-import com.google.gwt.dist.compiler.CompileTaskOptionsImpl;
 
 /**
  * Concrete class to implement compiler perm options.
  */
-public class CompilePermsOptionsImpl extends CompileTaskOptionsImpl implements
-		CompilePermsOptions, Serializable {
+public class DistCompilePermsOptionsImpl extends CompileTaskOptionsImpl
+		implements DistCompilePermsOptions, Serializable {
 
 	private static final long serialVersionUID = -4757085237535925396L;
 	private int localWorkers;
 	private int[] permsToCompile;
+	private String uuid;
 
-	public CompilePermsOptionsImpl() {
+	public DistCompilePermsOptionsImpl(DistCompilerOptions other) {
+		super.copyFrom(other);
+		setUUID(other.getUUID());
 	}
 
-	public CompilePermsOptionsImpl(CompilerOptions other) {
+	public DistCompilePermsOptionsImpl(DistCompilePermsOptions other) {
 		super.copyFrom(other);
 	}
 
-	public void copyFrom(CompilePermsOptions other) {
+	public void copyFrom(DistCompilePermsOptions other) {
 		super.copyFrom(other);
 		setPermsToCompile(other.getPermsToCompile());
 		setLocalWorkers(other.getLocalWorkers());
+		setUUID(other.getUUID());
 	}
 
 	public int getLocalWorkers() {
@@ -37,6 +38,10 @@ public class CompilePermsOptionsImpl extends CompileTaskOptionsImpl implements
 		return (permsToCompile == null) ? null : permsToCompile.clone();
 	}
 
+	public String getUUID() {
+		return this.uuid;
+	}
+
 	public void setLocalWorkers(int localWorkers) {
 		this.localWorkers = localWorkers;
 	}
@@ -44,5 +49,9 @@ public class CompilePermsOptionsImpl extends CompileTaskOptionsImpl implements
 	public void setPermsToCompile(int[] permsToCompile) {
 		this.permsToCompile = (permsToCompile == null) ? null : permsToCompile
 				.clone();
+	}
+
+	public void setUUID(String uuid) {
+		this.uuid = uuid;
 	}
 }

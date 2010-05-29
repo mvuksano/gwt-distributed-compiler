@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.gwt.dist.compiler;
+package com.google.gwt.dist.util.options;
 
 import java.io.File;
 import java.io.Serializable;

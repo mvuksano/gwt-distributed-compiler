@@ -10,8 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
-import com.google.gwt.dist.Application;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.SessionManager;
@@ -27,24 +25,23 @@ import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
+import com.google.gwt.dist.util.options.DistCompilePermsOptions;
 
 /**
  * Concrete SessionManager implementation.
  */
 public class SessionManagerImpl implements SessionManager {
 
-	private Application application;
-	private CompilePermsOptions compilePermsOptions;
+	private DistCompilePermsOptions distCompilePermsOptions;
 	private ZipCompressor compressor;
 	private ZipDecompressor decompressor;
 	private Communicator communicator;
 	private Node node;
 
-	public SessionManagerImpl(Application application,
-			Communicator communicator, Node node, CompilePermsOptions options,
-			ZipCompressor compressor, ZipDecompressor decompressor) {
-		this.application = application;
-		this.compilePermsOptions = options;
+	public SessionManagerImpl(Communicator communicator, Node node,
+			DistCompilePermsOptions options, ZipCompressor compressor,
+			ZipDecompressor decompressor) {
+		this.distCompilePermsOptions = options;
 		this.compressor = compressor;
 		this.decompressor = decompressor;
 		this.communicator = communicator;
@@ -100,8 +97,8 @@ public class SessionManagerImpl implements SessionManager {
 					SendDataMessage message = new SendDataMessage();
 					SendDataPayload payload = new SendDataPayload();
 					payload.setPayload(generateDataForProcessing());
-					payload.setCompilePermsOptions(compilePermsOptions);
-					payload.setUUID(application.getSettings().getUUID());
+					payload.setCompilePermsOptions(distCompilePermsOptions);
+					payload.setUUID(distCompilePermsOptions.getUUID());
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);
 					return false;
@@ -115,8 +112,7 @@ public class SessionManagerImpl implements SessionManager {
 					try {
 						RequestProcessingResultMessage message = new RequestProcessingResultMessage();
 						ReturnResultPayload payload = new ReturnResultPayload();
-						payload
-								.setUUID(application.getSettings().getUUID());
+						payload.setUUID(distCompilePermsOptions.getUUID());
 						message.setResponse(payload);
 						byte[] retrievedData = communicator.retrieveData(
 								message, this.node);
@@ -150,6 +146,9 @@ public class SessionManagerImpl implements SessionManager {
 		ByteArrayOutputStream workFolder = compressor.archiveAndCompressDir(
 				new File(source + File.separator + "work"), true);
 
+		ByteArrayOutputStream libFolder = compressor.archiveAndCompressDir(
+				new File(source + File.separator + "lib"), true);
+
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(srcFolder
 				.toByteArray());
 		CheckedInputStream checksum1 = new CheckedInputStream(bais1,
@@ -162,7 +161,14 @@ public class SessionManagerImpl implements SessionManager {
 				new Adler32());
 		ZipInputStream zis2 = new ZipInputStream(checksum2);
 
-		ZipInputStream mergedStream = compressor.mergeZippedStreams(zis1, zis2);
+		ByteArrayInputStream bais3 = new ByteArrayInputStream(libFolder
+				.toByteArray());
+		CheckedInputStream checksum3 = new CheckedInputStream(bais3,
+				new Adler32());
+		ZipInputStream zis3 = new ZipInputStream(checksum3);
+
+		ZipInputStream mergedStream = compressor.mergeZippedStreams(zis1, zis2,
+				zis3);
 
 		ByteArrayOutputStream dataAsByteArrayOutputStream = new ByteArrayOutputStream();
 		ZipOutputStream compressedResultStream = new ZipOutputStream(

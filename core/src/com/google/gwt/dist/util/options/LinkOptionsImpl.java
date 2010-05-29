@@ -1,10 +1,9 @@
-package com.google.gwt.dist.link;
+package com.google.gwt.dist.util.options;
 
 import java.io.File;
 import java.io.Serializable;
 
 import com.google.gwt.dev.Link.LinkOptions;
-import com.google.gwt.dist.compiler.CompileTaskOptionsImpl;
 
 /**
  * Options for Link.

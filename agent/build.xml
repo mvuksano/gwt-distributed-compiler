@@ -48,6 +48,9 @@
     <javac srcdir="test" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
+    <copy todir="classes">
+      <fileset dir="${config}" />
+    </copy>
   </target>
 
   <target name="test" depends="javac" description="Run tests.">
@@ -61,23 +64,19 @@
   </target>
 
   <target name="build" depends="javac" description="Build this project." >
-    <jar destfile="${build}\${module.name}.jar" basedir="${classes}">
-    </jar>
-  </target>
-
-
-	
-  <target name="dist" depends="build" description="Deploy the project.">
-    <copy todir="${dist}">
-      <fileset dir="${build}" />
-    </copy>
-    <copy todir="${dist}\lib">
+    <jar destfile="${build}\${module.name}.jar" basedir="${classes}" />
+    <copy todir="${build}\lib">
       <fileset dir="${lib}" />
     </copy>
-    <copy todir="${dist}\config">
+    <copy todir="${build}\config">
       <fileset dir="${config}" />
     </copy>
-    <copy file="start.sh" todir="${dist}"/>
+    <copy file="start.sh" todir="${build}"/>
+  </target>
+    
+  <target name="dist" depends="build" description="Create distributable files." >
+    <tar basedir="${build}" destfile="${dist}/${module.name}.tar.bz2" compression="bzip2" />
+    <zip basedir="${build}" destfile="${dist}/${module.name}.zip" compress="true" />
   </target>
 
 </project>

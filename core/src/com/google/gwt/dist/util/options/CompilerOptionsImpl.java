@@ -1,11 +1,9 @@
-package com.google.gwt.dist.compiler;
+package com.google.gwt.dist.util.options;
 
 import java.io.File;
 import java.io.Serializable;
 
 import com.google.gwt.dev.CompilerOptions;
-import com.google.gwt.dist.link.LinkOptionsImpl;
-import com.google.gwt.dist.precompile.PrecompileOptionsImpl;
 
 public class CompilerOptionsImpl extends PrecompileOptionsImpl implements
 		CompilerOptions, Serializable {

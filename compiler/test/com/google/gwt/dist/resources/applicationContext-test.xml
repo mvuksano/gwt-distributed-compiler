@@ -12,14 +12,7 @@
 		<constructor-arg name="decompressor" ref="decompressor"/>
 		<constructor-arg name="distributor" ref="distributor"/>
 		<constructor-arg name="treeLogger" ref="treeLogger"/>
-		<property name="marshaller" ref="castorMarshaller" />
-		<property name="unmarshaller" ref="castorMarshaller" />
 	</bean>
-	
-	<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" >
-		<property name="mappingLocation" value="test/com/google/gwt/dist/resources/castor.xml" />
-	</bean>
-	
 	
 	<bean id="communicator" class="com.google.gwt.dist.compiler.communicator.impl.CommunicatorImpl">
 	</bean>
