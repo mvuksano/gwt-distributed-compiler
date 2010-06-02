@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
@@ -147,7 +148,9 @@ public class SessionManagerImpl implements SessionManager {
 				new File(source + File.separator + "work"), true);
 
 		ByteArrayOutputStream libFolder = compressor.archiveAndCompressDir(
-				new File(source + File.separator + distCompilePermsOptions.getGwtClassPath()), true);
+				new File(source + File.separator
+						+ distCompilePermsOptions.getGwtClassPath()), true,
+				Pattern.compile("^(?:(?!gwt-servlet\\.jar).)*$"));
 
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(srcFolder
 				.toByteArray());

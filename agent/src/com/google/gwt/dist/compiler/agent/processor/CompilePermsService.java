@@ -10,19 +10,19 @@ import java.util.List;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.dev.CompilePerms;
-import com.google.gwt.dev.CompilePerms.CompilePermsOptions;
 import com.google.gwt.dev.util.log.PrintWriterTreeLogger;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.compiler.agent.events.CompilePermsListener;
+import com.google.gwt.dist.util.options.DistCompilePermsOptions;
 
 /**
  * CompilePermsService executes actual CompilePerms operation. This is a long
- * running operation and is intended to be run in background. It uses
- * publish/subscribe model to notify other objects about a job being completed.
+ * running operation and is intended to be run in background. It uses observer
+ * pattern model to notify other objects about a job being completed.
  */
 public class CompilePermsService implements Runnable {
 
-	private CompilePermsOptions options;
+	private DistCompilePermsOptions options;
 	private CompilePermsListener listener;
 	private String uuid;
 
@@ -34,7 +34,7 @@ public class CompilePermsService implements Runnable {
 		return this.listener;
 	}
 
-	public CompilePermsOptions getCompilePermsOptions() {
+	public DistCompilePermsOptions getCompilePermsOptions() {
 		return this.options;
 	}
 
@@ -43,6 +43,7 @@ public class CompilePermsService implements Runnable {
 		ClassLoader prevClassLoader = null;
 		try {
 			List<URL> classpathURLs = new ArrayList<URL>();
+
 			classpathURLs.add(new File(uuid + File.separator + "src"
 					+ File.separator).toURI().toURL());
 
@@ -66,6 +67,11 @@ public class CompilePermsService implements Runnable {
 			Thread.currentThread().setContextClassLoader(urlClassLoader);
 
 			new CompilePerms(options).run(logger);
+			System.gc();
+			System.gc();
+			Thread.currentThread().setContextClassLoader(prevClassLoader);
+			urlClassLoader = null;
+			classpathURLs = null;
 
 			compilePermsFinished();
 		} catch (MalformedURLException e) {
@@ -73,7 +79,7 @@ public class CompilePermsService implements Runnable {
 		} catch (UnableToCompleteException e) {
 			e.printStackTrace();
 		} finally {
-			Thread.currentThread().setContextClassLoader(prevClassLoader);
+
 		}
 
 	}
@@ -86,11 +92,11 @@ public class CompilePermsService implements Runnable {
 		this.listener = listener;
 	}
 
-	public void setCompilePermsOptions(CompilePermsOptions options) {
+	public void setCompilePermsOptions(DistCompilePermsOptions options) {
 		this.options = options;
 	}
 
-	public void initialize(CompilePermsOptions options, String uuid) {
+	public void initialize(DistCompilePermsOptions options, String uuid) {
 		this.options = options;
 		this.uuid = uuid;
 	}

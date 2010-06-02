@@ -121,14 +121,30 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	 *            Payload which contains information about what data to delete.
 	 */
 	private void deleteDataStoredOnDisk(ReturnResultPayload payload) {
-		new File(System.getProperty("user.dir") + File.separator
-				+ payload.getUUID()).delete();
+		deleteDir(new File(System.getProperty("user.dir") + File.separator
+				+ payload.getUUID()));
 		dataProcessor.reset();
 	}
-
+	
+	//TODO: candidate for removal.
 	@Override
 	public void run() {
 		System.out.println("running...");
 
+	}
+	
+	/**
+	 * Delete directory and all the files and folders in it.
+	 * @param dir Directory to delete.
+	 */
+	private void deleteDir(File dir) {
+		for (File f : dir.listFiles()) {
+			if (f.isDirectory()) {
+				deleteDir(f);
+				f.delete();
+			} else {
+				f.delete();
+			}
+		}
 	}
 }

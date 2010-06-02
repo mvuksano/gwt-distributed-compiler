@@ -31,7 +31,12 @@ public class ZipCompressor {
 			.getLogger(ZipCompressor.class.getName());
 
 	public ByteArrayOutputStream archiveAndCompressDir(File directory) {
-		return archiveAndCompressDir(directory, false);
+		return archiveAndCompressDir(directory, false, null);
+	}
+
+	public ByteArrayOutputStream archiveAndCompressDir(File directory,
+			boolean preserveParentFolderName) {
+		return archiveAndCompressDir(directory, preserveParentFolderName, null);
 	}
 
 	/**
@@ -45,7 +50,7 @@ public class ZipCompressor {
 	 * @return Compressed output stream as byte array.
 	 */
 	public ByteArrayOutputStream archiveAndCompressDir(File directory,
-			boolean preserveParentFolderName) {
+			boolean preserveParentFolderName, Pattern fileFilter) {
 		ByteArrayOutputStream destination = new ByteArrayOutputStream();
 		CheckedOutputStream checksum = new CheckedOutputStream(destination,
 				new Adler32());
@@ -56,9 +61,9 @@ public class ZipCompressor {
 		try {
 			if (preserveParentFolderName) {
 				addFilesToPackage(directory, directory.getName()
-						+ Util.getFolderSeparatorInZipArchive(), out, null);
+						+ Util.getFolderSeparatorInZipArchive(), out, fileFilter);
 			} else {
-				addFilesToPackage(directory, "", out, null);
+				addFilesToPackage(directory, "", out, fileFilter);
 			}
 			out.close();
 		} catch (IOException e) {

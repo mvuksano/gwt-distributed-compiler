@@ -23,7 +23,7 @@ public class DistCompilePermsOptionsImpl extends CompileTaskOptionsImpl
 	}
 
 	public DistCompilePermsOptionsImpl(DistCompilePermsOptions other) {
-		super.copyFrom(other);
+		copyFrom(other);
 	}
 
 	public void copyFrom(DistCompilePermsOptions other) {

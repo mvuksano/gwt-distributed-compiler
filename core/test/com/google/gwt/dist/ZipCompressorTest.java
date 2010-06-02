@@ -5,6 +5,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
@@ -64,8 +68,10 @@ public class ZipCompressorTest {
 				source.toString()
 						+ "\\core\\test\\com\\google\\gwt\\dist\\resources\\sample-to-be-compressed\\test-folder2\\");
 
-		ByteArrayOutputStream baos1 = zipCompressor.archiveAndCompressDir(dir1, true);
-		ByteArrayOutputStream baos2 = zipCompressor.archiveAndCompressDir(dir2, true);
+		ByteArrayOutputStream baos1 = zipCompressor.archiveAndCompressDir(dir1,
+				true);
+		ByteArrayOutputStream baos2 = zipCompressor.archiveAndCompressDir(dir2,
+				true);
 
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(baos1
 				.toByteArray());
@@ -87,5 +93,32 @@ public class ZipCompressorTest {
 			Assert.assertEquals(zipEntry.getName(),
 					expectedZipEntryNames[counter++]);
 		}
+	}
+
+	@Test
+	public void testInculdeFilesFilter() {
+		Pattern includeFiles = Pattern.compile("^(?:(?!gwt-servlet\\.jar).)*$");
+		List<File> files = new ArrayList<File>( Arrays.asList(
+			new File[] {
+				new File("war/WEB-INF/lib/gwt-servlet.jar"),
+				new File("war/WEB-INF/lib/gwt-styles.jar")
+				}
+			));
+		
+		List<File> expectedFiles = new ArrayList<File>( Arrays.asList(
+				new File[] {
+					new File("war/WEB-INF/lib/gwt-servlet.jar")
+					}
+				));
+		
+		List<File> filteredFiles = new ArrayList<File>();
+		
+		for (File f: files) {
+			Matcher m = includeFiles.matcher(f.getName());
+			if (m.matches()) {
+				filteredFiles.add(f);
+			}
+		}
+		Assert.assertEquals(filteredFiles.size(), expectedFiles.size());
 	}
 }
