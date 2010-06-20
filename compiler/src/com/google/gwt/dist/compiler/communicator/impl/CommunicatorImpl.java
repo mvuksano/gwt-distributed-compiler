@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessagePayload;
-import com.google.gwt.dist.comm.ReturnResultPayload;
+import com.google.gwt.dist.comm.ProcessingResultPayload;
+import com.google.gwt.dist.comm.impl.ProcessingResultMessage;
 import com.google.gwt.dist.compiler.communicator.Communicator;
-import com.google.gwt.dist.impl.RequestProcessingResultMessage;
 
 public class CommunicatorImpl implements Communicator {
 
@@ -76,7 +76,7 @@ public class CommunicatorImpl implements Communicator {
 	}
 
 	@Override
-	public byte[] retrieveData(RequestProcessingResultMessage message, Node node) {
+	public byte[] retrieveData(ProcessingResultMessage message, Node node) {
 		byte[] retrievedData = null;
 
 		try {
@@ -90,9 +90,9 @@ public class CommunicatorImpl implements Communicator {
 			oos.flush();
 
 			ObjectInputStream ois = new ObjectInputStream(is);
-			RequestProcessingResultMessage returnedMessage = (RequestProcessingResultMessage) ois
+			ProcessingResultMessage returnedMessage = (ProcessingResultMessage) ois
 					.readObject();
-			ReturnResultPayload returnedPayload = returnedMessage.getResponse();
+			ProcessingResultPayload returnedPayload = returnedMessage.getResponse();
 			retrievedData = returnedPayload.getResponseValue();
 
 			oos.close();

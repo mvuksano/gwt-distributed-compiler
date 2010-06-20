@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessagePayload;
-import com.google.gwt.dist.comm.ProcessingStateResponse;
-import com.google.gwt.dist.comm.ReturnResultPayload;
+import com.google.gwt.dist.comm.ProcessingResultPayload;
+import com.google.gwt.dist.comm.ProcessingStatePayload;
+import com.google.gwt.dist.comm.impl.ProcessingResultMessage;
+import com.google.gwt.dist.comm.impl.SendDataMessage;
 import com.google.gwt.dist.compiler.agent.SessionManager;
 import com.google.gwt.dist.compiler.agent.communicator.Communicator;
 import com.google.gwt.dist.compiler.agent.processor.DataProcessor;
-import com.google.gwt.dist.impl.RequestProcessingResultMessage;
-import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 
@@ -84,13 +84,13 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 			responseToReturn = message.getResponse();
 			break;
 		case QUERY:
-			responseToReturn = (T) new ProcessingStateResponse(
+			responseToReturn = (T) new ProcessingStatePayload(
 					getProcessingState());
 			break;
 		case RETURN_RESULT:
 			try {
-				ReturnResultPayload payload = new ReturnResultPayload();
-				payload = ((RequestProcessingResultMessage) message)
+				ProcessingResultPayload payload = new ProcessingResultPayload();
+				payload = ((ProcessingResultMessage) message)
 						.getResponse();
 				File folderFromWhichToPickData = new File(System
 						.getProperty("user.dir")
@@ -120,7 +120,7 @@ public class SessionManagerImpl implements SessionManager, Runnable {
 	 * @param payload
 	 *            Payload which contains information about what data to delete.
 	 */
-	private void deleteDataStoredOnDisk(ReturnResultPayload payload) {
+	private void deleteDataStoredOnDisk(ProcessingResultPayload payload) {
 		deleteDir(new File(System.getProperty("user.dir") + File.separator
 				+ payload.getUUID()));
 		dataProcessor.reset();

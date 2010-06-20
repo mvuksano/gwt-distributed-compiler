@@ -14,9 +14,14 @@ import org.apache.log4j.Logger;
 
 import com.google.gwt.dist.DataChecker;
 
+/**
+ * DataChecker is used to check consistency of existing data and the data that
+ * is about to be received from the client.
+ */
 public class DataCheckerImpl implements DataChecker {
-	
-	private static final Logger logger = Logger.getLogger(DataCheckerImpl.class);
+
+	private static final Logger logger = Logger
+			.getLogger(DataCheckerImpl.class);
 
 	@Override
 	public Map<String, byte[]> getMD5Matrix(File directory) {

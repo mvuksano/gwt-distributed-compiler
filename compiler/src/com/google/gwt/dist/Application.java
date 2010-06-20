@@ -1,5 +1,6 @@
 package com.google.gwt.dist;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public class Application {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Application.class);
-	
+
 	public Application(Communicator communicator, ZipCompressor compressor,
 			ZipDecompressor decompressor, Distributor distributor,
 			TreeLogger treeLogger) {
@@ -100,9 +101,11 @@ public class Application {
 		Precompile precompile = new Precompile(precompileOptions);
 		precompile.run(treeLogger);
 
+		int permsToCompile[] = getPermsToCompile(precompileOptions.getWorkDir());
+
 		DistCompilePermsOptions compilePermsOptions = new DistCompilePermsOptionsImpl(
 				options);
-		compilePermsOptions.setPermsToCompile(new int[] {0, 1, 2, 3, 4, 5});
+		compilePermsOptions.setPermsToCompile(permsToCompile);
 		Map<Node, int[]> distributionMatrix = distributor.distribute(
 				compilePermsOptions.getPermsToCompile(), nodes);
 
@@ -129,6 +132,10 @@ public class Application {
 			}
 		}
 
+		while (!allSessionManagersFinished(sessionManagers)) {
+			
+		}
+
 		LinkOptionsImpl linkOptions = new LinkOptionsImpl(options);
 		Link link = new Link(linkOptions);
 		link.run(treeLogger);
@@ -137,10 +144,12 @@ public class Application {
 	public AgentsSettings getSettings() {
 		return this.settings;
 	}
-	
+
 	/**
 	 * Check if correct settings are present.
-	 * @param settings Settings to be checked.
+	 * 
+	 * @param settings
+	 *            Settings to be checked.
 	 * @return True if correct settings were present. False otherwise.
 	 */
 	protected boolean validUUID(AgentsSettings settings) {
@@ -150,9 +159,20 @@ public class Application {
 		}
 		return true;
 	}
-	
+
 	public void setSettings(AgentsSettings settings) {
 		this.settings = settings;
+	}
+
+	protected boolean allSessionManagersFinished(
+			List<SessionManager> sessionManagers) {
+		boolean finished = true;
+		for (SessionManager s : sessionManagers) {
+			if (s.isFinished() == Boolean.valueOf(false)) {
+				finished = false;
+			}
+		}
+		return finished;
 	}
 
 	protected boolean allSessionManagersFinished(
@@ -165,6 +185,17 @@ public class Application {
 			}
 		}
 		return finished;
+	}
+
+	/**
+	 * Reads how many permutations are there to be compiled.
+	 * 
+	 * @param dir
+	 *            Directory to which percompile step has emitted its output.
+	 * @return int array which contains permutations which should be compiled.
+	 */
+	private int[] getPermsToCompile(File dir) {
+		return new int[] { 0, 1, 2, 3, 4, 5 };
 	}
 
 	private Map<SessionManager, Boolean> initializeSessionManagerStatusList(

@@ -1,5 +1,5 @@
 package com.google.gwt.dist;
 
 public enum ProcessingState {
-	READY, INPROGRESS, COMPLETED, TERMINATED
+	READY, READY_FOR_COMPILE, INPROGRESS, COMPLETED, TERMINATED
 }

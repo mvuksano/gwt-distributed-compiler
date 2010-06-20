@@ -15,7 +15,7 @@ public interface SessionManager extends Runnable {
 	 * @param n
 	 *            Node to check.
 	 * 
-	 * @return true if CompilePerms is completed and ready to be sent to the
+	 * @return true if {@link CompilePerms} is completed and ready to be sent to the
 	 *         client.
 	 */
 	boolean compilePermsCompleted(Node n);
@@ -26,6 +26,15 @@ public interface SessionManager extends Runnable {
 	 * @return Currently used communicator.
 	 */
 	Communicator getCommunicator();
+
+	/**
+	 * Is all the necessary communication with, that is supposed to be done by
+	 * this session manager, finished.
+	 * 
+	 * @return true if there is no more communication that should be done. false
+	 *         otherwise.
+	 */
+	boolean isFinished();
 
 	/**
 	 * Check if it is OK to send some data to the agent.

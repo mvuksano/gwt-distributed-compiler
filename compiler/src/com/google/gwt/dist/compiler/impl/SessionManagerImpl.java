@@ -16,14 +16,14 @@ import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessagePayload;
-import com.google.gwt.dist.comm.ProcessingStateResponse;
-import com.google.gwt.dist.comm.ReturnResultPayload;
+import com.google.gwt.dist.comm.ProcessingStatePayload;
+import com.google.gwt.dist.comm.ProcessingResultPayload;
 import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.comm.CommMessage.CommMessageType;
+import com.google.gwt.dist.comm.impl.ProcessingResultMessage;
+import com.google.gwt.dist.comm.impl.ProcessingStateMessage;
+import com.google.gwt.dist.comm.impl.SendDataMessage;
 import com.google.gwt.dist.compiler.communicator.Communicator;
-import com.google.gwt.dist.impl.ProcessingStateMessage;
-import com.google.gwt.dist.impl.RequestProcessingResultMessage;
-import com.google.gwt.dist.impl.SendDataMessage;
 import com.google.gwt.dist.util.ZipCompressor;
 import com.google.gwt.dist.util.ZipDecompressor;
 import com.google.gwt.dist.util.options.DistCompilePermsOptions;
@@ -33,10 +33,11 @@ import com.google.gwt.dist.util.options.DistCompilePermsOptions;
  */
 public class SessionManagerImpl implements SessionManager {
 
-	private DistCompilePermsOptions distCompilePermsOptions;
+	private Communicator communicator;
 	private ZipCompressor compressor;
 	private ZipDecompressor decompressor;
-	private Communicator communicator;
+	private DistCompilePermsOptions distCompilePermsOptions;
+	private boolean finished;
 	private Node node;
 
 	public SessionManagerImpl(Communicator communicator, Node node,
@@ -46,6 +47,7 @@ public class SessionManagerImpl implements SessionManager {
 		this.compressor = compressor;
 		this.decompressor = decompressor;
 		this.communicator = communicator;
+		this.finished = false;
 		this.node = node;
 	}
 
@@ -79,6 +81,10 @@ public class SessionManagerImpl implements SessionManager {
 	public Communicator getCommunicator() {
 		return this.communicator;
 	}
+	
+	public boolean isFinished() {
+		return this.finished;
+	}
 
 	@Override
 	public void setCommunicator(Communicator communicator) {
@@ -86,11 +92,11 @@ public class SessionManagerImpl implements SessionManager {
 	}
 
 	public boolean start() {
-		ProcessingStateResponse response = sendMessageToAgent(new ProcessingStateMessage(
+		ProcessingStatePayload response = sendMessageToAgent(new ProcessingStateMessage(
 				CommMessageType.QUERY));
 		ProcessingState currentState = null;
 		if (response != null) {
-			currentState = ((ProcessingStateResponse) response)
+			currentState = ((ProcessingStatePayload) response)
 					.getCurrentState();
 			if (currentState != null) {
 				switch (currentState) {
@@ -111,8 +117,8 @@ public class SessionManagerImpl implements SessionManager {
 				}
 				case COMPLETED: {
 					try {
-						RequestProcessingResultMessage message = new RequestProcessingResultMessage();
-						ReturnResultPayload payload = new ReturnResultPayload();
+						ProcessingResultMessage message = new ProcessingResultMessage();
+						ProcessingResultPayload payload = new ProcessingResultPayload();
 						payload.setUUID(distCompilePermsOptions.getUUID());
 						message.setResponse(payload);
 						byte[] retrievedData = communicator.retrieveData(
