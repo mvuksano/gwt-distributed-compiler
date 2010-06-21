@@ -11,13 +11,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.log4j.Logger;
+
 import com.google.gwt.dist.Node;
 import com.google.gwt.dist.ProcessingState;
 import com.google.gwt.dist.SessionManager;
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessagePayload;
-import com.google.gwt.dist.comm.ProcessingStatePayload;
 import com.google.gwt.dist.comm.ProcessingResultPayload;
+import com.google.gwt.dist.comm.ProcessingStatePayload;
 import com.google.gwt.dist.comm.SendDataPayload;
 import com.google.gwt.dist.comm.CommMessage.CommMessageType;
 import com.google.gwt.dist.comm.impl.ProcessingResultMessage;
@@ -39,6 +41,8 @@ public class SessionManagerImpl implements SessionManager {
 	private DistCompilePermsOptions distCompilePermsOptions;
 	private boolean finished;
 	private Node node;
+	
+	private static final Logger logger = Logger.getLogger(SessionManagerImpl.class);
 
 	public SessionManagerImpl(Communicator communicator, Node node,
 			DistCompilePermsOptions options, ZipCompressor compressor,
@@ -91,7 +95,7 @@ public class SessionManagerImpl implements SessionManager {
 		this.communicator = communicator;
 	}
 
-	public boolean start() {
+	public void start() {
 		ProcessingStatePayload response = sendMessageToAgent(new ProcessingStateMessage(
 				CommMessageType.QUERY));
 		ProcessingState currentState = null;
@@ -108,12 +112,14 @@ public class SessionManagerImpl implements SessionManager {
 					payload.setUUID(distCompilePermsOptions.getUUID());
 					message.setResponse(payload);
 					communicator.sendMessage(message, this.node);
-					return false;
+					this.finished = false;
+					break;
 				}
 				case INPROGRESS: {
-					System.out.println("Agent " + this.node.getIpaddress()
+					logger.info("Agent " + this.node.getIpaddress()
 							+ " is in progress.");
-					return false;
+					this.finished = false;
+					break;
 				}
 				case COMPLETED: {
 					try {
@@ -129,14 +135,16 @@ public class SessionManagerImpl implements SessionManager {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-					return true;
+					logger.info("Agent " + this.node.getIpaddress()
+							+ " has finished.");
+					this.finished = true;
+					break;
 				}
 				default:
-					return false;
+					this.finished = false;
 				}
 			}
 		}
-		return false;
 	}
 
 	/**

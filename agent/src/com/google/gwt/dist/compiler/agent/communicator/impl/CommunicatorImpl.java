@@ -8,9 +8,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.google.gwt.dist.comm.CommMessage;
 import com.google.gwt.dist.comm.CommMessagePayload;
@@ -26,8 +27,7 @@ public class CommunicatorImpl implements Communicator {
 	private Set<DataReceivedListener> dataReceivedListeners;
 	private SessionManager sessionManager;
 
-	private static final Logger logger = Logger
-			.getLogger(CommunicatorImpl.class.getName());
+	private static final Logger logger = Logger.getLogger(CommunicatorImpl.class);
 
 	public CommunicatorImpl() {
 		this.dataReceivedListeners = new HashSet<DataReceivedListener>();
@@ -91,8 +91,7 @@ public class CommunicatorImpl implements Communicator {
 			oos.close();
 			os.close();
 		} catch (IOException e) {
-			logger.log(Level.SEVERE,
-					"There was a problem while sending data to client "
+			logger.error("There was a problem while sending data to client "
 							+ client.getInetAddress());
 		}
 	}

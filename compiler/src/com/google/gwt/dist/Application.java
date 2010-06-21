@@ -2,7 +2,6 @@ package com.google.gwt.dist;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -66,9 +65,7 @@ public class Application {
 	private ZipDecompressor decompressor;
 	private Distributor distributor;
 	private TreeLogger treeLogger;
-	private AgentsSettings settings;
 
-	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Application.class);
 
 	public Application(Communicator communicator, ZipCompressor compressor,
@@ -93,12 +90,12 @@ public class Application {
 	}
 
 	public void start(DistCompilerOptions options) {
-
 		List<Node> nodes = options.getNodes();
 		List<SessionManager> sessionManagers = new ArrayList<SessionManager>();
 		PrecompileOptionsImpl precompileOptions = new PrecompileOptionsImpl(
 				options);
 		Precompile precompile = new Precompile(precompileOptions);
+		long compileStart = System.currentTimeMillis();
 		precompile.run(treeLogger);
 
 		int permsToCompile[] = getPermsToCompile(precompileOptions.getWorkDir());
@@ -114,35 +111,32 @@ public class Application {
 					options);
 			customizedCompilePermsOptions.setPermsToCompile(distributionMatrix
 					.get(n));
-			// TODO: This should be injected with Spring.
 			sessionManagers.add(new SessionManagerImpl(communicator, n,
 					customizedCompilePermsOptions, compressor, decompressor));
 		}
 
-		Map<SessionManager, Boolean> sessionManagerStatusList = initializeSessionManagerStatusList(sessionManagers);
-
-		while (!allSessionManagersFinished(sessionManagers,
-				sessionManagerStatusList)) {
+		while (!allSessionManagersFinished(sessionManagers)) {
 			for (SessionManager sm : sessionManagers) {
-				sessionManagerStatusList.put(sm, sm.start());
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
+				if (!sm.isFinished()) {
+					sm.start();
 				}
 			}
-		}
-
-		while (!allSessionManagersFinished(sessionManagers)) {
-			
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+			}
 		}
 
 		LinkOptionsImpl linkOptions = new LinkOptionsImpl(options);
 		Link link = new Link(linkOptions);
 		link.run(treeLogger);
-	}
 
-	public AgentsSettings getSettings() {
-		return this.settings;
+		long compileFinish = System.currentTimeMillis();
+		long delta = compileFinish - compileStart;
+//		treeLogger.log(TreeLogger.INFO, "Compilation succeeded -- "
+//				+ String.format("%.3f", delta / 1000d) + "s");
+		logger.info("Compilation succeeded -- "
+				+ String.format("%.3f", delta / 1000d) + "s");
 	}
 
 	/**
@@ -160,27 +154,11 @@ public class Application {
 		return true;
 	}
 
-	public void setSettings(AgentsSettings settings) {
-		this.settings = settings;
-	}
-
 	protected boolean allSessionManagersFinished(
 			List<SessionManager> sessionManagers) {
 		boolean finished = true;
 		for (SessionManager s : sessionManagers) {
 			if (s.isFinished() == Boolean.valueOf(false)) {
-				finished = false;
-			}
-		}
-		return finished;
-	}
-
-	protected boolean allSessionManagersFinished(
-			List<SessionManager> sessionManagers,
-			Map<SessionManager, Boolean> sessionManagerStatusList) {
-		boolean finished = true;
-		for (SessionManager s : sessionManagers) {
-			if (sessionManagerStatusList.get(s) == Boolean.valueOf(false)) {
 				finished = false;
 			}
 		}
@@ -196,14 +174,5 @@ public class Application {
 	 */
 	private int[] getPermsToCompile(File dir) {
 		return new int[] { 0, 1, 2, 3, 4, 5 };
-	}
-
-	private Map<SessionManager, Boolean> initializeSessionManagerStatusList(
-			List<SessionManager> sessionManagers) {
-		Map<SessionManager, Boolean> sessionManagerStatusList = new HashMap<SessionManager, Boolean>();
-		for (SessionManager sm : sessionManagers) {
-			sessionManagerStatusList.put(sm, Boolean.valueOf(false));
-		}
-		return sessionManagerStatusList;
 	}
 }

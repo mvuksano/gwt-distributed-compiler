@@ -72,8 +72,6 @@ public interface SessionManager extends Runnable {
 
 	/**
 	 * Initiates message exchange with agent.
-	 * 
-	 * @return true if it is OK to start linking, else false;
 	 */
-	boolean start();
+	void start();
 }
