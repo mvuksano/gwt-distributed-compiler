@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="gwt-distributed-compiler-agent" default="build" basedir=".">
-  <property name="gwt.sdk" location="D:/devel/gwt/trunk/build/staging/gwt-0.0.0" />
+  <property name="gwt.sdk" location="/home/markovuksanovic/devel/gwt/trunk/build/staging/gwt-0.0.0" />
   <property name="build"        location="build"/>
   <property name="classes"     	location="classes"/>
   <property name="config"     	location="config"/>
@@ -48,9 +48,6 @@
     <javac srcdir="test" includes="**" encoding="utf-8" destdir="${classes}" source="1.5" target="1.5" nowarn="true" debug="true" debuglevel="lines,vars,source" includeAntRuntime="false">
       <classpath refid="project.class.path"/>
     </javac>
-    <copy todir="classes">
-      <fileset dir="${config}" />
-    </copy>
   </target>
 
   <target name="test" depends="javac" description="Run tests.">
