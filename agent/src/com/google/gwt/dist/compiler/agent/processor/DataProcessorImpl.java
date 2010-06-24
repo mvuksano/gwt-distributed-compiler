@@ -35,9 +35,6 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 	 * 
 	 * @param decompressor
 	 *            Decompressor used to uncompress the incoming stream.
-	 * @param tempStorage
-	 *            Directory that will be used as a temporary storage during
-	 *            processing.
 	 */
 	public DataProcessorImpl(ZipDecompressor decompressor) {
 		this.decompressor = decompressor;
@@ -81,12 +78,6 @@ public class DataProcessorImpl implements CompilePermsListener, DataProcessor,
 
 	@Override
 	public void run() {
-		while (true) {
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-			}
-		}
 	}
 
 	public void setCompilePermsService(CompilePermsService compilePermsService) {
