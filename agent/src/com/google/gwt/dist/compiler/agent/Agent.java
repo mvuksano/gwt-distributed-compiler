@@ -1,14 +1,10 @@
 package com.google.gwt.dist.compiler.agent;
 
 import java.net.ServerSocket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.google.gwt.dist.compiler.agent.processor.DataProcessor;
 
 public class Agent extends Thread {
 
@@ -25,11 +21,6 @@ public class Agent extends Thread {
 
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
 				"applicationContext.xml");
-		ExecutorService executorService = Executors.newFixedThreadPool(5);
-		logger.debug("Started " + executorService.getClass().getName());
-		DataProcessor dp = (DataProcessor) appContext.getBean("dataProcessor");
-		executorService.execute(dp);
-		executorService.shutdown();
 		while (true) {
 			ClientWorker worker = (ClientWorker) appContext
 					.getBean("clientWorker");
